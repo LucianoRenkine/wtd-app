@@ -69,9 +69,9 @@
             height: 100vh;
             background: linear-gradient(180deg, #1A1220 0%, #0D0A10 100%);
             border-right: 1px solid rgba(139, 84, 116, 0.3);
-            padding: 30px 20px;
+            padding: 80px 20px 30px;
             transition: left 0.3s ease;
-            z-index: 40;
+            z-index: 200;
             overflow-y: auto;
         }
 
@@ -111,6 +111,21 @@
             border-radius: 50%;
         }
 
+        .sidebar-divider {
+            border: none;
+            border-top: 1px solid rgba(139, 84, 116, 0.2);
+            margin: 20px 10px;
+        }
+
+        .sidebar nav a.logout-link {
+            color: #a06070;
+        }
+
+        .sidebar nav a.logout-link:hover {
+            color: #e07090;
+            background: rgba(180, 80, 100, 0.12);
+        }
+
         .sidebar-overlay {
             position: fixed;
             inset: 0;
@@ -118,7 +133,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s;
-            z-index: 30;
+            z-index: 150;
         }
 
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
@@ -628,6 +643,8 @@
                 <li><a href="calendar.html">Agenda</a></li>
                 <li><a href="proximas.html">Próximas Tareas</a></li>
                 <li><a href="#">Watchlist</a></li>
+                <hr class="sidebar-divider">
+                <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
             </ul>
         </nav>
     </div>
@@ -770,6 +787,12 @@
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
         });
+
+        function doLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('wtdAuth');
+            window.location.href = 'login.html';
+        }
 
         /* ── Dates ── */
         const START_DATE     = new Date('2024-12-21T18:30:00');

@@ -190,7 +190,7 @@
 
             if (users.length > 0) {
                 select.innerHTML = users.map(user =>
-                    `<option value="${user.id}|${user.nombre}">${user.nombre} (${user.email})</option>`
+                    `<option value="${user.id}|${user.nombre}">${user.nombre}</option>`
                 ).join('');
             } else {
                 select.innerHTML = '<option value="">No hay usuarios disponibles</option>';
