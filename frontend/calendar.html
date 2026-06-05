@@ -74,7 +74,7 @@
             height: 100vh;
             background: linear-gradient(180deg, #1A1220 0%, #0D0A10 100%);
             border-right: 1px solid rgba(139, 84, 116, 0.3);
-            padding: 30px 20px;
+            padding: 80px 20px 30px;
             transition: left 0.3s ease;
             z-index: 200;
             overflow-y: auto;
@@ -267,18 +267,58 @@
             padding: 1px 5px;
         }
 
+        /* ── Right panel sticky ── */
+        .right-panel {
+            position: sticky;
+            top: 80px;
+            background: rgba(13, 9, 18, 0.7);
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            max-height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Tabs ── */
+        .tab-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid rgba(139, 84, 116, 0.2);
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #666;
+            padding: 14px 10px;
+            font-size: 0.82em;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
+        }
+        .tab-btn:hover { color: #8B5474; background: rgba(139, 84, 116, 0.05); }
+        .tab-btn.active {
+            color: #C4849E;
+            border-bottom-color: #8B5474;
+            background: rgba(139, 84, 116, 0.07);
+        }
+        .tab-pane { display: none; padding: 20px; overflow-y: auto; flex: 1; }
+        .tab-pane.active { display: block; }
+
         .form-section {
-            background: linear-gradient(135deg, rgba(20, 14, 26, 0.8) 0%, rgba(10, 8, 16, 0.8) 100%);
-            border: 2px solid rgba(139, 84, 116, 0.2);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(5px);
+            /* kept for compat but now used inside tab-pane */
         }
 
         .form-section h3 {
             color: #d0d0d0;
-            margin-bottom: 20px;
-            font-size: 1.2em;
+            margin-bottom: 16px;
+            font-size: 1.05em;
+            font-weight: 600;
         }
 
         .form-group {
@@ -488,44 +528,53 @@
                 </div>
             </div>
 
-            <!-- Right Panel -->
-            <div style="display: flex; flex-direction: column; gap: 30px;">
-                <!-- Add Task Form -->
-                <div class="form-section">
+            <!-- Right Panel (sticky, tabbed) -->
+            <div class="right-panel">
+                <div class="tab-bar">
+                    <button class="tab-btn active" id="tabBtnTasks" onclick="showTab('tasks')">📅 Tareas del día</button>
+                    <button class="tab-btn" id="tabBtnForm" onclick="showTab('form')">+ Nueva tarea</button>
+                </div>
+
+                <!-- Tab: Tareas del día -->
+                <div class="tab-pane active" id="tabPaneTasks">
+                    <h3 id="selectedDateTitle">Tareas del día</h3>
+                    <div id="tasksList" class="tasks-list">
+                        <div class="no-tasks">Selecciona un día para ver sus tareas</div>
+                    </div>
+                </div>
+
+                <!-- Tab: Nueva tarea -->
+                <div class="tab-pane" id="tabPaneForm">
                     <h3>Nueva Tarea</h3>
                     <form id="taskForm">
                         <div class="form-group">
                             <label>Título *</label>
                             <input type="text" id="taskTitle" required placeholder="Ingresa una tarea">
                         </div>
-
                         <div class="form-group">
                             <label>Descripción</label>
                             <textarea id="taskDescription" placeholder="Detalles..."></textarea>
                         </div>
-
                         <div class="form-group">
                             <label>Fecha *</label>
                             <input type="date" id="taskDate" required>
                         </div>
-
-                        <div class="form-group">
-                            <label>Hora Inicio</label>
-                            <input type="time" id="taskStartTime">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                            <div class="form-group">
+                                <label>Hora inicio</label>
+                                <input type="time" id="taskStartTime">
+                            </div>
+                            <div class="form-group">
+                                <label>Hora fin</label>
+                                <input type="time" id="taskEndTime">
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label>Hora Fin</label>
-                            <input type="time" id="taskEndTime">
-                        </div>
-
                         <div class="form-group">
                             <label>Categoría *</label>
                             <select id="taskCategory" required>
                                 <option value="">Cargando categorías...</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label>Prioridad</label>
                             <select id="taskPriority">
@@ -534,17 +583,8 @@
                                 <option value="HIGH">Alta</option>
                             </select>
                         </div>
-
                         <button type="submit" class="btn">Agregar Tarea</button>
                     </form>
-                </div>
-
-                <!-- Tasks for Selected Date -->
-                <div class="form-section">
-                    <h3 id="selectedDateTitle">Tareas del Hoy</h3>
-                    <div id="tasksList" class="tasks-list">
-                        <div class="no-tasks">Selecciona un día para ver tareas</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -572,6 +612,14 @@
             e.preventDefault();
             localStorage.removeItem('wtdAuth');
             window.location.href = 'login.html';
+        }
+
+        /* ── Tabs ── */
+        function showTab(name) {
+            document.getElementById('tabPaneTasks').classList.toggle('active', name === 'tasks');
+            document.getElementById('tabPaneForm').classList.toggle('active', name === 'form');
+            document.getElementById('tabBtnTasks').classList.toggle('active', name === 'tasks');
+            document.getElementById('tabBtnForm').classList.toggle('active', name === 'form');
         }
 
         // State
@@ -722,11 +770,12 @@
                     cell.appendChild(more);
                 }
 
-                // Click handler
+                // Click handler — switch to tasks tab automatically
                 cell.addEventListener('click', () => {
                     selectedDate = date;
                     renderCalendar();
                     renderTasksForSelectedDate();
+                    showTab('tasks');
                 });
             }
 
