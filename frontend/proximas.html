@@ -52,6 +52,216 @@
             color: #6a5870;
         }
 
+        .new-task-btn {
+            background: linear-gradient(135deg, #8B5474, #C4849E);
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        .new-task-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(139, 84, 116, 0.4);
+        }
+
+        /* ── Drawer ── */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 60;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: -440px;
+            width: 420px;
+            height: 100vh;
+            background: linear-gradient(180deg, #120C1A 0%, #0D0A10 100%);
+            border-left: 1px solid rgba(139, 84, 116, 0.25);
+            z-index: 70;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .drawer.active { right: 0; }
+
+        .drawer-header {
+            padding: 22px 28px 18px;
+            border-bottom: 1px solid rgba(139, 84, 116, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(18, 12, 26, 0.98);
+            backdrop-filter: blur(8px);
+        }
+
+        .drawer-title {
+            font-size: 1em;
+            font-weight: 700;
+            color: #C4849E;
+            letter-spacing: 0.5px;
+        }
+
+        .drawer-close {
+            background: none;
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            color: #6a5870;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drawer-close:hover {
+            background: rgba(139, 84, 116, 0.15);
+            color: #C4849E;
+            border-color: #8B5474;
+        }
+
+        .drawer-body {
+            padding: 28px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field label {
+            font-size: 0.72em;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #8B5474;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            background: rgba(5, 2, 10, 0.5);
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            border-radius: 10px;
+            color: #d0d0d0;
+            font-family: inherit;
+            font-size: 0.92em;
+            padding: 11px 14px;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            outline: none;
+            border-color: #8B5474;
+            background: rgba(139, 84, 116, 0.06);
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .field select option {
+            background: #1A1220;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .drawer-footer {
+            padding: 20px 28px;
+            border-top: 1px solid rgba(139, 84, 116, 0.12);
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            background: linear-gradient(135deg, #8B5474, #C4849E);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(139, 84, 116, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-cancel {
+            background: none;
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            color: #7a6876;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(139, 84, 116, 0.08);
+            color: #C4849E;
+        }
+
+        .field-error {
+            font-size: 0.75em;
+            color: #C4849E;
+            display: none;
+        }
+
+        @media (max-width: 500px) {
+            .drawer { width: 100%; right: -100%; }
+        }
+
         /* ── Layout ── */
         .container {
             max-width: 860px;
@@ -423,7 +633,7 @@
     <header>
         <a href="index.html" class="back-link">← Inicio</a>
         <div class="logo">WTD</div>
-        <div class="header-user" id="headerUser"></div>
+        <button class="new-task-btn" onclick="openDrawer()">+ Nueva tarea</button>
     </header>
 
     <div class="container">
@@ -472,6 +682,68 @@
                 <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
                 <button class="modal-btn confirm" id="modalConfirmBtn" onclick="confirmDelete()">Eliminar</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Drawer overlay -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+    <!-- Drawer -->
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">Nueva Tarea</span>
+            <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        </div>
+
+        <form class="drawer-body" id="drawerForm" onsubmit="submitTask(event)">
+            <div class="field">
+                <label>Título *</label>
+                <input type="text" id="fTitle" placeholder="¿Qué hay que hacer?" required autocomplete="off">
+                <span class="field-error" id="errTitle">El título es obligatorio</span>
+            </div>
+
+            <div class="field">
+                <label>Descripción</label>
+                <textarea id="fDesc" placeholder="Detalles opcionales…"></textarea>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label>Fecha *</label>
+                    <input type="date" id="fDate" required>
+                </div>
+                <div class="field">
+                    <label>Categoría *</label>
+                    <select id="fCategory" required>
+                        <option value="">Elegir…</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label>Hora inicio</label>
+                    <input type="time" id="fStartTime">
+                </div>
+                <div class="field">
+                    <label>Hora fin</label>
+                    <input type="time" id="fEndTime">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Prioridad</label>
+                <select id="fPriority">
+                    <option value="MEDIUM">Normal</option>
+                    <option value="LOW">Baja</option>
+                    <option value="HIGH">Alta</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="drawer-footer">
+            <button class="btn-cancel" onclick="closeDrawer()">Cancelar</button>
+            <button class="btn-submit" id="submitBtn" onclick="submitTask(event)">Agregar tarea</button>
         </div>
     </div>
 
@@ -675,6 +947,70 @@
         document.getElementById('deleteModal').addEventListener('click', e => {
             if (e.target === document.getElementById('deleteModal')) closeModal();
         });
+
+        /* ── Drawer ── */
+        function openDrawer() {
+            // Set today as default date
+            document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+
+            // Populate categories
+            const sel = document.getElementById('fCategory');
+            sel.innerHTML = '<option value="">Elegir…</option>' +
+                categories.map(c =>
+                    `<option value="${c.id}">${c.name}</option>`
+                ).join('');
+
+            document.getElementById('drawer').classList.add('active');
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('fTitle').focus(), 350);
+        }
+
+        function closeDrawer() {
+            document.getElementById('drawer').classList.remove('active');
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('drawerForm').reset();
+        }
+
+        async function submitTask(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('fTitle').value.trim();
+            if (!title) {
+                document.getElementById('errTitle').style.display = 'block';
+                document.getElementById('fTitle').focus();
+                return;
+            }
+            document.getElementById('errTitle').style.display = 'none';
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Guardando…';
+
+            const task = {
+                title,
+                description:  document.getElementById('fDesc').value.trim() || null,
+                startDate:    document.getElementById('fDate').value,
+                startTime:    document.getElementById('fStartTime').value || null,
+                endTime:      document.getElementById('fEndTime').value   || null,
+                category:     { id: parseInt(document.getElementById('fCategory').value) },
+                priority:     document.getElementById('fPriority').value,
+                completed:    false,
+                createdBy:    { id: currentUserId }
+            };
+
+            const created = await createTask(task);
+
+            btn.disabled = false;
+            btn.textContent = 'Agregar tarea';
+
+            if (created) {
+                closeDrawer();
+                await loadTasks();
+                render();
+            }
+        }
 
         /* ── Start ── */
         init();
