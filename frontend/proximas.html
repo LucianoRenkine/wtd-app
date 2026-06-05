@@ -258,6 +258,33 @@
             display: none;
         }
 
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(18, 12, 22, 0.96);
+            border: 1px solid rgba(139, 84, 116, 0.4);
+            border-radius: 10px;
+            padding: 12px 22px;
+            font-size: 0.88em;
+            color: #d0d0d0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 200;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error { border-color: rgba(196, 100, 100, 0.5); color: #e09090; }
+        .toast.success { border-color: rgba(100, 180, 120, 0.5); color: #90c8a0; }
+
         @media (max-width: 500px) {
             .drawer { width: 100%; right: -100%; }
         }
@@ -685,6 +712,8 @@
         </div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <!-- Drawer overlay -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 
@@ -973,10 +1002,21 @@
             document.getElementById('drawerForm').reset();
         }
 
+        function toast(msg, type = 'info') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = `toast ${type} show`;
+            clearTimeout(el._t);
+            el._t = setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
         async function submitTask(e) {
             e.preventDefault();
 
-            const title = document.getElementById('fTitle').value.trim();
+            const title    = document.getElementById('fTitle').value.trim();
+            const catVal   = document.getElementById('fCategory').value;
+            const dateVal  = document.getElementById('fDate').value;
+
             if (!title) {
                 document.getElementById('errTitle').style.display = 'block';
                 document.getElementById('fTitle').focus();
@@ -984,20 +1024,32 @@
             }
             document.getElementById('errTitle').style.display = 'none';
 
+            if (!catVal) {
+                toast('Elegí una categoría', 'error');
+                document.getElementById('fCategory').focus();
+                return;
+            }
+
+            if (!dateVal) {
+                toast('Elegí una fecha', 'error');
+                document.getElementById('fDate').focus();
+                return;
+            }
+
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.textContent = 'Guardando…';
 
             const task = {
                 title,
-                description:  document.getElementById('fDesc').value.trim() || null,
-                startDate:    document.getElementById('fDate').value,
-                startTime:    document.getElementById('fStartTime').value || null,
-                endTime:      document.getElementById('fEndTime').value   || null,
-                category:     { id: parseInt(document.getElementById('fCategory').value) },
-                priority:     document.getElementById('fPriority').value,
-                completed:    false,
-                createdBy:    { id: currentUserId }
+                description: document.getElementById('fDesc').value.trim() || null,
+                startDate:   dateVal,
+                startTime:   document.getElementById('fStartTime').value || null,
+                endTime:     document.getElementById('fEndTime').value   || null,
+                category:    { id: parseInt(catVal) },
+                priority:    document.getElementById('fPriority').value,
+                completed:   false,
+                createdBy:   { id: currentUserId }
             };
 
             const created = await createTask(task);
@@ -1006,9 +1058,12 @@
             btn.textContent = 'Agregar tarea';
 
             if (created) {
+                toast('Tarea agregada ✓', 'success');
                 closeDrawer();
                 await loadTasks();
                 render();
+            } else {
+                toast('No se pudo guardar. ¿Está el backend corriendo?', 'error');
             }
         }
 

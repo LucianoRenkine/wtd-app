@@ -64,13 +64,15 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<?> createTask(@RequestBody Task task) {
-        // Load category if provided
+        // Load category if provided, clear transient object otherwise
         if (task.getCategory() != null && task.getCategory().getId() != null) {
             Optional<Category> category = categoryRepository.findById(task.getCategory().getId());
             if (category.isEmpty()) {
                 return ResponseEntity.badRequest().body("Categoría no encontrada");
             }
             task.setCategory(category.get());
+        } else {
+            task.setCategory(null);
         }
 
         // Load user if provided
