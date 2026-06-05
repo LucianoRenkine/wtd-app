@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Próximas Tareas - WTD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #d0d0d0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #c41e3a;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 20px rgba(196, 30, 58, 0.1);
+        }
+
+        .logo {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #c41e3a;
+            letter-spacing: 1px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #c41e3a;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 5px 10px;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            color: #d0d0d0;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .page-subtitle {
+            color: #999;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #c41e3a 0%, transparent 100%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            margin-bottom: 40px;
+            padding-left: 50px;
+            position: relative;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -12px;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: #1a1a1a;
+            border: 3px solid #c41e3a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-marker.today {
+            background: #c41e3a;
+        }
+
+        .timeline-marker.today::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .timeline-marker.today::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #c41e3a;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .timeline-date {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #c41e3a;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .timeline-day {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .tasks-group {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
+            border: 2px solid rgba(196, 30, 58, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .task-in-timeline {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.3s;
+            gap: 15px;
+        }
+
+        .task-in-timeline:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-in-timeline:hover {
+            background: rgba(196, 30, 58, 0.1);
+            transform: translateX(5px);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            padding: 5px;
+            opacity: 0;
+        }
+
+        .task-in-timeline:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            color: #c41e3a;
+        }
+
+        .task-title {
+            color: #d0d0d0;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .task-description {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .task-category-badge {
+            display: inline-block;
+            background: rgba(196, 30, 58, 0.2);
+            color: #c41e3a;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .task-category-badge[data-category="Cumples"] {
+            background: rgba(217, 70, 166, 0.3);
+            color: #d946a6;
+            font-weight: 700;
+        }
+
+        .task-in-timeline.cumples-task {
+            border-left: 3px solid #d946a6;
+        }
+
+        .task-in-timeline.cumples-task .task-title {
+            color: #ff1493;
+            font-weight: 700;
+        }
+
+        .no-tasks-day {
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .no-upcoming {
+            text-align: center;
+            color: #666;
+            padding: 60px 20px;
+            font-style: italic;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: none;
+            border: 2px solid rgba(196, 30, 58, 0.2);
+            color: #d0d0d0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover {
+            border-color: #c41e3a;
+            color: #c41e3a;
+        }
+
+        .filter-btn.active {
+            background: #c41e3a;
+            border-color: #c41e3a;
+            color: white;
+        }
+
+        /* Delete Modal */
+        .delete-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .delete-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .delete-modal-content {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
+            border: 2px solid #c41e3a;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .delete-modal-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .delete-modal-text {
+            font-size: 1.2em;
+            color: #d0d0d0;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .delete-modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .delete-modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .delete-modal-btn.cancel {
+            background: rgba(196, 30, 58, 0.2);
+            color: #d0d0d0;
+            border: 2px solid rgba(196, 30, 58, 0.3);
+        }
+
+        .delete-modal-btn.cancel:hover {
+            background: rgba(196, 30, 58, 0.1);
+            border-color: rgba(196, 30, 58, 0.5);
+        }
+
+        .delete-modal-btn.confirm {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .delete-modal-btn.confirm:hover {
+            background: #ff6b7a;
+            transform: scale(1.05);
+        }
+
+        .delete-modal-content.anniversary {
+            border-color: #ff1493;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.98) 0%, rgba(15, 15, 15, 0.98) 100%);
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.3);
+        }
+
+        .delete-modal-text.anniversary {
+            color: #ff1493;
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .delete-modal-btn.anniversary {
+            background: #ff1493;
+        }
+
+        .delete-modal-btn.anniversary:hover {
+            background: #ff69b4;
+            transform: scale(1.05);
+        }
+
+        .special-date-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #d946a6 0%, #a21caf 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .special-date-label.semi {
+            background: linear-gradient(135deg, #da70d6 0%, #ba55d3 100%);
+        }
+
+        .special-date-label.anniversary {
+            background: linear-gradient(135deg, #ff1493 0%, #c71585 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 1.8em;
+            }
+
+            .timeline::before {
+                left: -1px;
+            }
+
+            .timeline-marker {
+                left: -14px;
+            }
+
+            .timeline-item {
+                padding-left: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="back-btn">← Volver</a>
+        <div class="logo">WTD - Próximas</div>
+        <div style="width: 40px;"></div>
+    </header>
+
+    <!-- Container -->
+    <div class="container">
+        <h1 class="page-title">Próximas Tareas</h1>
+        <p class="page-subtitle">Todas tus tareas de los próximos días</p>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTasks('all')">Todas</button>
+            <button class="filter-btn" onclick="filterTasks('Tarea')">Tareas</button>
+            <button class="filter-btn" onclick="filterTasks('Clase')">Clases</button>
+            <button class="filter-btn" onclick="filterTasks('Watchlist')">Watchlist</button>
+        </div>
+
+        <div class="timeline" id="timeline">
+            <p class="no-upcoming">Cargando tareas...</p>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">💔</div>
+            <p class="delete-modal-text">Amorcito, ¿segura que querés eliminar la tarea?</p>
+            <div class="delete-modal-buttons">
+                <button class="delete-modal-btn cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button class="delete-modal-btn confirm" onclick="confirmDelete()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+
+        function renderTimeline() {
+            const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Filter and sort tasks
+            let filteredTasks = tasks
+                .filter(task => {
+                    const taskDate = new Date(task.date + 'T00:00:00');
+                    const isUpcoming = taskDate >= today && !task.completed;
+                    const matchesFilter = currentFilter === 'all' || task.category === currentFilter;
+                    return isUpcoming && matchesFilter;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            if (filteredTasks.length === 0) {
+                document.getElementById('timeline').innerHTML = '<p class="no-upcoming">No hay tareas próximas</p>';
+                return;
+            }
+
+            // Group by date
+            const groupedByDate = {};
+            filteredTasks.forEach(task => {
+                if (!groupedByDate[task.date]) {
+                    groupedByDate[task.date] = [];
+                }
+                groupedByDate[task.date].push(task);
+            });
+
+            // Render timeline
+            let html = '';
+            Object.keys(groupedByDate).forEach(dateStr => {
+                const date = new Date(dateStr + 'T00:00:00');
+                const isToday = date.toDateString() === today.toDateString();
+                const isTomorrow = date.getTime() === today.getTime() + 86400000;
+
+                const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+                const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+                let dayLabel = dayNames[date.getDay()];
+                if (isToday) dayLabel = 'Hoy, ' + dayLabel;
+                if (isTomorrow) dayLabel = 'Mañana, ' + dayLabel;
+
+                const dateDisplay = `${date.getDate()} ${monthNames[date.getMonth()]}`;
+
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-marker ${isToday ? 'today' : ''}"></div>
+                        <div class="timeline-date">${dateDisplay}</div>
+                        <div class="timeline-day">${dayLabel}</div>
+                        <div class="tasks-group">
+                            ${groupedByDate[dateStr].map((task, index) => `
+                                <div class="task-in-timeline ${task.category === 'Cumples' ? 'cumples-task' : ''}">
+                                    <div class="task-info">
+                                        <div class="task-title">${task.title}</div>
+                                        ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                                        <span class="task-category-badge" data-category="${task.category}">${task.category}</span>
+                                    </div>
+                                    <div class="task-actions">
+                                        <button class="delete-btn" onclick="deleteTask('${dateStr}', ${index})" title="Eliminar">✕</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('timeline').innerHTML = html;
+        }
+
+        function filterTasks(category) {
+            currentFilter = category;
+
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderTimeline();
+        }
+
+        let deleteData = null;
+
+        function deleteTask(dateStr, index) {
+            deleteData = { dateStr, index };
+
+            // Check if it's a special date (21st)
+            const date = new Date(dateStr + 'T00:00:00');
+            const day = date.getDate();
+            const month = date.getMonth();
+
+            const modalContent = document.querySelector('.delete-modal-content');
+            const modalText = modalContent.querySelector('.delete-modal-text');
+            const confirmBtn = modalContent.querySelector('.delete-modal-btn.confirm');
+            const modalIcon = modalContent.querySelector('.delete-modal-icon');
+
+            if (day === 21) {
+                modalContent.classList.add('anniversary');
+                modalIcon.textContent = '💔💔💔';
+                modalText.classList.add('anniversary');
+                modalText.textContent = '¡¿QUERÉS CORTAR CONMIGO?!';
+                confirmBtn.classList.add('anniversary');
+                confirmBtn.classList.remove('confirm');
+            } else {
+                modalContent.classList.remove('anniversary');
+                modalIcon.textContent = '💔';
+                modalText.classList.remove('anniversary');
+                modalText.textContent = 'Amorcito, ¿segura que querés eliminar la tarea?';
+                confirmBtn.classList.remove('anniversary');
+                confirmBtn.classList.add('confirm');
+            }
+
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteData = null;
+        }
+
+        function confirmDelete() {
+            if (!deleteData) return;
+
+            const { dateStr, index } = deleteData;
+            const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
+
+            // Get all tasks for this date
+            const dayTasks = tasks.filter(t => t.date === dateStr);
+
+            // Find the task to delete
+            const task = dayTasks[index];
+
+            // Find its index in the main tasks array
+            const taskIndex = tasks.indexOf(task);
+
+            // Remove it
+            if (taskIndex > -1) {
+                tasks.splice(taskIndex, 1);
+                localStorage.setItem('wtdTasks', JSON.stringify(tasks));
+                renderTimeline();
+            }
+
+            closeDeleteModal();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', (e) => {
+            if (e.target.id === 'deleteModal') {
+                closeDeleteModal();
+            }
+        });
+
+        // Initialize
+        renderTimeline();
+
+        // Refresh every 10 seconds
+        setInterval(renderTimeline, 10000);
+    </script>
+</body>
+</html>

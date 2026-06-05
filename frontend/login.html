@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresa - WTD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #d0d0d0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.9) 100%);
+            border: 2px solid rgba(196, 30, 58, 0.4);
+            border-radius: 15px;
+            padding: 50px;
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(196, 30, 58, 0.2);
+            animation: slideUp 0.8s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #c41e3a;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .login-subtitle {
+            color: #999;
+            font-size: 1em;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #c41e3a;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(196, 30, 58, 0.2);
+            border-radius: 8px;
+            color: #d0d0d0;
+            font-family: inherit;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            cursor: pointer;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: #d0d0d0;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #c41e3a 0%, #ff6b7a 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 1em;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(196, 30, 58, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: #999;
+        }
+
+        .error {
+            background: rgba(196, 30, 58, 0.2);
+            border: 2px solid #c41e3a;
+            color: #ff6b7a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #c41e3a;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">WTD</div>
+            <p class="login-subtitle">What to Do - Gestión de Tareas</p>
+        </div>
+
+        <div class="error" id="errorMessage"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="userSelect">Selecciona tu usuario:</label>
+                <select id="userSelect" required>
+                    <option value="">Cargando usuarios...</option>
+                </select>
+            </div>
+            <button type="submit" class="login-btn" id="loginBtn">Ingresar</button>
+        </form>
+
+        <div class="back-link">
+            <a href="index.html">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Load users on page load
+        async function loadUsers() {
+            const users = await getUsers();
+            const select = document.getElementById('userSelect');
+
+            if (users.length > 0) {
+                select.innerHTML = users.map(user =>
+                    `<option value="${user.id}|${user.nombre}">${user.nombre} (${user.email})</option>`
+                ).join('');
+            } else {
+                select.innerHTML = '<option value="">No hay usuarios disponibles</option>';
+                document.getElementById('loginBtn').disabled = true;
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const selected = document.getElementById('userSelect').value;
+            if (!selected) {
+                showError('Por favor selecciona un usuario');
+                return;
+            }
+
+            const [userId, userName] = selected.split('|');
+            const user = await getUserById(userId);
+
+            if (user) {
+                saveAuth(parseInt(userId), user);
+                window.location.href = 'calendar.html';
+            } else {
+                showError('Error al cargar el usuario');
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize
+        loadUsers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WTD - What to Do</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #d0d0d0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #c41e3a;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 20px rgba(196, 30, 58, 0.1);
+        }
+
+        .logo {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #c41e3a;
+            letter-spacing: 1px;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            background: none;
+            border: none;
+            color: #c41e3a;
+            font-size: 1.8em;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #c41e3a;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(10px, 10px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+            border-right: 2px solid #c41e3a;
+            padding: 30px 20px;
+            transition: left 0.3s ease;
+            z-index: 40;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(196, 30, 58, 0.2);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+        }
+
+        .sidebar nav li {
+            margin-bottom: 25px;
+        }
+
+        .sidebar nav a {
+            text-decoration: none;
+            color: #d0d0d0;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .sidebar nav a:hover {
+            color: #c41e3a;
+            background: rgba(196, 30, 58, 0.1);
+            padding-left: 15px;
+        }
+
+        .sidebar nav a.active {
+            color: #c41e3a;
+            font-weight: 600;
+            background: rgba(196, 30, 58, 0.15);
+        }
+
+        .menu-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #c41e3a;
+            border-radius: 50%;
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 30;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(180deg, rgba(196, 30, 58, 0.1) 0%, transparent 100%);
+            padding: 80px 40px 60px;
+            text-align: center;
+        }
+
+        .hero-content {
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(196, 30, 58, 0.5);
+            border-radius: 15px;
+            padding: 60px 50px;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(196, 30, 58, 0.15);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #c41e3a 0%, #ff6b7a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .hero-subtitle {
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* Counter Section */
+        .counter-section {
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+            padding: 30px;
+            border: 2px solid rgba(196, 30, 58, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .counter-section h3 {
+            color: #c41e3a;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+        }
+
+        .counter-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 2.2em;
+            color: #c41e3a;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(180deg, rgba(196, 30, 58, 0.05) 0%, transparent 100%);
+            padding: 80px 40px;
+            border-top: 2px solid rgba(196, 30, 58, 0.2);
+            border-bottom: 2px solid rgba(196, 30, 58, 0.2);
+            margin-top: 60px;
+        }
+
+        .stats-title {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 60px;
+            color: #d0d0d0;
+            letter-spacing: 1px;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .stats-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
+            padding: 30px;
+            border-left: 5px solid #c41e3a;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 20px rgba(196, 30, 58, 0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 12px 30px rgba(196, 30, 58, 0.2);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2.8em;
+            color: #c41e3a;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .romantic-phrase {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
+            padding: 50px 40px;
+            border: 2px solid rgba(196, 30, 58, 0.4);
+            border-radius: 15px;
+            text-align: center;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 20px 50px rgba(196, 30, 58, 0.15);
+        }
+
+        .romantic-phrase p {
+            font-size: 1.4em;
+            color: #c41e3a;
+            font-style: italic;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* Upcoming Tasks Section */
+        .upcoming-section {
+            background: linear-gradient(180deg, rgba(196, 30, 58, 0.05) 0%, transparent 100%);
+            padding: 60px 40px;
+            border-top: 2px solid rgba(196, 30, 58, 0.2);
+            border-bottom: 2px solid rgba(196, 30, 58, 0.2);
+            margin-top: 60px;
+        }
+
+        .upcoming-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .upcoming-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .upcoming-header h2 {
+            font-size: 2em;
+            color: #d0d0d0;
+            letter-spacing: 1px;
+        }
+
+        .view-all-link {
+            color: #c41e3a;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .view-all-link:hover {
+            color: #ff6b7a;
+            margin-right: 5px;
+        }
+
+        .upcoming-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .upcoming-item {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
+            padding: 20px 25px;
+            border-left: 4px solid #c41e3a;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            gap: 15px;
+        }
+
+        .upcoming-item:hover {
+            transform: translateX(5px);
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.9) 100%);
+        }
+
+        .delete-upcoming-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            padding: 5px;
+            flex-shrink: 0;
+            opacity: 0;
+        }
+
+        .upcoming-item:hover .delete-upcoming-btn {
+            opacity: 1;
+        }
+
+        .delete-upcoming-btn:hover {
+            color: #c41e3a;
+        }
+
+        .upcoming-item-content {
+            flex: 1;
+        }
+
+        .upcoming-item-title {
+            color: #d0d0d0;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .upcoming-item-date {
+            color: #c41e3a;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .upcoming-item-category {
+            background: rgba(196, 30, 58, 0.2);
+            color: #c41e3a;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .upcoming-item-category[data-category="Cumples"] {
+            background: rgba(217, 70, 166, 0.3);
+            color: #d946a6;
+            font-weight: 700;
+        }
+
+        .upcoming-item.cumples-item {
+            border-left-color: #d946a6;
+        }
+
+        .upcoming-item.cumples-item .upcoming-item-title {
+            color: #ff1493;
+            font-weight: 700;
+        }
+
+        .no-upcoming {
+            text-align: center;
+            color: #666;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        /* Message Section */
+        .message-section {
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.08) 0%, rgba(0, 0, 0, 0.1) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 800px;
+            margin: 60px auto;
+            border: 2px solid rgba(196, 30, 58, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .message-section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #d0d0d0;
+        }
+
+        .message-section p {
+            font-size: 1.1em;
+            color: #999;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(26, 26, 26, 0.95);
+            border-top: 2px solid rgba(196, 30, 58, 0.2);
+            padding: 40px;
+            text-align: center;
+            margin-top: 80px;
+            font-size: 0.95em;
+            color: #999;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        .footer-link {
+            color: #c41e3a;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: #ff6b7a;
+        }
+
+        /* Delete Modal */
+        .delete-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .delete-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .delete-modal-content {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
+            border: 2px solid #c41e3a;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .delete-modal-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .delete-modal-text {
+            font-size: 1.2em;
+            color: #d0d0d0;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .delete-modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .delete-modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .delete-modal-btn.cancel {
+            background: rgba(196, 30, 58, 0.2);
+            color: #d0d0d0;
+            border: 2px solid rgba(196, 30, 58, 0.3);
+        }
+
+        .delete-modal-btn.cancel:hover {
+            background: rgba(196, 30, 58, 0.1);
+            border-color: rgba(196, 30, 58, 0.5);
+        }
+
+        .delete-modal-btn.confirm {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .delete-modal-btn.confirm:hover {
+            background: #ff6b7a;
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+
+            .hero-content {
+                padding: 40px 25px;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .counter-display {
+                font-size: 1.6em;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .stats-title {
+                font-size: 1.6em;
+            }
+
+            .romantic-phrase p {
+                font-size: 1.1em;
+            }
+
+            .message-section {
+                margin: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <button class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="logo">WTD</div>
+        <div style="width: 40px;"></div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <nav>
+            <ul>
+                <li><a href="#" class="active"><span class="menu-indicator"></span> Home</a></li>
+                <li><a href="agenda.html">Nueva Tarea</a></li>
+                <li><a href="#">Clases</a></li>
+                <li><a href="#">Watchlist</a></li>
+                <li><a href="#">Perfil</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>What to Do</h1>
+            <p class="hero-subtitle">Organiza tu vida, celebra cada momento</p>
+
+            <div class="counter-section">
+                <h3>Tiempo Juntos</h3>
+                <div class="counter-display" id="counter">Cargando...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Tasks Section -->
+    <section class="upcoming-section">
+        <div class="upcoming-container">
+            <div class="upcoming-header">
+                <h2>Próximas Tareas</h2>
+                <a href="proximas.html" class="view-all-link">Ver todas →</a>
+            </div>
+            <div class="upcoming-list" id="upcomingList">
+                <p class="no-upcoming">No hay tareas próximas</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Message Section -->
+    <section class="message-section">
+        <h2>Cada día cuenta</h2>
+        <p>WTD es más que una app de tareas. Es una forma de mantener registrado cada momento importante, cada tarea completada, cada clase asistida. Porque lo que importa es lo que haces con tu tiempo.</p>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <h2 class="stats-title">Nuestros Números</h2>
+        <div class="stats-container">
+            <div class="stats-content">
+                <div class="stat-item">
+                    <div class="stat-label">BESOS</div>
+                    <div class="stat-value" id="kisses">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">ABRAZOS</div>
+                    <div class="stat-value" id="hugs">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">MOMENTOS ESPECIALES</div>
+                    <div class="stat-value" id="moments">∞</div>
+                </div>
+            </div>
+
+            <div class="romantic-phrase">
+                <p id="romantic-text">Cargando...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Delete Modal -->
+    <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">💔</div>
+            <p class="delete-modal-text">Amorcito, ¿segura que querés eliminar la tarea?</p>
+            <div class="delete-modal-buttons">
+                <button class="delete-modal-btn cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button class="delete-modal-btn confirm" onclick="confirmDelete()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Hecho con ❤️ - WTD</p>
+        <p style="font-size: 0.85em; margin-top: 10px;">© 2026 What to Do • <a href="#" class="footer-link">Privacidad</a> • <a href="#" class="footer-link">Contacto</a></p>
+    </footer>
+
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Romantic phrases
+        const phrases = [
+            "Te amo más cada día",
+            "Eres mi razón de sonreír",
+            "Mi corazón es tuyo",
+            "Juntos somos infinito",
+            "Cada momento contigo es perfecto",
+            "Eres mi persona favorita",
+            "Te amo sin condiciones",
+            "Mi vida es mejor desde que estás en ella",
+            "Eres lo mejor que me pasó",
+            "Te quiero hoy y siempre",
+            "Mi corazón late por ti",
+            "Contigo quiero envejecer",
+            "Eres mi amor verdadero",
+            "Te necesito todos los días",
+            "Eres mi dulce obsesión",
+            "Tú eres mi cielo",
+            "Te amo con toda mi alma",
+            "Eres mi sueño hecho realidad",
+            "Mi amor por ti es eterno",
+            "Eres todo lo que necesito"
+        ];
+
+        // Update romantic phrase
+        function updateRomanticPhrase() {
+            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+            document.getElementById('romantic-text').textContent = `"${randomPhrase}"`;
+        }
+
+        // Update counter
+        function updateCounter() {
+            const startDate = new Date('2024-12-21T18:30:00');
+            const now = new Date();
+            const diff = now - startDate;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('counter').textContent =
+                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Calculate statistics
+        function updateStats() {
+            const startDate = new Date('2024-12-21T18:30:00');
+            const now = new Date();
+            const diff = now - startDate;
+
+            const totalDays = diff / (1000 * 60 * 60 * 24);
+
+            const kisses = Math.floor(totalDays * 3);
+            const hugs = Math.floor(totalDays * 5);
+
+            document.getElementById('kisses').textContent = kisses;
+            document.getElementById('hugs').textContent = hugs;
+        }
+
+        // Initialize
+        updateCounter();
+        updateStats();
+        updateRomanticPhrase();
+
+        // Update every second
+        setInterval(updateCounter, 1000);
+        setInterval(updateStats, 1000);
+
+        // Change phrase every 10 seconds
+        setInterval(updateRomanticPhrase, 10000);
+
+        // Load and display upcoming tasks
+        function loadUpcomingTasks() {
+            const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Filter tasks from today onwards and not completed
+            const upcomingTasks = tasks
+                .filter(task => {
+                    const taskDate = new Date(task.date + 'T00:00:00');
+                    return taskDate >= today && !task.completed;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 5); // Show only 5 upcoming tasks
+
+            const upcomingList = document.getElementById('upcomingList');
+
+            if (upcomingTasks.length === 0) {
+                upcomingList.innerHTML = '<p class="no-upcoming">No hay tareas próximas</p>';
+                return;
+            }
+
+            upcomingList.innerHTML = upcomingTasks.map((task, index) => {
+                const taskDate = new Date(task.date + 'T00:00:00');
+                const dateStr = taskDate.toLocaleDateString('es-ES', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                return `
+                    <div class="upcoming-item ${task.category === 'Cumples' ? 'cumples-item' : ''}">
+                        <div class="upcoming-item-content">
+                            <div class="upcoming-item-title">${task.title}</div>
+                            <div class="upcoming-item-date">${dateStr}</div>
+                        </div>
+                        <span class="upcoming-item-category" data-category="${task.category}">${task.category}</span>
+                        <button class="delete-upcoming-btn" onclick="deleteUpcomingTask('${task.date}', ${index})" title="Eliminar">✕</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Delete modal logic
+        let deleteData = null;
+
+        function deleteUpcomingTask(dateStr, index) {
+            deleteData = { dateStr, index };
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteData = null;
+        }
+
+        function confirmDelete() {
+            if (!deleteData) return;
+
+            const { dateStr, index } = deleteData;
+            const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
+
+            // Get all tasks for this date
+            const dayTasks = tasks.filter(t => t.date === dateStr);
+
+            // Find the task to delete
+            const task = dayTasks[index];
+
+            // Find its index in the main tasks array
+            const taskIndex = tasks.indexOf(task);
+
+            // Remove it
+            if (taskIndex > -1) {
+                tasks.splice(taskIndex, 1);
+                localStorage.setItem('wtdTasks', JSON.stringify(tasks));
+                loadUpcomingTasks();
+            }
+
+            closeDeleteModal();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', (e) => {
+            if (e.target.id === 'deleteModal') {
+                closeDeleteModal();
+            }
+        });
+
+        // Load on page load
+        loadUpcomingTasks();
+
+        // Check for updates every 10 seconds
+        setInterval(loadUpcomingTasks, 10000);
+    </script>
+</body>
+</html>
