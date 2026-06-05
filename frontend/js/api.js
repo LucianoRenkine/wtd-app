@@ -184,13 +184,8 @@ async function deleteTask(taskId) {
     }
 }
 
-// Get categories
+// Get categories (no auth required)
 async function getCategories() {
-    if (!currentUserId) {
-        console.error('Not authenticated');
-        return [];
-    }
-
     try {
         const response = await fetch(`${API_BASE_URL}/tasks/categories`);
         if (!response.ok) throw new Error('Failed to fetch categories');

@@ -978,16 +978,23 @@
         });
 
         /* ── Drawer ── */
-        function openDrawer() {
-            // Set today as default date
+        async function openDrawer() {
             document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
 
-            // Populate categories
+            // Cargar categorías en el momento (no depender de init)
+            const cats = await getCategories();
+            if (cats.length > 0) categories = cats;
+
             const sel = document.getElementById('fCategory');
-            sel.innerHTML = '<option value="">Elegir…</option>' +
-                categories.map(c =>
-                    `<option value="${c.id}">${c.name}</option>`
-                ).join('');
+            if (categories.length > 0) {
+                sel.innerHTML = '<option value="">Elegir…</option>' +
+                    categories.map(c =>
+                        `<option value="${c.id}">${c.name}</option>`
+                    ).join('');
+            } else {
+                sel.innerHTML = '<option value="">Sin conexión al servidor</option>';
+                toast('No se pudo conectar con el servidor', 'error');
+            }
 
             document.getElementById('drawer').classList.add('active');
             document.getElementById('drawerOverlay').classList.add('active');
