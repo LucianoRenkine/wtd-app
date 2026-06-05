@@ -5,24 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WTD - What to Do</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            background: linear-gradient(135deg, #0D0A10 0%, #1A1220 100%);
             color: #d0d0d0;
             line-height: 1.6;
         }
 
-        /* Header */
+        /* ── Header ── */
         header {
-            background: rgba(26, 26, 26, 0.95);
+            background: rgba(18, 12, 22, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 2px solid #c41e3a;
+            border-bottom: 1px solid rgba(139, 84, 116, 0.3);
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
@@ -30,24 +26,21 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            box-shadow: 0 2px 20px rgba(196, 30, 58, 0.1);
+            height: 60px;
         }
 
         .logo {
-            font-size: 1.6em;
+            font-size: 1.4em;
             font-weight: 800;
-            color: #c41e3a;
-            letter-spacing: 1px;
+            color: #8B5474;
+            letter-spacing: 2px;
         }
 
-        /* Hamburger Menu */
         .hamburger {
             background: none;
             border: none;
-            color: #c41e3a;
-            font-size: 1.8em;
+            color: #8B5474;
             cursor: pointer;
-            padding: 0;
             display: flex;
             flex-direction: column;
             gap: 5px;
@@ -57,51 +50,35 @@
         .hamburger span {
             display: block;
             width: 25px;
-            height: 3px;
-            background: #c41e3a;
-            transition: all 0.3s;
+            height: 2px;
+            background: #8B5474;
             border-radius: 2px;
+            transition: all 0.3s;
         }
 
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(10px, 10px);
-        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(10px, 10px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
 
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        /* Sidebar */
+        /* ── Sidebar ── */
         .sidebar {
             position: fixed;
             left: -300px;
             top: 0;
             width: 300px;
             height: 100vh;
-            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
-            border-right: 2px solid #c41e3a;
+            background: linear-gradient(180deg, #1A1220 0%, #0D0A10 100%);
+            border-right: 1px solid rgba(139, 84, 116, 0.3);
             padding: 30px 20px;
             transition: left 0.3s ease;
             z-index: 40;
             overflow-y: auto;
-            box-shadow: 2px 0 20px rgba(196, 30, 58, 0.2);
         }
 
-        .sidebar.active {
-            left: 0;
-        }
+        .sidebar.active { left: 0; }
 
-        .sidebar nav ul {
-            list-style: none;
-        }
-
-        .sidebar nav li {
-            margin-bottom: 25px;
-        }
+        .sidebar nav ul { list-style: none; }
+        .sidebar nav li { margin-bottom: 25px; }
 
         .sidebar nav a {
             text-decoration: none;
@@ -116,254 +93,374 @@
         }
 
         .sidebar nav a:hover {
-            color: #c41e3a;
-            background: rgba(196, 30, 58, 0.1);
+            color: #8B5474;
+            background: rgba(139, 84, 116, 0.1);
             padding-left: 15px;
         }
 
         .sidebar nav a.active {
-            color: #c41e3a;
+            color: #8B5474;
             font-weight: 600;
-            background: rgba(196, 30, 58, 0.15);
+            background: rgba(139, 84, 116, 0.15);
         }
 
         .menu-indicator {
             display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #c41e3a;
+            width: 8px; height: 8px;
+            background: #8B5474;
             border-radius: 50%;
         }
 
-        /* Overlay */
         .sidebar-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            inset: 0;
+            background: rgba(0,0,0,0.5);
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s;
             z-index: 30;
         }
 
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
-        /* Hero */
+        /* ── Hero Split ── */
         .hero {
-            background: linear-gradient(180deg, rgba(196, 30, 58, 0.1) 0%, transparent 100%);
-            padding: 80px 40px 60px;
-            text-align: center;
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            min-height: calc(100vh - 60px);
         }
 
-        .hero-content {
-            background: rgba(26, 26, 26, 0.7);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(196, 30, 58, 0.5);
-            border-radius: 15px;
-            padding: 60px 50px;
-            max-width: 700px;
-            margin: 0 auto;
-            box-shadow: 0 20px 60px rgba(196, 30, 58, 0.15);
-            animation: fadeInUp 0.8s ease;
+        /* Left Panel */
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 60px 60px 70px;
+            border-right: 1px solid rgba(139, 84, 116, 0.18);
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .hero-left::before {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 84, 116, 0.08) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        .hero h1 {
-            font-size: 3.5em;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #c41e3a 0%, #ff6b7a 100%);
+        .hero-eyebrow {
+            font-size: 0.75em;
+            letter-spacing: 4px;
+            color: #8B5474;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            opacity: 0.8;
+        }
+
+        .hero-title {
+            font-size: clamp(2.8em, 5vw, 4.2em);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #C4849E 0%, #8B5474 60%, #6B3A55 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .hero-subtitle {
-            color: #999;
-            margin-bottom: 30px;
-            font-size: 1.1em;
+            color: #7a6876;
+            font-size: 1.05em;
+            margin-bottom: 50px;
+            font-style: italic;
         }
 
-        /* Counter Section */
-        .counter-section {
-            background: linear-gradient(135deg, rgba(196, 30, 58, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
-            padding: 30px;
-            border: 2px solid rgba(196, 30, 58, 0.3);
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            backdrop-filter: blur(5px);
+        .counter-block {
+            background: rgba(139, 84, 116, 0.07);
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(4px);
         }
 
-        .counter-section h3 {
-            color: #c41e3a;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-            letter-spacing: 1px;
+        .counter-label {
+            font-size: 0.75em;
+            letter-spacing: 3px;
+            color: #8B5474;
+            text-transform: uppercase;
+            margin-bottom: 12px;
         }
 
         .counter-display {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 8px;
             font-family: 'Courier New', monospace;
-            font-size: 2.2em;
-            color: #c41e3a;
-            letter-spacing: 2px;
+            font-size: clamp(1.6em, 3vw, 2.4em);
             font-weight: 700;
+            color: #C4849E;
+            letter-spacing: 3px;
         }
 
-        /* Stats Section */
-        .stats-section {
-            background: linear-gradient(180deg, rgba(196, 30, 58, 0.05) 0%, transparent 100%);
-            padding: 80px 40px;
-            border-top: 2px solid rgba(196, 30, 58, 0.2);
-            border-bottom: 2px solid rgba(196, 30, 58, 0.2);
-            margin-top: 60px;
+        .counter-display span {
+            display: inline-block;
         }
 
-        .stats-title {
-            text-align: center;
-            font-size: 2.2em;
-            margin-bottom: 60px;
-            color: #d0d0d0;
+        .counter-unit {
+            font-size: 0.45em;
+            color: #8B5474;
+            margin-left: 2px;
+            vertical-align: middle;
             letter-spacing: 1px;
         }
 
-        .stats-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
+        .hero-actions {
+            display: flex;
+            gap: 16px;
         }
 
-        .stats-content {
+        .hero-btn {
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-btn.primary {
+            background: linear-gradient(135deg, #8B5474 0%, #C4849E 100%);
+            color: white;
+        }
+
+        .hero-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 84, 116, 0.35);
+        }
+
+        .hero-btn.secondary {
+            background: transparent;
+            color: #8B5474;
+            border: 1px solid rgba(139, 84, 116, 0.4);
+        }
+
+        .hero-btn.secondary:hover {
+            background: rgba(139, 84, 116, 0.1);
+            border-color: #8B5474;
+        }
+
+        /* Right Panel */
+        .hero-right {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            justify-content: center;
+            padding: 50px 60px 50px 50px;
+            gap: 24px;
+            background: rgba(10, 6, 16, 0.3);
         }
 
-        .stat-item {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
-            padding: 30px;
-            border-left: 5px solid #c41e3a;
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 8px 20px rgba(196, 30, 58, 0.1);
-            transition: all 0.3s;
+        .numbers-title {
+            font-size: 0.75em;
+            letter-spacing: 4px;
+            color: #8B5474;
+            text-transform: uppercase;
+            opacity: 0.8;
         }
 
-        .stat-item:hover {
-            transform: translateX(10px);
-            box-shadow: 0 12px 30px rgba(196, 30, 58, 0.2);
+        /* Ring + Days row */
+        .numbers-top {
+            display: flex;
+            align-items: center;
+            gap: 32px;
         }
 
-        .stat-label {
-            font-size: 0.9em;
-            color: #999;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
+        .ring-container {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            flex-shrink: 0;
         }
 
-        .stat-value {
-            font-size: 2.8em;
-            color: #c41e3a;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
+        .ring-svg {
+            width: 130px;
+            height: 130px;
+            transform: rotate(-90deg);
         }
 
-        .romantic-phrase {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
-            padding: 50px 40px;
-            border: 2px solid rgba(196, 30, 58, 0.4);
-            border-radius: 15px;
-            text-align: center;
-            min-height: 250px;
+        .ring-bg {
+            fill: none;
+            stroke: rgba(139, 84, 116, 0.12);
+            stroke-width: 7;
+        }
+
+        .ring-fill {
+            fill: none;
+            stroke: url(#ringGrad);
+            stroke-width: 7;
+            stroke-linecap: round;
+            stroke-dasharray: 0 345;
+            transition: stroke-dasharray 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ring-inner {
+            position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 20px 50px rgba(196, 30, 58, 0.15);
+        }
+
+        .ring-value {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #C4849E;
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+
+        .ring-sublabel {
+            font-size: 0.6em;
+            color: #7a6876;
+            letter-spacing: 1px;
+            margin-top: 3px;
+        }
+
+        .days-block {
+            flex: 1;
+        }
+
+        .days-number {
+            font-size: clamp(3em, 6vw, 5em);
+            font-weight: 800;
+            color: #C4849E;
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .days-label {
+            font-size: 0.85em;
+            color: #7a6876;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        .days-next-anniv {
+            font-size: 0.75em;
+            color: rgba(139, 84, 116, 0.6);
+            margin-top: 8px;
+        }
+
+        .days-next-anniv strong {
+            color: #8B5474;
+        }
+
+        /* 2x2 Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: rgba(139, 84, 116, 0.06);
+            border: 1px solid rgba(139, 84, 116, 0.15);
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            background: rgba(139, 84, 116, 0.12);
+            border-color: rgba(139, 84, 116, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .stat-icon {
+            font-size: 1.5em;
+            line-height: 1;
+        }
+
+        .stat-info {}
+
+        .stat-num {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #C4849E;
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+
+        .stat-name {
+            font-size: 0.7em;
+            color: #7a6876;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        /* Romantic phrase */
+        .romantic-phrase {
+            background: rgba(139, 84, 116, 0.07);
+            border-left: 3px solid rgba(139, 84, 116, 0.5);
+            border-radius: 0 10px 10px 0;
+            padding: 18px 22px;
         }
 
         .romantic-phrase p {
-            font-size: 1.4em;
-            color: #c41e3a;
+            font-size: 0.95em;
+            color: #9a7e8a;
             font-style: italic;
-            line-height: 1.8;
-            font-weight: 300;
+            line-height: 1.6;
+            transition: opacity 0.5s;
         }
 
-        /* Upcoming Tasks Section */
+        /* ── Upcoming Section ── */
         .upcoming-section {
-            background: linear-gradient(180deg, rgba(196, 30, 58, 0.05) 0%, transparent 100%);
-            padding: 60px 40px;
-            border-top: 2px solid rgba(196, 30, 58, 0.2);
-            border-bottom: 2px solid rgba(196, 30, 58, 0.2);
-            margin-top: 60px;
+            padding: 60px 70px;
+            border-top: 1px solid rgba(139, 84, 116, 0.15);
         }
 
-        .upcoming-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .upcoming-container { max-width: 900px; margin: 0 auto; }
 
         .upcoming-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .upcoming-header h2 {
-            font-size: 2em;
+            font-size: 1.4em;
             color: #d0d0d0;
             letter-spacing: 1px;
         }
 
         .view-all-link {
-            color: #c41e3a;
+            color: #8B5474;
             text-decoration: none;
+            font-size: 0.9em;
             font-weight: 600;
             transition: all 0.3s;
         }
 
-        .view-all-link:hover {
-            color: #ff6b7a;
-            margin-right: 5px;
-        }
+        .view-all-link:hover { color: #C4849E; }
 
-        .upcoming-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        .upcoming-list { display: flex; flex-direction: column; gap: 10px; }
 
         .upcoming-item {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
-            padding: 20px 25px;
-            border-left: 4px solid #c41e3a;
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
+            background: rgba(20, 14, 26, 0.8);
+            padding: 16px 20px;
+            border-left: 3px solid #8B5474;
+            border-radius: 0 10px 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -372,133 +469,63 @@
         }
 
         .upcoming-item:hover {
-            transform: translateX(5px);
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(15, 15, 15, 0.9) 100%);
+            transform: translateX(4px);
+            background: rgba(20, 14, 26, 0.95);
         }
 
-        .delete-upcoming-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s;
-            padding: 5px;
-            flex-shrink: 0;
-            opacity: 0;
-        }
-
-        .upcoming-item:hover .delete-upcoming-btn {
-            opacity: 1;
-        }
-
-        .delete-upcoming-btn:hover {
-            color: #c41e3a;
-        }
-
-        .upcoming-item-content {
-            flex: 1;
-        }
+        .upcoming-item-content { flex: 1; }
 
         .upcoming-item-title {
             color: #d0d0d0;
             font-weight: 600;
-            margin-bottom: 5px;
+            font-size: 0.95em;
+            margin-bottom: 3px;
         }
 
         .upcoming-item-date {
-            color: #c41e3a;
-            font-size: 0.9em;
-            font-weight: 500;
+            color: #8B5474;
+            font-size: 0.82em;
         }
 
         .upcoming-item-category {
-            background: rgba(196, 30, 58, 0.2);
-            color: #c41e3a;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.8em;
+            background: rgba(139, 84, 116, 0.2);
+            color: #8B5474;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.78em;
+            white-space: nowrap;
         }
 
-        .upcoming-item-category[data-category="Cumples"] {
-            background: rgba(217, 70, 166, 0.3);
-            color: #d946a6;
-            font-weight: 700;
+        .upcoming-item.cumples-item { border-left-color: #d946a6; }
+        .upcoming-item.cumples-item .upcoming-item-title { color: #ff79c6; }
+
+        .delete-upcoming-btn {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            padding: 4px;
+            opacity: 0;
+            flex-shrink: 0;
         }
 
-        .upcoming-item.cumples-item {
-            border-left-color: #d946a6;
-        }
-
-        .upcoming-item.cumples-item .upcoming-item-title {
-            color: #ff1493;
-            font-weight: 700;
-        }
+        .upcoming-item:hover .delete-upcoming-btn { opacity: 1; }
+        .delete-upcoming-btn:hover { color: #8B5474; }
 
         .no-upcoming {
             text-align: center;
-            color: #666;
+            color: #555;
             padding: 30px;
             font-style: italic;
         }
 
-        /* Message Section */
-        .message-section {
-            background: linear-gradient(135deg, rgba(196, 30, 58, 0.08) 0%, rgba(0, 0, 0, 0.1) 100%);
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 800px;
-            margin: 60px auto;
-            border: 2px solid rgba(196, 30, 58, 0.2);
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
-        }
-
-        .message-section h2 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            color: #d0d0d0;
-        }
-
-        .message-section p {
-            font-size: 1.1em;
-            color: #999;
-            line-height: 1.8;
-        }
-
-        /* Footer */
-        footer {
-            background: rgba(26, 26, 26, 0.95);
-            border-top: 2px solid rgba(196, 30, 58, 0.2);
-            padding: 40px;
-            text-align: center;
-            margin-top: 80px;
-            font-size: 0.95em;
-            color: #999;
-        }
-
-        footer p {
-            margin-bottom: 10px;
-        }
-
-        .footer-link {
-            color: #c41e3a;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-link:hover {
-            color: #ff6b7a;
-        }
-
-        /* Delete Modal */
+        /* ── Delete Modal ── */
         .delete-modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            inset: 0;
+            background: rgba(0,0,0,0.7);
             display: none;
             justify-content: center;
             align-items: center;
@@ -507,129 +534,90 @@
             transition: opacity 0.3s;
         }
 
-        .delete-modal.active {
-            display: flex;
-            opacity: 1;
-        }
+        .delete-modal.active { display: flex; opacity: 1; }
 
         .delete-modal-content {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(18, 12, 22, 0.98) 0%, rgba(10, 8, 16, 0.98) 100%);
+            border: 1px solid rgba(139, 84, 116, 0.5);
+            border-radius: 16px;
             padding: 40px;
-            max-width: 400px;
+            max-width: 380px;
             text-align: center;
             backdrop-filter: blur(10px);
             animation: slideUp 0.3s ease;
         }
 
         @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
         }
 
-        .delete-modal-icon {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
+        .delete-modal-icon { font-size: 2.5em; margin-bottom: 16px; }
 
         .delete-modal-text {
-            font-size: 1.2em;
+            font-size: 1.1em;
             color: #d0d0d0;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
             line-height: 1.6;
         }
 
-        .delete-modal-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
+        .delete-modal-buttons { display: flex; gap: 12px; justify-content: center; }
 
         .delete-modal-btn {
-            padding: 12px 30px;
+            padding: 10px 26px;
             border: none;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 1em;
+            font-size: 0.95em;
         }
 
         .delete-modal-btn.cancel {
-            background: rgba(196, 30, 58, 0.2);
+            background: rgba(139, 84, 116, 0.15);
             color: #d0d0d0;
-            border: 2px solid rgba(196, 30, 58, 0.3);
+            border: 1px solid rgba(139, 84, 116, 0.3);
         }
 
-        .delete-modal-btn.cancel:hover {
-            background: rgba(196, 30, 58, 0.1);
-            border-color: rgba(196, 30, 58, 0.5);
+        .delete-modal-btn.cancel:hover { background: rgba(139, 84, 116, 0.25); }
+
+        .delete-modal-btn.confirm { background: #8B5474; color: white; }
+        .delete-modal-btn.confirm:hover { background: #C4849E; }
+
+        /* ── Footer ── */
+        footer {
+            border-top: 1px solid rgba(139, 84, 116, 0.15);
+            padding: 30px 40px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #555;
         }
 
-        .delete-modal-btn.confirm {
-            background: #c41e3a;
-            color: white;
-        }
+        .footer-link { color: #8B5474; text-decoration: none; }
+        .footer-link:hover { color: #C4849E; }
 
-        .delete-modal-btn.confirm:hover {
-            background: #ff6b7a;
-            transform: scale(1.05);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            header {
-                padding: 15px 20px;
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; }
+            .hero-left {
+                padding: 50px 30px 40px;
+                border-right: none;
+                border-bottom: 1px solid rgba(139, 84, 116, 0.18);
             }
-
-            .hero-content {
-                padding: 40px 25px;
-            }
-
-            .hero h1 {
-                font-size: 2.2em;
-            }
-
-            .counter-display {
-                font-size: 1.6em;
-            }
-
-            .stats-container {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            .stats-title {
-                font-size: 1.6em;
-            }
-
-            .romantic-phrase p {
-                font-size: 1.1em;
-            }
-
-            .message-section {
-                margin: 40px 20px;
-            }
+            .hero-right { padding: 40px 30px 50px; }
+            .upcoming-section { padding: 50px 30px; }
         }
     </style>
 </head>
 <body>
+
     <!-- Header -->
     <header>
         <button class="hamburger" id="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </button>
         <div class="logo">WTD</div>
-        <div style="width: 40px;"></div>
+        <div style="width:40px"></div>
     </header>
 
     <!-- Sidebar -->
@@ -637,31 +625,105 @@
         <nav>
             <ul>
                 <li><a href="#" class="active"><span class="menu-indicator"></span> Home</a></li>
-                <li><a href="agenda.html">Nueva Tarea</a></li>
-                <li><a href="#">Clases</a></li>
+                <li><a href="calendar.html">Agenda</a></li>
+                <li><a href="proximas.html">Próximas Tareas</a></li>
                 <li><a href="#">Watchlist</a></li>
-                <li><a href="#">Perfil</a></li>
             </ul>
         </nav>
     </div>
-
-    <!-- Overlay -->
     <div class="sidebar-overlay" id="overlay"></div>
 
-    <!-- Hero -->
+    <!-- Hero Split -->
     <section class="hero">
-        <div class="hero-content">
-            <h1>What to Do</h1>
-            <p class="hero-subtitle">Organiza tu vida, celebra cada momento</p>
 
-            <div class="counter-section">
-                <h3>Tiempo Juntos</h3>
-                <div class="counter-display" id="counter">Cargando...</div>
+        <!-- ── Left: título + counter ── -->
+        <div class="hero-left">
+            <div class="hero-title">What to Do</div>
+            <h1 class="hero-eyebrow">Organiza tu vida,<br>celebra cada momento</h1>
+            <p class="hero-subtitle">Un espacio para los dos.</p>
+
+            <div class="counter-block">
+                <div class="counter-label">Tiempo Juntos</div>
+                <div class="counter-display" id="counter">0d 0h 0m 0s</div>
+            </div>
+
+            <div class="hero-actions">
+                <a href="calendar.html" class="hero-btn primary">Ver Agenda</a>
+                <a href="proximas.html" class="hero-btn secondary">Próximas Tareas</a>
+            </div>
+        </div>
+
+        <!-- ── Right: Nuestros Números ── -->
+        <div class="hero-right">
+
+            <div class="numbers-title">Nuestros Números</div>
+
+            <!-- Ring + días -->
+            <div class="numbers-top">
+                <div class="ring-container">
+                    <svg class="ring-svg" viewBox="0 0 140 140">
+                        <defs>
+                            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#C4849E"/>
+                                <stop offset="100%" style="stop-color:#8B5474"/>
+                            </linearGradient>
+                        </defs>
+                        <circle class="ring-bg" cx="70" cy="70" r="55"/>
+                        <circle class="ring-fill" cx="70" cy="70" r="55" id="anniversaryRing"/>
+                    </svg>
+                    <div class="ring-inner">
+                        <div class="ring-value" id="anniversaryPercent">--%</div>
+                        <div class="ring-sublabel">ANIVERSARIO</div>
+                    </div>
+                </div>
+
+                <div class="days-block">
+                    <div class="days-number" id="daysCount">0</div>
+                    <div class="days-label">días juntos</div>
+                    <div class="days-next-anniv">próximo aniversario en <strong id="daysToAnniv">--</strong> días</div>
+                </div>
+            </div>
+
+            <!-- 2×2 Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">♥</div>
+                    <div class="stat-info">
+                        <div class="stat-num" id="kisses">0</div>
+                        <div class="stat-name">Besos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🫂</div>
+                    <div class="stat-info">
+                        <div class="stat-num" id="hugs">0</div>
+                        <div class="stat-name">Abrazos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <div class="stat-num" id="weeks">0</div>
+                        <div class="stat-name">Semanas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✨</div>
+                    <div class="stat-info">
+                        <div class="stat-num">∞</div>
+                        <div class="stat-name">Momentos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frase romántica -->
+            <div class="romantic-phrase">
+                <p id="romantic-text">"Cargando..."</p>
             </div>
         </div>
     </section>
 
-    <!-- Upcoming Tasks Section -->
+    <!-- Upcoming Tasks -->
     <section class="upcoming-section">
         <div class="upcoming-container">
             <div class="upcoming-header">
@@ -670,37 +732,6 @@
             </div>
             <div class="upcoming-list" id="upcomingList">
                 <p class="no-upcoming">No hay tareas próximas</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Message Section -->
-    <section class="message-section">
-        <h2>Cada día cuenta</h2>
-        <p>WTD es más que una app de tareas. Es una forma de mantener registrado cada momento importante, cada tarea completada, cada clase asistida. Porque lo que importa es lo que haces con tu tiempo.</p>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <h2 class="stats-title">Nuestros Números</h2>
-        <div class="stats-container">
-            <div class="stats-content">
-                <div class="stat-item">
-                    <div class="stat-label">BESOS</div>
-                    <div class="stat-value" id="kisses">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">ABRAZOS</div>
-                    <div class="stat-value" id="hugs">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">MOMENTOS ESPECIALES</div>
-                    <div class="stat-value" id="moments">∞</div>
-                </div>
-            </div>
-
-            <div class="romantic-phrase">
-                <p id="romantic-text">Cargando...</p>
             </div>
         </div>
     </section>
@@ -719,192 +750,170 @@
 
     <!-- Footer -->
     <footer>
-        <p>Hecho con ❤️ - WTD</p>
-        <p style="font-size: 0.85em; margin-top: 10px;">© 2026 What to Do • <a href="#" class="footer-link">Privacidad</a> • <a href="#" class="footer-link">Contacto</a></p>
+        <p>Hecho con ❤️ para los dos · WTD</p>
+        <p style="margin-top:6px">© 2026 What to Do · <a href="#" class="footer-link">Privacidad</a></p>
     </footer>
 
     <script>
-        // Hamburger menu toggle
+        /* ── Hamburger ── */
         const hamburger = document.getElementById('hamburger');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+        const sidebar   = document.getElementById('sidebar');
+        const overlay   = document.getElementById('overlay');
 
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
         });
-
         overlay.addEventListener('click', () => {
             hamburger.classList.remove('active');
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
         });
 
-        // Romantic phrases
+        /* ── Dates ── */
+        const START_DATE     = new Date('2024-12-21T18:30:00');
+        const LAST_ANNIV     = new Date('2025-12-21T18:30:00');
+        const NEXT_ANNIV     = new Date('2026-12-21T18:30:00');
+        const ANNIV_DURATION = NEXT_ANNIV - LAST_ANNIV;
+
+        /* ── Counter (seconds tick) ── */
+        function updateCounter() {
+            const diff = Date.now() - START_DATE;
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000)  / 60000);
+            const s = Math.floor((diff % 60000)    / 1000);
+            document.getElementById('counter').textContent =
+                `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+        }
+
+        /* ── Stats (once) ── */
+        function animateCount(el, target) {
+            const dur = 1400;
+            const step = 16;
+            const inc  = target / (dur / step);
+            let cur = 0;
+            const t = setInterval(() => {
+                cur = Math.min(cur + inc, target);
+                el.textContent = Math.floor(cur).toLocaleString();
+                if (cur >= target) clearInterval(t);
+            }, step);
+        }
+
+        function updateStats() {
+            const diff      = Date.now() - START_DATE;
+            const totalDays = Math.floor(diff / 86400000);
+
+            animateCount(document.getElementById('daysCount'), totalDays);
+            animateCount(document.getElementById('kisses'),    totalDays * 3);
+            animateCount(document.getElementById('hugs'),      totalDays * 5);
+            animateCount(document.getElementById('weeks'),     Math.floor(totalDays / 7));
+
+            /* Anniversary ring */
+            const progress       = Math.min(1, (Date.now() - LAST_ANNIV) / ANNIV_DURATION);
+            const pct            = Math.round(progress * 100);
+            const circumference  = 2 * Math.PI * 55;   /* r = 55 */
+            const dash           = progress * circumference;
+
+            document.getElementById('anniversaryPercent').textContent = pct + '%';
+            setTimeout(() => {
+                document.getElementById('anniversaryRing').style.strokeDasharray =
+                    `${dash} ${circumference}`;
+            }, 200);
+
+            /* Days to next anniversary */
+            const daysLeft = Math.ceil((NEXT_ANNIV - Date.now()) / 86400000);
+            document.getElementById('daysToAnniv').textContent = daysLeft;
+        }
+
+        /* ── Romantic phrases ── */
         const phrases = [
-            "Te amo más cada día",
-            "Eres mi razón de sonreír",
-            "Mi corazón es tuyo",
-            "Juntos somos infinito",
-            "Cada momento contigo es perfecto",
-            "Eres mi persona favorita",
-            "Te amo sin condiciones",
+            "Te amo más cada día", "Eres mi razón de sonreír",
+            "Juntos somos infinito", "Cada momento contigo es perfecto",
+            "Eres mi persona favorita", "Te amo sin condiciones",
             "Mi vida es mejor desde que estás en ella",
-            "Eres lo mejor que me pasó",
-            "Te quiero hoy y siempre",
-            "Mi corazón late por ti",
-            "Contigo quiero envejecer",
-            "Eres mi amor verdadero",
-            "Te necesito todos los días",
-            "Eres mi dulce obsesión",
-            "Tú eres mi cielo",
-            "Te amo con toda mi alma",
-            "Eres mi sueño hecho realidad",
-            "Mi amor por ti es eterno",
-            "Eres todo lo que necesito"
+            "Eres lo mejor que me pasó", "Mi corazón late por ti",
+            "Contigo quiero envejecer", "Eres mi dulce obsesión",
+            "Te amo con toda mi alma", "Eres mi sueño hecho realidad",
+            "Mi amor por ti no tiene fin", "Tú eres mi cielo"
         ];
 
-        // Update romantic phrase
-        function updateRomanticPhrase() {
-            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-            document.getElementById('romantic-text').textContent = `"${randomPhrase}"`;
+        function updatePhrase() {
+            const el = document.getElementById('romantic-text');
+            el.style.opacity = 0;
+            setTimeout(() => {
+                el.textContent = `"${phrases[Math.floor(Math.random() * phrases.length)]}"`;
+                el.style.opacity = 1;
+            }, 500);
         }
 
-        // Update counter
-        function updateCounter() {
-            const startDate = new Date('2024-12-21T18:30:00');
-            const now = new Date();
-            const diff = now - startDate;
-
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            document.getElementById('counter').textContent =
-                `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        // Calculate statistics
-        function updateStats() {
-            const startDate = new Date('2024-12-21T18:30:00');
-            const now = new Date();
-            const diff = now - startDate;
-
-            const totalDays = diff / (1000 * 60 * 60 * 24);
-
-            const kisses = Math.floor(totalDays * 3);
-            const hugs = Math.floor(totalDays * 5);
-
-            document.getElementById('kisses').textContent = kisses;
-            document.getElementById('hugs').textContent = hugs;
-        }
-
-        // Initialize
-        updateCounter();
-        updateStats();
-        updateRomanticPhrase();
-
-        // Update every second
-        setInterval(updateCounter, 1000);
-        setInterval(updateStats, 1000);
-
-        // Change phrase every 10 seconds
-        setInterval(updateRomanticPhrase, 10000);
-
-        // Load and display upcoming tasks
+        /* ── Upcoming tasks (localStorage) ── */
         function loadUpcomingTasks() {
             const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            const today = new Date(); today.setHours(0,0,0,0);
 
-            // Filter tasks from today onwards and not completed
-            const upcomingTasks = tasks
-                .filter(task => {
-                    const taskDate = new Date(task.date + 'T00:00:00');
-                    return taskDate >= today && !task.completed;
-                })
-                .sort((a, b) => new Date(a.date) - new Date(b.date))
-                .slice(0, 5); // Show only 5 upcoming tasks
+            const upcoming = tasks
+                .filter(t => new Date(t.date + 'T00:00:00') >= today && !t.completed)
+                .sort((a,b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 5);
 
-            const upcomingList = document.getElementById('upcomingList');
-
-            if (upcomingTasks.length === 0) {
-                upcomingList.innerHTML = '<p class="no-upcoming">No hay tareas próximas</p>';
+            const list = document.getElementById('upcomingList');
+            if (!upcoming.length) {
+                list.innerHTML = '<p class="no-upcoming">No hay tareas próximas</p>';
                 return;
             }
-
-            upcomingList.innerHTML = upcomingTasks.map((task, index) => {
-                const taskDate = new Date(task.date + 'T00:00:00');
-                const dateStr = taskDate.toLocaleDateString('es-ES', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric'
-                });
-
+            list.innerHTML = upcoming.map((task, i) => {
+                const d = new Date(task.date + 'T00:00:00')
+                    .toLocaleDateString('es-ES', { weekday:'short', month:'short', day:'numeric' });
                 return `
-                    <div class="upcoming-item ${task.category === 'Cumples' ? 'cumples-item' : ''}">
-                        <div class="upcoming-item-content">
-                            <div class="upcoming-item-title">${task.title}</div>
-                            <div class="upcoming-item-date">${dateStr}</div>
-                        </div>
-                        <span class="upcoming-item-category" data-category="${task.category}">${task.category}</span>
-                        <button class="delete-upcoming-btn" onclick="deleteUpcomingTask('${task.date}', ${index})" title="Eliminar">✕</button>
+                <div class="upcoming-item ${task.category === 'Cumples' ? 'cumples-item' : ''}">
+                    <div class="upcoming-item-content">
+                        <div class="upcoming-item-title">${task.title}</div>
+                        <div class="upcoming-item-date">${d}</div>
                     </div>
-                `;
+                    <span class="upcoming-item-category">${task.category}</span>
+                    <button class="delete-upcoming-btn" onclick="deleteUpcomingTask('${task.date}',${i})">✕</button>
+                </div>`;
             }).join('');
         }
 
-        // Delete modal logic
+        /* ── Delete modal ── */
         let deleteData = null;
 
         function deleteUpcomingTask(dateStr, index) {
             deleteData = { dateStr, index };
             document.getElementById('deleteModal').classList.add('active');
         }
-
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.remove('active');
             deleteData = null;
         }
-
         function confirmDelete() {
             if (!deleteData) return;
-
             const { dateStr, index } = deleteData;
             const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
-
-            // Get all tasks for this date
             const dayTasks = tasks.filter(t => t.date === dateStr);
-
-            // Find the task to delete
-            const task = dayTasks[index];
-
-            // Find its index in the main tasks array
-            const taskIndex = tasks.indexOf(task);
-
-            // Remove it
-            if (taskIndex > -1) {
-                tasks.splice(taskIndex, 1);
+            const taskIdx  = tasks.indexOf(dayTasks[index]);
+            if (taskIdx > -1) {
+                tasks.splice(taskIdx, 1);
                 localStorage.setItem('wtdTasks', JSON.stringify(tasks));
                 loadUpcomingTasks();
             }
-
             closeDeleteModal();
         }
-
-        // Close modal when clicking outside
-        document.getElementById('deleteModal').addEventListener('click', (e) => {
-            if (e.target.id === 'deleteModal') {
-                closeDeleteModal();
-            }
+        document.getElementById('deleteModal').addEventListener('click', e => {
+            if (e.target.id === 'deleteModal') closeDeleteModal();
         });
 
-        // Load on page load
+        /* ── Init ── */
+        updateCounter();
+        updateStats();
+        updatePhrase();
         loadUpcomingTasks();
 
-        // Check for updates every 10 seconds
+        setInterval(updateCounter, 1000);
+        setInterval(updatePhrase, 10000);
         setInterval(loadUpcomingTasks, 10000);
     </script>
 </body>

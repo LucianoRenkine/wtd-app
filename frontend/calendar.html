@@ -13,15 +13,15 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            background: linear-gradient(135deg, #0D0A10 0%, #1A1220 100%);
             color: #d0d0d0;
             line-height: 1.6;
         }
 
         header {
-            background: rgba(26, 26, 26, 0.95);
+            background: rgba(18, 12, 22, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 2px solid #c41e3a;
+            border-bottom: 2px solid #8B5474;
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
@@ -29,13 +29,13 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            box-shadow: 0 2px 20px rgba(196, 30, 58, 0.1);
+            box-shadow: 0 2px 20px rgba(139, 84, 116, 0.1);
         }
 
         .logo {
             font-size: 1.6em;
             font-weight: 800;
-            color: #c41e3a;
+            color: #8B5474;
             letter-spacing: 1px;
         }
 
@@ -65,8 +65,8 @@
         }
 
         .calendar-section {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
-            border: 2px solid rgba(196, 30, 58, 0.2);
+            background: linear-gradient(135deg, rgba(20, 14, 26, 0.8) 0%, rgba(10, 8, 16, 0.8) 100%);
+            border: 2px solid rgba(139, 84, 116, 0.2);
             border-radius: 15px;
             padding: 30px;
             backdrop-filter: blur(5px);
@@ -82,7 +82,7 @@
         .calendar-nav button {
             background: none;
             border: none;
-            color: #c41e3a;
+            color: #8B5474;
             font-size: 1.5em;
             cursor: pointer;
             transition: all 0.3s;
@@ -121,7 +121,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(196, 30, 58, 0.2);
+            border: 2px solid rgba(139, 84, 116, 0.2);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
@@ -132,8 +132,8 @@
         }
 
         .day-cell:hover {
-            border-color: #c41e3a;
-            background: rgba(196, 30, 58, 0.1);
+            border-color: #8B5474;
+            background: rgba(139, 84, 116, 0.1);
         }
 
         .day-cell.other-month {
@@ -142,15 +142,15 @@
         }
 
         .day-cell.today {
-            background: #c41e3a;
-            border-color: #c41e3a;
+            background: #8B5474;
+            border-color: #8B5474;
             color: white;
             font-weight: bold;
         }
 
         .day-cell.selected {
-            background: rgba(196, 30, 58, 0.3);
-            border-color: #c41e3a;
+            background: rgba(139, 84, 116, 0.3);
+            border-color: #8B5474;
         }
 
         .task-indicators {
@@ -168,8 +168,8 @@
         }
 
         .form-section {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(15, 15, 15, 0.8) 100%);
-            border: 2px solid rgba(196, 30, 58, 0.2);
+            background: linear-gradient(135deg, rgba(20, 14, 26, 0.8) 0%, rgba(10, 8, 16, 0.8) 100%);
+            border: 2px solid rgba(139, 84, 116, 0.2);
             border-radius: 15px;
             padding: 30px;
             backdrop-filter: blur(5px);
@@ -188,7 +188,7 @@
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #c41e3a;
+            color: #8B5474;
             font-weight: 600;
             font-size: 0.9em;
         }
@@ -199,8 +199,8 @@
         .form-group time-input {
             width: 100%;
             padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(196, 30, 58, 0.2);
+            background: rgba(5, 2, 10, 0.4);
+            border: 2px solid rgba(139, 84, 116, 0.2);
             border-radius: 8px;
             color: #d0d0d0;
             font-family: inherit;
@@ -212,7 +212,7 @@
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #c41e3a;
+            border-color: #8B5474;
         }
 
         .form-group textarea {
@@ -221,7 +221,7 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #c41e3a 0%, #ff6b7a 100%);
+            background: linear-gradient(135deg, #8B5474 0%, #C4849E 100%);
             color: white;
             border: none;
             padding: 10px 20px;
@@ -235,7 +235,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(196, 30, 58, 0.3);
+            box-shadow: 0 10px 25px rgba(139, 84, 116, 0.3);
         }
 
         .tasks-list {
@@ -249,9 +249,9 @@
         }
 
         .task-item {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(5, 2, 10, 0.3);
             padding: 15px;
-            border-left: 4px solid #c41e3a;
+            border-left: 4px solid #8B5474;
             border-radius: 8px;
             margin-bottom: 10px;
             display: flex;
@@ -295,9 +295,9 @@
         }
 
         .task-btn {
-            background: rgba(196, 30, 58, 0.3);
-            border: 1px solid #c41e3a;
-            color: #c41e3a;
+            background: rgba(139, 84, 116, 0.3);
+            border: 1px solid #8B5474;
+            color: #8B5474;
             padding: 5px 8px;
             border-radius: 4px;
             cursor: pointer;
@@ -306,7 +306,7 @@
         }
 
         .task-btn:hover {
-            background: #c41e3a;
+            background: #8B5474;
             color: white;
         }
 
@@ -323,9 +323,9 @@
         }
 
         .error {
-            background: rgba(196, 30, 58, 0.2);
-            border: 2px solid #c41e3a;
-            color: #ff6b7a;
+            background: rgba(139, 84, 116, 0.2);
+            border: 2px solid #8B5474;
+            color: #C4849E;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -350,7 +350,7 @@
 </head>
 <body>
     <header>
-        <a href="index.html" style="color: #c41e3a; text-decoration: none;">← Volver</a>
+        <a href="index.html" style="color: #8B5474; text-decoration: none;">← Volver</a>
         <div class="logo">WTD - Calendario</div>
         <div class="user-info" id="userInfo">Cargando...</div>
     </header>
@@ -575,7 +575,7 @@
                     dayTasks.slice(0, 3).forEach(task => {
                         const dot = document.createElement('div');
                         dot.className = 'task-dot';
-                        dot.style.backgroundColor = task.category?.color || '#c41e3a';
+                        dot.style.backgroundColor = task.category?.color || '#8B5474';
                         indicators.appendChild(dot);
                     });
                     cell.appendChild(indicators);
