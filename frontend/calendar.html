@@ -770,12 +770,19 @@
                     cell.appendChild(more);
                 }
 
-                // Click handler — switch to tasks tab automatically
+                // Click handler
                 cell.addEventListener('click', () => {
                     selectedDate = date;
                     renderCalendar();
                     renderTasksForSelectedDate();
-                    showTab('tasks');
+
+                    const onForm = document.getElementById('tabPaneForm').classList.contains('active');
+                    if (onForm) {
+                        // Stay on form, just update the date field
+                        document.getElementById('taskDate').value = dayStr;
+                    } else {
+                        showTab('tasks');
+                    }
                 });
             }
 
