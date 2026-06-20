@@ -459,19 +459,126 @@
             background: rgba(20, 14, 26, 0.95);
         }
 
-        .upcoming-item-content { flex: 1; }
+        .upcoming-item-content { flex: 1; cursor: pointer; min-width: 0; }
+        .upcoming-item-content:hover .upcoming-item-title { color: #C4849E; }
 
         .upcoming-item-title {
             color: #d0d0d0;
             font-weight: 600;
             font-size: 0.95em;
             margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .upcoming-item-date {
             color: #8B5474;
             font-size: 0.82em;
         }
+
+        .upcoming-item-desc {
+            font-size: 0.78em;
+            color: #5a4860;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Task detail panel ── */
+        .task-detail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .task-detail-overlay.active { opacity: 1; visibility: visible; }
+
+        .task-detail-panel {
+            position: fixed;
+            top: 0;
+            right: -440px;
+            width: 420px;
+            height: 100vh;
+            background: linear-gradient(180deg, #120C1A 0%, #0D0A10 100%);
+            border-left: 1px solid rgba(139, 84, 116, 0.25);
+            z-index: 310;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .task-detail-panel.active { right: 0; }
+
+        .tdp-header {
+            padding: 22px 28px 18px;
+            border-bottom: 1px solid rgba(139, 84, 116, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background: rgba(18, 12, 26, 0.98);
+        }
+        .tdp-header-title { font-size: 1em; font-weight: 700; color: #C4849E; letter-spacing: 0.5px; }
+        .tdp-close {
+            background: none;
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            color: #6a5870;
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tdp-close:hover { background: rgba(139, 84, 116, 0.15); color: #C4849E; border-color: #8B5474; }
+
+        .tdp-body {
+            padding: 28px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .tdp-title { font-size: 1.35em; font-weight: 700; color: #d0d0d0; line-height: 1.35; }
+        .tdp-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .tdp-badge { font-size: 0.78em; font-weight: 600; padding: 4px 10px; border-radius: 8px; color: white; }
+        .tdp-info { font-size: 0.82em; color: #7a6876; }
+        .tdp-desc {
+            background: rgba(5, 2, 10, 0.4);
+            border: 1px solid rgba(139, 84, 116, 0.15);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 0.9em;
+            color: #a0909c;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            flex: 1;
+            min-height: 80px;
+        }
+        .tdp-no-desc { font-size: 0.88em; color: #4a3850; font-style: italic; text-align: center; padding: 24px; }
+
+        .tdp-footer {
+            display: flex;
+            gap: 10px;
+            padding: 20px 28px;
+            border-top: 1px solid rgba(139, 84, 116, 0.12);
+            flex-shrink: 0;
+            background: rgba(12, 8, 18, 0.98);
+        }
+        .tdp-btn {
+            flex: 1; padding: 12px; border-radius: 10px; border: none;
+            font-weight: 600; font-size: 0.88em; cursor: pointer;
+            transition: all 0.2s; font-family: inherit;
+        }
+        .tdp-btn.delete { background: rgba(180,80,80,0.1); color: #c07080; border: 1px solid rgba(180,80,80,0.18); }
+        .tdp-btn.delete:hover { background: rgba(180,80,80,0.2); color: #e08090; }
+
+        @media (max-width: 500px) { .task-detail-panel { width: 100%; right: -100%; } }
 
         .upcoming-item-category {
             background: rgba(139, 84, 116, 0.2);
@@ -736,6 +843,23 @@
         </div>
     </div>
 
+    <!-- Task Detail Panel -->
+    <div class="task-detail-overlay" id="taskDetailOverlay" onclick="closeTaskDetail()"></div>
+    <div class="task-detail-panel" id="taskDetailPanel">
+        <div class="tdp-header">
+            <span class="tdp-header-title">Detalle de tarea</span>
+            <button class="tdp-close" onclick="closeTaskDetail()">✕</button>
+        </div>
+        <div class="tdp-body">
+            <div class="tdp-title" id="tdpTitle"></div>
+            <div class="tdp-meta" id="tdpMeta"></div>
+            <div id="tdpDesc"></div>
+        </div>
+        <div class="tdp-footer">
+            <button class="tdp-btn delete" onclick="tdpDelete()">✕ Eliminar</button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <p>Hecho con ❤️ para los dos · WTD</p>
@@ -849,6 +973,8 @@
         }
 
         /* ── Upcoming tasks (API) ── */
+        let upcomingTasks = [];
+
         async function loadUpcomingTasks() {
             const today    = new Date();
             const tomorrow = new Date(today.getTime() + 86400000);
@@ -857,31 +983,92 @@
             const to   = weekEnd.toISOString().split('T')[0];
 
             const tasks = await getTasksByDateRange(from, to);
-            const upcoming = tasks
+            upcomingTasks = tasks
                 .filter(t => !t.completed)
                 .sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''))
                 .slice(0, 5);
 
             const list = document.getElementById('upcomingList');
-            if (!upcoming.length) {
+            if (!upcomingTasks.length) {
                 list.innerHTML = '<p class="no-upcoming">No hay tareas próximas</p>';
                 return;
             }
-            list.innerHTML = upcoming.map(task => {
+            list.innerHTML = upcomingTasks.map(task => {
                 const d = new Date(task.startDate + 'T12:00:00')
                     .toLocaleDateString('es-ES', { weekday:'short', month:'short', day:'numeric' });
+                const time    = task.startTime ? ' · ' + task.startTime.substring(0, 5) : '';
                 const color   = task.category?.color || '#8B5474';
                 const catName = task.category?.name  || '';
                 return `
                 <div class="upcoming-item">
-                    <div class="upcoming-item-content">
+                    <div class="upcoming-item-content" onclick="openTaskDetail(${task.id})">
                         <div class="upcoming-item-title">${task.title}</div>
-                        <div class="upcoming-item-date">${d}</div>
+                        <div class="upcoming-item-date">${d}${time}</div>
+                        ${task.description ? `<div class="upcoming-item-desc">${task.description}</div>` : ''}
                     </div>
                     <span class="upcoming-item-category" style="background:${color};color:white">${catName}</span>
-                    <button class="delete-upcoming-btn" onclick="askDeleteUpcoming(${task.id})">✕</button>
+                    <button class="delete-upcoming-btn" onclick="event.stopPropagation();askDeleteUpcoming(${task.id})">✕</button>
                 </div>`;
             }).join('');
+        }
+
+        /* ── Task detail panel ── */
+        let activeDetailId = null;
+        const MONTHS_ES   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        const WEEKDAYS_ES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+        function openTaskDetail(taskId) {
+            const task = upcomingTasks.find(t => t.id === taskId);
+            if (!task) return;
+            activeDetailId = taskId;
+
+            document.getElementById('tdpTitle').textContent = task.title;
+
+            const color   = task.category?.color || '#8B5474';
+            const catName = task.category?.name  || 'Sin categoría';
+            let meta = `<span class="tdp-badge" style="background:${color}">${catName}</span>`;
+
+            if (task.startDate) {
+                const d = new Date(task.startDate + 'T12:00:00');
+                meta += `<span class="tdp-info">📅 ${WEEKDAYS_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]}</span>`;
+            }
+            if (task.startTime) {
+                const t   = task.startTime.substring(0, 5);
+                const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
+                meta += `<span class="tdp-info">🕐 ${t}${end}</span>`;
+            }
+            const prio = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
+            if (prio) meta += `<span class="tdp-info">⚡ ${prio}</span>`;
+            if (task.createdBy?.nombre) meta += `<span class="tdp-info">👤 ${task.createdBy.nombre}</span>`;
+            if (task.sharedWith?.length) meta += `<span class="tdp-info">💕 Compartida</span>`;
+
+            document.getElementById('tdpMeta').innerHTML = meta;
+
+            const descEl = document.getElementById('tdpDesc');
+            if (task.description) {
+                descEl.className   = 'tdp-desc';
+                descEl.textContent = task.description;
+            } else {
+                descEl.className   = 'tdp-no-desc';
+                descEl.textContent = 'Sin descripción';
+            }
+
+            document.getElementById('taskDetailPanel').classList.add('active');
+            document.getElementById('taskDetailOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTaskDetail() {
+            document.getElementById('taskDetailPanel').classList.remove('active');
+            document.getElementById('taskDetailOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            activeDetailId = null;
+        }
+
+        function tdpDelete() {
+            const id = activeDetailId;
+            closeTaskDetail();
+            askDeleteUpcoming(id);
         }
 
         /* ── Delete modal ── */
