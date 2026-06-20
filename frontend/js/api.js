@@ -2,7 +2,7 @@
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = IS_LOCAL
     ? 'http://localhost:8080/api'
-    : 'https://REEMPLAZAR_CON_URL_DE_RENDER/api';
+    : 'https://wtd-backend.onrender.com/api';
 
 let currentUserId = null;
 let currentUser = null;
