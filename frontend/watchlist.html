@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist - WTD</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0D0A10 0%, #1A1220 100%);
+            color: #d0d0d0;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(18, 12, 22, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(139, 84, 116, 0.3);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: #8B5474;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 4px;
+        }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: #8B5474;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(10px, 10px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+        .logo {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: #8B5474;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1A1220 0%, #0D0A10 100%);
+            border-right: 1px solid rgba(139, 84, 116, 0.3);
+            padding: 80px 20px 30px;
+            transition: left 0.3s ease;
+            z-index: 200;
+            overflow-y: auto;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar nav ul { list-style: none; }
+        .sidebar nav li { margin-bottom: 20px; }
+        .sidebar nav a {
+            text-decoration: none;
+            color: #d0d0d0;
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .sidebar nav a:hover { color: #8B5474; background: rgba(139, 84, 116, 0.1); padding-left: 15px; }
+        .sidebar nav a.active { color: #8B5474; font-weight: 600; background: rgba(139, 84, 116, 0.15); }
+        .sidebar-divider { border: none; border-top: 1px solid rgba(139, 84, 116, 0.2); margin: 20px 10px; }
+        .sidebar nav a.logout-link { color: #a06070; }
+        .sidebar nav a.logout-link:hover { color: #e07090; background: rgba(180, 80, 100, 0.12); }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 150;
+        }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        /* ── Main content ── */
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 60px);
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .message {
+            font-size: 1.15em;
+            color: #a090a0;
+            line-height: 1.8;
+            max-width: 480px;
+            margin-bottom: 48px;
+            font-style: italic;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .countdown-unit {
+            background: rgba(139, 84, 116, 0.08);
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            border-radius: 14px;
+            padding: 20px 28px;
+            min-width: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .countdown-num {
+            font-family: 'Courier New', monospace;
+            font-size: 2.4em;
+            font-weight: 700;
+            color: #C4849E;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .countdown-label {
+            font-size: 0.65em;
+            color: #6a5870;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .done-msg {
+            font-size: 1.3em;
+            color: #C4849E;
+            font-style: italic;
+        }
+
+        @media (max-width: 480px) {
+            header { padding: 0 20px; }
+            .countdown-unit { padding: 16px 18px; min-width: 72px; }
+            .countdown-num { font-size: 1.9em; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        <a href="index.html" class="logo">WTD</a>
+        <div></div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calendar.html">Calendario</a></li>
+                <li><a href="proximas.html">Próximas Tareas</a></li>
+                <li><a href="watchlist.html" class="active">Watchlist</a></li>
+                <hr class="sidebar-divider">
+                <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="content">
+        <p class="message">
+            Te prometo que estoy trabajando en esta página.<br>
+            Estará disponible en:
+        </p>
+        <div class="countdown" id="countdown"></div>
+    </div>
+
+    <script>
+        /* ── Auth guard ── */
+        if (!localStorage.getItem('wtdAuth')) location.replace('login.html');
+
+        /* ── Hamburger ── */
+        const hamburger      = document.getElementById('hamburger');
+        const sidebar        = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+        sidebarOverlay.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        function doLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('wtdAuth');
+            window.location.href = 'login.html';
+        }
+
+        /* ── Countdown to 2026-07-01 00:00 ART (UTC-3) ── */
+        const TARGET = new Date('2026-07-01T03:00:00Z'); // 00:00 ART = 03:00 UTC
+
+        function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
+
+        function tick() {
+            const diff = TARGET - Date.now();
+            const el   = document.getElementById('countdown');
+
+            if (diff <= 0) {
+                el.innerHTML = '<p class="done-msg">¡Ya está disponible! 🎉</p>';
+                return;
+            }
+
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000)  / 60000);
+            const s = Math.floor((diff % 60000)    / 1000);
+
+            el.innerHTML = `
+                <div class="countdown-unit">
+                    <span class="countdown-num">${d}</span>
+                    <span class="countdown-label">Días</span>
+                </div>
+                <div class="countdown-unit">
+                    <span class="countdown-num">${pad(h)}</span>
+                    <span class="countdown-label">Horas</span>
+                </div>
+                <div class="countdown-unit">
+                    <span class="countdown-num">${pad(m)}</span>
+                    <span class="countdown-label">Min</span>
+                </div>
+                <div class="countdown-unit">
+                    <span class="countdown-num">${pad(s)}</span>
+                    <span class="countdown-label">Seg</span>
+                </div>`;
+        }
+
+        tick();
+        setInterval(tick, 1000);
+    </script>
+</body>
+</html>
