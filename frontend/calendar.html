@@ -632,6 +632,39 @@
             .detail-panel { width: 100%; right: -100%; }
         }
 
+        /* ── Shared task ── */
+        .share-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px 12px;
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            border-radius: 8px;
+            transition: all 0.2s;
+            user-select: none;
+            font-size: 0.9em;
+            color: #a090a0;
+            margin-bottom: 15px;
+        }
+        .share-label:hover { border-color: #8B5474; background: rgba(139, 84, 116, 0.06); }
+        .share-label input[type=checkbox] { display: none; }
+        .share-box {
+            width: 17px;
+            height: 17px;
+            border: 1.5px solid rgba(139, 84, 116, 0.35);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            font-size: 0.75em;
+            color: transparent;
+        }
+        .share-label input:checked + .share-box { background: #8B5474; border-color: #8B5474; color: white; }
+        .share-label:has(input:checked) { color: #C4849E; border-color: rgba(196, 132, 158, 0.35); }
+
         /* Delete Modal */
         .modal-overlay {
             position: fixed;
@@ -796,6 +829,11 @@
                                 <option value="HIGH">Alta</option>
                             </select>
                         </div>
+                        <label class="share-label" id="shareField" style="display:none">
+                            <input type="checkbox" id="taskShared">
+                            <span class="share-box">✓</span>
+                            <span>💕 Tarea compartida con <strong id="partnerNameLabel">…</strong></span>
+                        </label>
                         <button type="submit" class="btn">Agregar Tarea</button>
                     </form>
                 </div>
@@ -872,6 +910,7 @@
         let selectedDate = new Date();
         let allTasks = [];
         let categories = [];
+        let partnerId = null;
 
         // Initialize
         async function init() {
@@ -893,6 +932,15 @@
             // Render calendar
             renderCalendar();
             renderTasksForSelectedDate();
+
+            // Load partner
+            const users = await getUsers();
+            const partner = users.find(u => u.id !== currentUserId && u.role !== 'admin');
+            if (partner) {
+                partnerId = partner.id;
+                document.getElementById('partnerNameLabel').textContent = partner.nombre;
+                document.getElementById('shareField').style.display = '';
+            }
 
             // Update user info
             if (currentUser) {
@@ -1057,6 +1105,7 @@
                         <div class="task-title">${task.title}</div>
                         ${task.startTime ? `<small style="color: #999;">${task.startTime}${task.endTime ? ` - ${task.endTime}` : ''}</small><br>` : ''}
                         <span class="task-category" style="background-color: ${task.category?.color || '#999'}">${task.category?.name || 'Sin categoría'}</span>
+                        ${task.sharedWith?.length ? '<span style="font-size:0.82em">💕</span>' : ''}
                     </div>
                     <div class="task-actions">
                         <button class="task-btn" onclick="toggleTask(${task.id})">✓</button>
@@ -1139,6 +1188,10 @@
 
             const created = await createTask(newTask);
             if (created) {
+                if (document.getElementById('taskShared').checked && partnerId) {
+                    await shareTask(created.id, partnerId);
+                    created.sharedWith = [{ id: partnerId }];
+                }
                 allTasks.push(created);
                 document.getElementById('taskForm').reset();
                 document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
@@ -1202,6 +1255,7 @@
             const priorityLabel = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
             if (priorityLabel) metaHTML += `<span class="detail-info-item">⚡ ${priorityLabel}</span>`;
             if (task.createdBy?.nombre) metaHTML += `<span class="detail-info-item">👤 ${task.createdBy.nombre}</span>`;
+            if (task.sharedWith?.length) metaHTML += `<span class="detail-info-item">💕 Compartida</span>`;
 
             document.getElementById('detailMetaRow').innerHTML = metaHTML;
 
