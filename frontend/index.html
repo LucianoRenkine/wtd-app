@@ -741,6 +741,11 @@
     </footer>
 
     <script>
+        /* ── Auth guard ── */
+        if (!localStorage.getItem('wtdAuth')) {
+            window.location.replace('login.html');
+        }
+
         /* ── Hamburger ── */
         const hamburger = document.getElementById('hamburger');
         const sidebar   = document.getElementById('sidebar');
