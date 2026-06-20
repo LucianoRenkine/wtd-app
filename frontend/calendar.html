@@ -573,9 +573,15 @@
             color: white;
         }
         .detail-info-item {
-            font-size: 0.82em;
-            color: #7a6876;
+            font-size: 0.75em;
+            color: #6a5870;
+            background: rgba(139, 84, 116, 0.06);
+            border: 1px solid rgba(139, 84, 116, 0.12);
+            border-radius: 20px;
+            padding: 3px 10px;
+            letter-spacing: 0.2px;
         }
+        .detail-info-item.shared { color: #C4849E; border-color: rgba(196, 132, 158, 0.25); background: rgba(196, 132, 158, 0.07); }
         .detail-desc-block {
             background: rgba(5, 2, 10, 0.4);
             border: 1px solid rgba(139, 84, 116, 0.15);
@@ -1245,17 +1251,17 @@
 
             if (task.startDate) {
                 const d = new Date(task.startDate + 'T12:00:00');
-                metaHTML += `<span class="detail-info-item">📅 ${WEEKDAYS_DETAIL[d.getDay()]} ${d.getDate()} de ${MONTHS_DETAIL[d.getMonth()]}</span>`;
+                metaHTML += `<span class="detail-info-item">${WEEKDAYS_DETAIL[d.getDay()]} ${d.getDate()} de ${MONTHS_DETAIL[d.getMonth()]}</span>`;
             }
             if (task.startTime) {
                 const t   = task.startTime.substring(0, 5);
                 const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
-                metaHTML += `<span class="detail-info-item">🕐 ${t}${end}</span>`;
+                metaHTML += `<span class="detail-info-item">${t}${end}</span>`;
             }
             const priorityLabel = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
-            if (priorityLabel) metaHTML += `<span class="detail-info-item">⚡ ${priorityLabel}</span>`;
-            if (task.createdBy?.nombre) metaHTML += `<span class="detail-info-item">👤 ${task.createdBy.nombre}</span>`;
-            if (task.sharedWith?.length) metaHTML += `<span class="detail-info-item">💕 Compartida</span>`;
+            if (priorityLabel) metaHTML += `<span class="detail-info-item">Prioridad ${priorityLabel}</span>`;
+            if (task.createdBy?.nombre) metaHTML += `<span class="detail-info-item">Por ${task.createdBy.nombre}</span>`;
+            if (task.sharedWith?.length) metaHTML += `<span class="detail-info-item shared">Compartida</span>`;
 
             document.getElementById('detailMetaRow').innerHTML = metaHTML;
 

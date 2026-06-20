@@ -547,7 +547,16 @@
         .tdp-title { font-size: 1.35em; font-weight: 700; color: #d0d0d0; line-height: 1.35; }
         .tdp-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
         .tdp-badge { font-size: 0.78em; font-weight: 600; padding: 4px 10px; border-radius: 8px; color: white; }
-        .tdp-info { font-size: 0.82em; color: #7a6876; }
+        .tdp-info {
+            font-size: 0.75em;
+            color: #6a5870;
+            background: rgba(139, 84, 116, 0.06);
+            border: 1px solid rgba(139, 84, 116, 0.12);
+            border-radius: 20px;
+            padding: 3px 10px;
+            letter-spacing: 0.2px;
+        }
+        .tdp-info.shared { color: #C4849E; border-color: rgba(196, 132, 158, 0.25); background: rgba(196, 132, 158, 0.07); }
         .tdp-desc {
             background: rgba(5, 2, 10, 0.4);
             border: 1px solid rgba(139, 84, 116, 0.15);
@@ -1030,17 +1039,17 @@
 
             if (task.startDate) {
                 const d = new Date(task.startDate + 'T12:00:00');
-                meta += `<span class="tdp-info">📅 ${WEEKDAYS_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]}</span>`;
+                meta += `<span class="tdp-info">${WEEKDAYS_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]}</span>`;
             }
             if (task.startTime) {
                 const t   = task.startTime.substring(0, 5);
                 const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
-                meta += `<span class="tdp-info">🕐 ${t}${end}</span>`;
+                meta += `<span class="tdp-info">${t}${end}</span>`;
             }
             const prio = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
-            if (prio) meta += `<span class="tdp-info">⚡ ${prio}</span>`;
-            if (task.createdBy?.nombre) meta += `<span class="tdp-info">👤 ${task.createdBy.nombre}</span>`;
-            if (task.sharedWith?.length) meta += `<span class="tdp-info">💕 Compartida</span>`;
+            if (prio) meta += `<span class="tdp-info">Prioridad ${prio}</span>`;
+            if (task.createdBy?.nombre) meta += `<span class="tdp-info">Por ${task.createdBy.nombre}</span>`;
+            if (task.sharedWith?.length) meta += `<span class="tdp-info shared">Compartida</span>`;
 
             document.getElementById('tdpMeta').innerHTML = meta;
 
