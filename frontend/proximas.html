@@ -703,11 +703,186 @@
 
         .modal-btn.confirm:hover { background: #C4849E; }
 
+        /* Completed section */
+        .completed-toggle-btn {
+            background: none;
+            border: none;
+            border-top: 1px solid rgba(139, 84, 116, 0.1);
+            color: #5a4860;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 16px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            font-family: inherit;
+            transition: color 0.2s;
+            margin-top: 8px;
+        }
+        .completed-toggle-btn:hover { color: #8B5474; }
+        .completed-toggle-btn .chevron {
+            transition: transform 0.25s;
+            display: inline-block;
+            font-size: 0.85em;
+        }
+        .completed-toggle-btn.open .chevron { transform: rotate(90deg); }
+        .completed-list .task-card { opacity: 0.45; }
+        .completed-list .task-card:hover { opacity: 0.65; }
+
         /* Responsive */
         @media (max-width: 600px) {
             header { padding: 0 20px; }
             .container { padding: 28px 16px 60px; }
             .task-time { display: none; }
+        }
+
+        /* ── Detail Panel ── */
+        .detail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 60;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .detail-overlay.active { opacity: 1; visibility: visible; }
+
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -440px;
+            width: 420px;
+            height: 100vh;
+            background: linear-gradient(180deg, #120C1A 0%, #0D0A10 100%);
+            border-left: 1px solid rgba(139, 84, 116, 0.25);
+            z-index: 70;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .detail-panel.active { right: 0; }
+
+        .detail-header {
+            padding: 22px 28px 18px;
+            border-bottom: 1px solid rgba(139, 84, 116, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background: rgba(18, 12, 26, 0.98);
+        }
+        .detail-title-header {
+            font-size: 1em;
+            font-weight: 700;
+            color: #C4849E;
+            letter-spacing: 0.5px;
+        }
+        .detail-close {
+            background: none;
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            color: #6a5870;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-close:hover { background: rgba(139, 84, 116, 0.15); color: #C4849E; border-color: #8B5474; }
+
+        .detail-body {
+            padding: 28px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .detail-task-title {
+            font-size: 1.35em;
+            font-weight: 700;
+            color: #d0d0d0;
+            line-height: 1.35;
+        }
+        .detail-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .detail-badge {
+            font-size: 0.78em;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            color: white;
+        }
+        .detail-info-item {
+            font-size: 0.82em;
+            color: #7a6876;
+        }
+        .detail-desc-block {
+            background: rgba(5, 2, 10, 0.4);
+            border: 1px solid rgba(139, 84, 116, 0.15);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 0.9em;
+            color: #a0909c;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            flex: 1;
+            min-height: 80px;
+        }
+        .detail-desc-empty {
+            font-size: 0.88em;
+            color: #4a3850;
+            font-style: italic;
+            text-align: center;
+            padding: 24px;
+        }
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            padding: 20px 28px;
+            border-top: 1px solid rgba(139, 84, 116, 0.12);
+            flex-shrink: 0;
+            background: rgba(12, 8, 18, 0.98);
+        }
+        .detail-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.88em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .detail-btn.complete {
+            background: rgba(126, 200, 154, 0.12);
+            color: #7ec89a;
+            border: 1px solid rgba(126, 200, 154, 0.22);
+        }
+        .detail-btn.complete:hover { background: rgba(126, 200, 154, 0.22); }
+        .detail-btn.complete.done-state { background: rgba(90, 140, 110, 0.22); color: #90c8a0; }
+        .detail-btn.delete {
+            background: rgba(180, 80, 80, 0.1);
+            color: #c07080;
+            border: 1px solid rgba(180, 80, 80, 0.18);
+        }
+        .detail-btn.delete:hover { background: rgba(180, 80, 80, 0.2); color: #e08090; }
+
+        @media (max-width: 500px) {
+            .detail-panel { width: 100%; right: -100%; }
         }
     </style>
 </head>
@@ -754,6 +929,10 @@
                 <div class="stat-chip-num" id="statTotal">–</div>
                 <div class="stat-chip-label">Total pendientes</div>
             </div>
+            <div class="stat-chip">
+                <div class="stat-chip-num" id="statCompletadas" style="color:#7ec89a">–</div>
+                <div class="stat-chip-label">Completadas</div>
+            </div>
         </div>
 
         <!-- Filters -->
@@ -783,6 +962,24 @@
     </div>
 
     <div class="toast" id="toast"></div>
+
+    <!-- Detail Panel -->
+    <div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+    <div class="detail-panel" id="detailPanel">
+        <div class="detail-header">
+            <span class="detail-title-header">Detalle de tarea</span>
+            <button class="detail-close" onclick="closeDetail()">✕</button>
+        </div>
+        <div class="detail-body">
+            <div class="detail-task-title" id="detailTaskTitle"></div>
+            <div class="detail-meta-row" id="detailMetaRow"></div>
+            <div id="detailDescBlock"></div>
+        </div>
+        <div class="detail-actions">
+            <button class="detail-btn complete" id="detailCompleteBtn" onclick="detailToggleDone()">✓ Completar</button>
+            <button class="detail-btn delete" onclick="detailAskDelete()">✕ Eliminar</button>
+        </div>
+    </div>
 
     <!-- Drawer overlay -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -871,10 +1068,11 @@
         }
 
         /* ── State ── */
-        let allTasks   = [];
-        let categories = [];
-        let activeFilter = 'all';
+        let allTasks      = [];
+        let categories    = [];
+        let activeFilter  = 'all';
         let pendingDeleteId = null;
+        let showCompleted = false;
 
         const MONTHS   = ['enero','febrero','marzo','abril','mayo','junio',
                           'julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -899,12 +1097,9 @@
             render();
         }
 
-        /* ── Load tasks (next 60 days) ── */
+        /* ── Load tasks (all) ── */
         async function loadTasks() {
-            const today = new Date();
-            const from  = today.toISOString().split('T')[0];
-            const to    = new Date(Date.now() + 60 * 86400000).toISOString().split('T')[0];
-            allTasks    = await getTasksByDateRange(from, to);
+            allTasks = await getAllTasks();
         }
 
         /* ── Filters ── */
@@ -948,6 +1143,8 @@
                 allTasks.filter(t => !t.completed && new Date(t.startDate) < weekEnd).length;
             document.getElementById('statTotal').textContent =
                 allTasks.filter(t => !t.completed).length;
+            document.getElementById('statCompletadas').textContent =
+                allTasks.filter(t => t.completed).length;
 
             if (!tasks.length) {
                 document.getElementById('timeline').innerHTML = `
@@ -994,7 +1191,29 @@
                 </div>`;
             });
 
+            /* Completed section */
+            const completedTasks = allTasks
+                .filter(t => t.completed)
+                .sort((a, b) => (b.startDate || '').localeCompare(a.startDate || ''));
+
+            if (completedTasks.length > 0) {
+                html += `
+                <div>
+                    <button class="completed-toggle-btn ${showCompleted ? 'open' : ''}" onclick="toggleCompleted()">
+                        <span class="chevron">▶</span>
+                        Completadas
+                        <span style="color:#8B5474;margin-left:2px">(${completedTasks.length})</span>
+                    </button>
+                    ${showCompleted ? `<div class="completed-list">${completedTasks.map(t => taskCard(t)).join('')}</div>` : ''}
+                </div>`;
+            }
+
             document.getElementById('timeline').innerHTML = html;
+        }
+
+        function toggleCompleted() {
+            showCompleted = !showCompleted;
+            render();
         }
 
         function taskCard(task) {
@@ -1006,7 +1225,7 @@
             const creator = task.createdBy?.nombre || '';
 
             return `
-            <div class="task-card" id="tc-${task.id}">
+            <div class="task-card" id="tc-${task.id}" onclick="openDetail(${task.id})" style="cursor:pointer">
                 <div class="task-strip" style="background:${color}"></div>
                 <div class="task-time">${time}</div>
                 <div class="task-info">
@@ -1018,8 +1237,8 @@
                     ${task.description ? `<div class="task-desc">${task.description}</div>` : ''}
                 </div>
                 <div class="task-actions">
-                    <button class="task-action-btn done" onclick="toggleDone(${task.id})" title="Completar">✓</button>
-                    <button class="task-action-btn"      onclick="askDelete(${task.id})"  title="Eliminar">✕</button>
+                    <button class="task-action-btn done" onclick="event.stopPropagation();toggleDone(${task.id})" title="Completar">✓</button>
+                    <button class="task-action-btn"      onclick="event.stopPropagation();askDelete(${task.id})"  title="Eliminar">✕</button>
                 </div>
             </div>`;
         }
@@ -1029,8 +1248,15 @@
             const task = allTasks.find(t => t.id === id);
             if (!task) return;
             task.completed = !task.completed;
-            await updateTask(id, task);
-            render();
+            render(); // optimistic update
+            const updated = await updateTask(id, task);
+            if (updated) {
+                toast(task.completed ? '¡Tarea completada! ✓' : 'Tarea desmarcada', 'success');
+            } else {
+                task.completed = !task.completed; // rollback
+                render();
+                toast('No se pudo actualizar la tarea', 'error');
+            }
         }
 
         function askDelete(id) {
@@ -1164,6 +1390,78 @@
             } else {
                 toast('No se pudo guardar. ¿Está el backend corriendo?', 'error');
             }
+        }
+
+        /* ── Detail Panel ── */
+        let detailTaskId = null;
+
+        function openDetail(taskId) {
+            const task = allTasks.find(t => t.id === taskId);
+            if (!task) return;
+            detailTaskId = taskId;
+
+            document.getElementById('detailTaskTitle').textContent = task.title;
+
+            const color   = task.category?.color || '#8B5474';
+            const catName = task.category?.name  || 'Sin categoría';
+
+            let metaHTML = `<span class="detail-badge" style="background:${color}">${catName}</span>`;
+
+            if (task.startDate) {
+                const d = new Date(task.startDate + 'T12:00:00');
+                metaHTML += `<span class="detail-info-item">📅 ${WEEKDAYS[d.getDay()]} ${d.getDate()} de ${MONTHS[d.getMonth()]}</span>`;
+            }
+            if (task.startTime) {
+                const t   = task.startTime.substring(0, 5);
+                const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
+                metaHTML += `<span class="detail-info-item">🕐 ${t}${end}</span>`;
+            }
+            const priorityLabel = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
+            if (priorityLabel) metaHTML += `<span class="detail-info-item">⚡ ${priorityLabel}</span>`;
+            if (task.createdBy?.nombre) metaHTML += `<span class="detail-info-item">👤 ${task.createdBy.nombre}</span>`;
+
+            document.getElementById('detailMetaRow').innerHTML = metaHTML;
+
+            const descEl = document.getElementById('detailDescBlock');
+            if (task.description) {
+                descEl.className   = 'detail-desc-block';
+                descEl.textContent = task.description;
+            } else {
+                descEl.className   = 'detail-desc-empty';
+                descEl.textContent = 'Sin descripción';
+            }
+
+            const btn = document.getElementById('detailCompleteBtn');
+            if (task.completed) {
+                btn.textContent = '↩ Desmarcar';
+                btn.classList.add('done-state');
+            } else {
+                btn.textContent = '✓ Completar';
+                btn.classList.remove('done-state');
+            }
+
+            document.getElementById('detailPanel').classList.add('active');
+            document.getElementById('detailOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPanel').classList.remove('active');
+            document.getElementById('detailOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            detailTaskId = null;
+        }
+
+        async function detailToggleDone() {
+            if (!detailTaskId) return;
+            await toggleDone(detailTaskId);
+            closeDetail();
+        }
+
+        function detailAskDelete() {
+            const id = detailTaskId;
+            closeDetail();
+            askDelete(id);
         }
 
         /* ── Start ── */

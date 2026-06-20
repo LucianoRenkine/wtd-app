@@ -479,14 +479,226 @@
         }
 
         @media (max-width: 768px) {
-            .page-title {
-                font-size: 1.8em;
-            }
-
-            .day-cell {
-                font-size: 0.8em;
-            }
+            .page-title { font-size: 1.8em; }
+            .day-cell { font-size: 0.8em; }
         }
+
+        /* ── Task item clickable ── */
+        .task-content { cursor: pointer; }
+        .task-content:hover .task-title { color: #C4849E; }
+
+        /* ── Detail Panel ── */
+        .detail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .detail-overlay.active { opacity: 1; visibility: visible; }
+
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -440px;
+            width: 420px;
+            height: 100vh;
+            background: linear-gradient(180deg, #120C1A 0%, #0D0A10 100%);
+            border-left: 1px solid rgba(139, 84, 116, 0.25);
+            z-index: 310;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .detail-panel.active { right: 0; }
+
+        .detail-header {
+            padding: 22px 28px 18px;
+            border-bottom: 1px solid rgba(139, 84, 116, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background: rgba(18, 12, 26, 0.98);
+        }
+        .detail-title-header {
+            font-size: 1em;
+            font-weight: 700;
+            color: #C4849E;
+            letter-spacing: 0.5px;
+        }
+        .detail-close {
+            background: none;
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            color: #6a5870;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-close:hover { background: rgba(139, 84, 116, 0.15); color: #C4849E; border-color: #8B5474; }
+
+        .detail-body {
+            padding: 28px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .detail-task-title {
+            font-size: 1.35em;
+            font-weight: 700;
+            color: #d0d0d0;
+            line-height: 1.35;
+        }
+        .detail-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .detail-badge {
+            font-size: 0.78em;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            color: white;
+        }
+        .detail-info-item {
+            font-size: 0.82em;
+            color: #7a6876;
+        }
+        .detail-desc-block {
+            background: rgba(5, 2, 10, 0.4);
+            border: 1px solid rgba(139, 84, 116, 0.15);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 0.9em;
+            color: #a0909c;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            flex: 1;
+            min-height: 80px;
+        }
+        .detail-desc-empty {
+            font-size: 0.88em;
+            color: #4a3850;
+            font-style: italic;
+            text-align: center;
+            padding: 24px;
+        }
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            padding: 20px 28px;
+            border-top: 1px solid rgba(139, 84, 116, 0.12);
+            flex-shrink: 0;
+            background: rgba(12, 8, 18, 0.98);
+        }
+        .detail-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.88em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .detail-btn.complete {
+            background: rgba(126, 200, 154, 0.12);
+            color: #7ec89a;
+            border: 1px solid rgba(126, 200, 154, 0.22);
+        }
+        .detail-btn.complete:hover { background: rgba(126, 200, 154, 0.22); }
+        .detail-btn.complete.done-state { background: rgba(90, 140, 110, 0.22); color: #90c8a0; }
+        .detail-btn.delete {
+            background: rgba(180, 80, 80, 0.1);
+            color: #c07080;
+            border: 1px solid rgba(180, 80, 80, 0.18);
+        }
+        .detail-btn.delete:hover { background: rgba(180, 80, 80, 0.2); color: #e08090; }
+
+        @media (max-width: 500px) {
+            .detail-panel { width: 100%; right: -100%; }
+        }
+
+        /* Delete Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: linear-gradient(135deg, rgba(18, 12, 22, 0.98), rgba(10, 8, 16, 0.98));
+            border: 1px solid rgba(139, 84, 116, 0.4);
+            border-radius: 16px;
+            padding: 36px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            animation: popIn 0.25s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+        .modal-icon { font-size: 2.2em; margin-bottom: 14px; }
+        .modal-text { font-size: 1em; color: #d0d0d0; margin-bottom: 24px; line-height: 1.6; }
+        .modal-btns { display: flex; gap: 10px; justify-content: center; }
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-btn.cancel {
+            background: rgba(139, 84, 116, 0.12);
+            color: #d0d0d0;
+            border: 1px solid rgba(139, 84, 116, 0.25);
+        }
+        .modal-btn.cancel:hover { background: rgba(139, 84, 116, 0.2); }
+        .modal-btn.confirm { background: #8B5474; color: white; }
+        .modal-btn.confirm:hover { background: #C4849E; }
+
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(18, 12, 22, 0.96);
+            border: 1px solid rgba(139, 84, 116, 0.4);
+            border-radius: 10px;
+            padding: 12px 22px;
+            font-size: 0.88em;
+            color: #d0d0d0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 400;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { border-color: rgba(196, 100, 100, 0.5); color: #e09090; }
+        .toast.success { border-color: rgba(100, 180, 120, 0.5); color: #90c8a0; }
     </style>
 </head>
 <body>
@@ -588,6 +800,38 @@
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-icon" id="modalIcon">💔</div>
+            <p class="modal-text" id="modalText">¿Estás segura que querés eliminar esta tarea?</p>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+                <button class="modal-btn confirm" id="modalConfirmBtn" onclick="confirmDelete()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Detail Panel -->
+    <div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+    <div class="detail-panel" id="detailPanel">
+        <div class="detail-header">
+            <span class="detail-title-header">Detalle de tarea</span>
+            <button class="detail-close" onclick="closeDetail()">✕</button>
+        </div>
+        <div class="detail-body">
+            <div class="detail-task-title" id="detailTaskTitle"></div>
+            <div class="detail-meta-row" id="detailMetaRow"></div>
+            <div id="detailDescBlock"></div>
+        </div>
+        <div class="detail-actions">
+            <button class="detail-btn complete" id="detailCompleteBtn" onclick="detailToggleDone()">✓ Completar</button>
+            <button class="detail-btn delete" onclick="detailAskDelete()">✕ Eliminar</button>
         </div>
     </div>
 
@@ -809,14 +1053,14 @@
 
             tasksList.innerHTML = dayTasks.map((task, idx) => `
                 <div class="task-item ${task.completed ? 'completed' : ''}">
-                    <div class="task-content">
+                    <div class="task-content" onclick="openDetail(${task.id})">
                         <div class="task-title">${task.title}</div>
                         ${task.startTime ? `<small style="color: #999;">${task.startTime}${task.endTime ? ` - ${task.endTime}` : ''}</small><br>` : ''}
                         <span class="task-category" style="background-color: ${task.category?.color || '#999'}">${task.category?.name || 'Sin categoría'}</span>
                     </div>
                     <div class="task-actions">
                         <button class="task-btn" onclick="toggleTask(${task.id})">✓</button>
-                        <button class="task-btn" onclick="deleteTaskConfirm(${task.id})">✕</button>
+                        <button class="task-btn" onclick="askDelete(${task.id})">✕</button>
                     </div>
                 </div>
             `).join('');
@@ -824,25 +1068,58 @@
 
         async function toggleTask(taskId) {
             const task = allTasks.find(t => t.id === taskId);
-            if (task) {
-                task.completed = !task.completed;
-                const updated = await updateTask(taskId, task);
-                if (updated) {
-                    renderTasksForSelectedDate();
-                }
+            if (!task) return;
+            task.completed = !task.completed;
+            renderTasksForSelectedDate(); // optimistic update
+            renderCalendar();
+            const updated = await updateTask(taskId, task);
+            if (updated) {
+                showToast(task.completed ? '¡Tarea completada! ✓' : 'Tarea desmarcada', 'success');
+            } else {
+                task.completed = !task.completed; // rollback
+                renderTasksForSelectedDate();
+                renderCalendar();
+                showToast('No se pudo actualizar la tarea', 'error');
             }
         }
 
-        async function deleteTaskConfirm(taskId) {
-            if (confirm('¿Eliminar esta tarea?')) {
-                const deleted = await deleteTask(taskId);
-                if (deleted) {
-                    allTasks = allTasks.filter(t => t.id !== taskId);
-                    renderCalendar();
-                    renderTasksForSelectedDate();
-                }
+        let pendingDeleteId = null;
+
+        function askDelete(taskId) {
+            pendingDeleteId = taskId;
+            const task = allTasks.find(t => t.id === taskId);
+            const date = task ? new Date((task.startDate || '') + 'T12:00:00') : null;
+            if (date && date.getDate() === 21) {
+                document.getElementById('modalIcon').textContent = '💔💔💔';
+                document.getElementById('modalText').textContent = '¡¿QUERÉS CORTAR CONMIGO?!';
+                document.getElementById('modalConfirmBtn').style.background = '#ff1493';
+            } else {
+                document.getElementById('modalIcon').textContent = '💔';
+                document.getElementById('modalText').textContent = '¿Estás segura que querés eliminar esta tarea?';
+                document.getElementById('modalConfirmBtn').style.background = '';
             }
+            document.getElementById('deleteModal').classList.add('active');
         }
+
+        async function confirmDelete() {
+            if (!pendingDeleteId) return;
+            const deleted = await deleteTask(pendingDeleteId);
+            if (deleted) {
+                allTasks = allTasks.filter(t => t.id !== pendingDeleteId);
+                renderCalendar();
+                renderTasksForSelectedDate();
+            }
+            closeModal();
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            pendingDeleteId = null;
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', e => {
+            if (e.target === document.getElementById('deleteModal')) closeModal();
+        });
 
         // Form submission
         document.getElementById('taskForm').addEventListener('submit', async (e) => {
@@ -886,6 +1163,89 @@
             selectedDate = new Date();
             loadTasks().then(() => { renderCalendar(); renderTasksForSelectedDate(); });
         });
+
+        function showToast(msg, type = 'info') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = `toast ${type} show`;
+            clearTimeout(el._t);
+            el._t = setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        /* ── Detail Panel ── */
+        let detailTaskId = null;
+
+        const MONTHS_DETAIL   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        const WEEKDAYS_DETAIL = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+        function openDetail(taskId) {
+            const task = allTasks.find(t => t.id === taskId);
+            if (!task) return;
+            detailTaskId = taskId;
+
+            document.getElementById('detailTaskTitle').textContent = task.title;
+
+            const color   = task.category?.color || '#8B5474';
+            const catName = task.category?.name  || 'Sin categoría';
+
+            let metaHTML = `<span class="detail-badge" style="background:${color}">${catName}</span>`;
+
+            if (task.startDate) {
+                const d = new Date(task.startDate + 'T12:00:00');
+                metaHTML += `<span class="detail-info-item">📅 ${WEEKDAYS_DETAIL[d.getDay()]} ${d.getDate()} de ${MONTHS_DETAIL[d.getMonth()]}</span>`;
+            }
+            if (task.startTime) {
+                const t   = task.startTime.substring(0, 5);
+                const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
+                metaHTML += `<span class="detail-info-item">🕐 ${t}${end}</span>`;
+            }
+            const priorityLabel = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
+            if (priorityLabel) metaHTML += `<span class="detail-info-item">⚡ ${priorityLabel}</span>`;
+            if (task.createdBy?.nombre) metaHTML += `<span class="detail-info-item">👤 ${task.createdBy.nombre}</span>`;
+
+            document.getElementById('detailMetaRow').innerHTML = metaHTML;
+
+            const descEl = document.getElementById('detailDescBlock');
+            if (task.description) {
+                descEl.className   = 'detail-desc-block';
+                descEl.textContent = task.description;
+            } else {
+                descEl.className   = 'detail-desc-empty';
+                descEl.textContent = 'Sin descripción';
+            }
+
+            const btn = document.getElementById('detailCompleteBtn');
+            if (task.completed) {
+                btn.textContent = '↩ Desmarcar';
+                btn.classList.add('done-state');
+            } else {
+                btn.textContent = '✓ Completar';
+                btn.classList.remove('done-state');
+            }
+
+            document.getElementById('detailPanel').classList.add('active');
+            document.getElementById('detailOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPanel').classList.remove('active');
+            document.getElementById('detailOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            detailTaskId = null;
+        }
+
+        async function detailToggleDone() {
+            if (!detailTaskId) return;
+            await toggleTask(detailTaskId);
+            closeDetail();
+        }
+
+        function detailAskDelete() {
+            const id = detailTaskId;
+            closeDetail();
+            askDelete(id);
+        }
 
         // Start
         init();
