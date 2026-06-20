@@ -44,15 +44,15 @@ public class Task {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    @Column(nullable = false)
     private Boolean completed = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'MEDIUM'")
+    @Column(length = 20)
     private Priority priority = Priority.MEDIUM;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'NONE'")
+    @Column(length = 20)
     private RecurrenceType recurrenceType = RecurrenceType.NONE;
 
     @ManyToMany(fetch = FetchType.LAZY)

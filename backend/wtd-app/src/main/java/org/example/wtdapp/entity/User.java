@@ -27,8 +27,8 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
-    @Column(columnDefinition = "VARCHAR(50) DEFAULT 'user'")
-    private String role;
+    @Column(length = 50)
+    private String role = "user";
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
