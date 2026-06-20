@@ -741,6 +741,7 @@
         <p style="margin-top:6px">© 2026 What to Do · <a href="#" class="footer-link">Privacidad</a></p>
     </footer>
 
+    <script src="js/api.js?v=2"></script>
     <script>
         /* ── Auth guard ── */
         if (!localStorage.getItem('wtdAuth')) {
@@ -846,14 +847,18 @@
             }, 500);
         }
 
-        /* ── Upcoming tasks (localStorage) ── */
-        function loadUpcomingTasks() {
-            const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
-            const today = new Date(); today.setHours(0,0,0,0);
+        /* ── Upcoming tasks (API) ── */
+        async function loadUpcomingTasks() {
+            const today    = new Date();
+            const tomorrow = new Date(today.getTime() + 86400000);
+            const weekEnd  = new Date(today.getTime() + 8 * 86400000);
+            const from = tomorrow.toISOString().split('T')[0];
+            const to   = weekEnd.toISOString().split('T')[0];
 
+            const tasks = await getTasksByDateRange(from, to);
             const upcoming = tasks
-                .filter(t => new Date(t.date + 'T00:00:00') >= today && !t.completed)
-                .sort((a,b) => new Date(a.date) - new Date(b.date))
+                .filter(t => !t.completed)
+                .sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''))
                 .slice(0, 5);
 
             const list = document.getElementById('upcomingList');
@@ -861,44 +866,39 @@
                 list.innerHTML = '<p class="no-upcoming">No hay tareas próximas</p>';
                 return;
             }
-            list.innerHTML = upcoming.map((task, i) => {
-                const d = new Date(task.date + 'T00:00:00')
+            list.innerHTML = upcoming.map(task => {
+                const d = new Date(task.startDate + 'T12:00:00')
                     .toLocaleDateString('es-ES', { weekday:'short', month:'short', day:'numeric' });
+                const color   = task.category?.color || '#8B5474';
+                const catName = task.category?.name  || '';
                 return `
-                <div class="upcoming-item ${task.category === 'Cumples' ? 'cumples-item' : ''}">
+                <div class="upcoming-item">
                     <div class="upcoming-item-content">
                         <div class="upcoming-item-title">${task.title}</div>
                         <div class="upcoming-item-date">${d}</div>
                     </div>
-                    <span class="upcoming-item-category">${task.category}</span>
-                    <button class="delete-upcoming-btn" onclick="deleteUpcomingTask('${task.date}',${i})">✕</button>
+                    <span class="upcoming-item-category" style="background:${color}">${catName}</span>
+                    <button class="delete-upcoming-btn" onclick="askDeleteUpcoming(${task.id})">✕</button>
                 </div>`;
             }).join('');
         }
 
         /* ── Delete modal ── */
-        let deleteData = null;
+        let pendingDeleteId = null;
 
-        function deleteUpcomingTask(dateStr, index) {
-            deleteData = { dateStr, index };
+        function askDeleteUpcoming(taskId) {
+            pendingDeleteId = taskId;
             document.getElementById('deleteModal').classList.add('active');
         }
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.remove('active');
-            deleteData = null;
+            pendingDeleteId = null;
         }
-        function confirmDelete() {
-            if (!deleteData) return;
-            const { dateStr, index } = deleteData;
-            const tasks = JSON.parse(localStorage.getItem('wtdTasks')) || [];
-            const dayTasks = tasks.filter(t => t.date === dateStr);
-            const taskIdx  = tasks.indexOf(dayTasks[index]);
-            if (taskIdx > -1) {
-                tasks.splice(taskIdx, 1);
-                localStorage.setItem('wtdTasks', JSON.stringify(tasks));
-                loadUpcomingTasks();
-            }
+        async function confirmDelete() {
+            if (!pendingDeleteId) return;
+            await deleteTask(pendingDeleteId);
             closeDeleteModal();
+            loadUpcomingTasks();
         }
         document.getElementById('deleteModal').addEventListener('click', e => {
             if (e.target.id === 'deleteModal') closeDeleteModal();

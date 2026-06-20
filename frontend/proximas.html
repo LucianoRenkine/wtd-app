@@ -1128,15 +1128,16 @@
             const tomorrow = new Date(today.getTime() + 86400000);
             const weekEnd  = new Date(today.getTime() + 7 * 86400000);
 
-            /* Filter */
+            /* Stats */
+            const todayStr = today.toISOString().split('T')[0];
+
+            /* Filter — excluye hoy y fechas pasadas */
             const tasks = allTasks.filter(t => {
                 if (t.completed) return false;
+                if (t.startDate <= todayStr) return false;
                 if (activeFilter === 'all') return true;
                 return t.category?.id == activeFilter;
             });
-
-            /* Stats */
-            const todayStr = today.toISOString().split('T')[0];
             document.getElementById('statHoy').textContent =
                 allTasks.filter(t => !t.completed && t.startDate === todayStr).length;
             document.getElementById('statSemana').textContent =
