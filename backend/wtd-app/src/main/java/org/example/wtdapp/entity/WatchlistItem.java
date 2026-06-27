@@ -31,6 +31,10 @@ public class WatchlistItem {
 
     private LocalDate releaseDate;
 
+    private Integer season;
+
+    private Integer year;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

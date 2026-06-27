@@ -159,10 +159,12 @@
 
         .add-row {
             display: none;
+            flex-direction: column;
             gap: 8px;
             margin-bottom: 14px;
         }
         .add-row.active { display: flex; }
+        .add-row-extra { display: flex; gap: 8px; }
         .add-row input {
             flex: 1;
             background: rgba(5, 2, 10, 0.5);
@@ -172,7 +174,10 @@
             padding: 8px 12px;
             font-size: 0.88em;
             font-family: inherit;
+            min-width: 0;
         }
+        .add-row input[type=number] { flex: 0 0 90px; }
+        .add-row input[type=date] { flex: 1; color-scheme: dark; }
         .add-row input:focus { outline: none; border-color: #8B5474; }
         .add-row button {
             background: #8B5474;
@@ -183,8 +188,36 @@
             font-size: 0.85em;
             font-weight: 600;
             cursor: pointer;
+            flex-shrink: 0;
         }
         .add-row button:hover { background: #C4849E; }
+
+        /* ── Year groups ── */
+        .year-toggle {
+            background: none;
+            border: none;
+            border-top: 1px solid rgba(139, 84, 116, 0.12);
+            color: #6a5870;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            padding: 14px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            font-family: inherit;
+            transition: color 0.2s;
+            margin-top: 6px;
+        }
+        .year-toggle:hover { color: #8B5474; }
+        .year-toggle .chevron { transition: transform 0.25s; display: inline-block; font-size: 0.85em; }
+        .year-toggle.open .chevron { transform: rotate(90deg); }
+
+        /* ── Locked (future date) row ── */
+        .item-row.locked { opacity: 0.45; }
+        .status-select:disabled { cursor: default; opacity: 1; }
 
         .item-row {
             display: flex;
@@ -318,7 +351,11 @@
                 </div>
                 <div class="add-row" id="addRowSERIES">
                     <input type="text" id="addInputSERIES" placeholder="Título de la serie…" onkeydown="if(event.key==='Enter') addItem('SERIES')">
-                    <button onclick="addItem('SERIES')">Agregar</button>
+                    <div class="add-row-extra">
+                        <input type="number" id="addSeasonSERIES" placeholder="Temporada" min="1">
+                        <input type="date" id="addDateSERIES" title="Fecha de estreno (opcional)">
+                        <button onclick="addItem('SERIES')">Agregar</button>
+                    </div>
                 </div>
                 <div id="listSERIES"><div class="empty-state">Cargando…</div></div>
             </div>
@@ -330,7 +367,10 @@
                 </div>
                 <div class="add-row" id="addRowMOVIE">
                     <input type="text" id="addInputMOVIE" placeholder="Título de la película…" onkeydown="if(event.key==='Enter') addItem('MOVIE')">
-                    <button onclick="addItem('MOVIE')">Agregar</button>
+                    <div class="add-row-extra">
+                        <input type="date" id="addDateMOVIE" title="Fecha de estreno (opcional)">
+                        <button onclick="addItem('MOVIE')">Agregar</button>
+                    </div>
                 </div>
                 <div id="listMOVIE"><div class="empty-state">Cargando…</div></div>
             </div>
@@ -376,6 +416,7 @@
         /* ── State ── */
         let items = [];
         let pendingDeleteId = null;
+        let openYears = {};
 
         async function init() {
             if (!loadAuth()) {
@@ -398,6 +439,29 @@
             return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
         }
 
+        function isLocked(item) {
+            if (!item.releaseDate) return false;
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            return new Date(item.releaseDate + 'T00:00:00') > today;
+        }
+
+        function itemRowHtml(item) {
+            const locked = isLocked(item);
+            const displayTitle = item.season ? `${item.title} (S${item.season})` : item.title;
+            const effectiveStatus = locked ? 'SOON' : item.status;
+            return `
+                <div class="item-row ${locked ? 'locked' : ''}">
+                    <span class="item-title">${displayTitle}</span>
+                    ${locked ? `<span class="item-release-date">${formatReleaseDate(item.releaseDate)}</span>` : ''}
+                    <select class="status-select ${effectiveStatus}" ${locked ? 'disabled' : ''} onchange="changeStatus(${item.id}, this.value)">
+                        <option value="YES"  ${effectiveStatus === 'YES'  ? 'selected' : ''}>Yes</option>
+                        <option value="NO"   ${effectiveStatus === 'NO'   ? 'selected' : ''}>No</option>
+                        <option value="SOON" ${effectiveStatus === 'SOON' ? 'selected' : ''}>Soon</option>
+                    </select>
+                    <button class="item-delete-btn" onclick="askDelete(${item.id})">✕</button>
+                </div>`;
+        }
+
         function renderList(type) {
             const el = document.getElementById('list' + type);
             const filtered = items.filter(i => i.type === type);
@@ -405,18 +469,29 @@
                 el.innerHTML = '<div class="empty-state">Nada por aquí todavía</div>';
                 return;
             }
-            el.innerHTML = filtered.map(item => `
-                <div class="item-row">
-                    <span class="item-title">${item.title}</span>
-                    ${item.releaseDate ? `<span class="item-release-date">${formatReleaseDate(item.releaseDate)}</span>` : ''}
-                    <select class="status-select ${item.status}" onchange="changeStatus(${item.id}, this.value)">
-                        <option value="YES"  ${item.status === 'YES'  ? 'selected' : ''}>Yes</option>
-                        <option value="NO"   ${item.status === 'NO'   ? 'selected' : ''}>No</option>
-                        <option value="SOON" ${item.status === 'SOON' ? 'selected' : ''}>Soon</option>
-                    </select>
-                    <button class="item-delete-btn" onclick="askDelete(${item.id})">✕</button>
-                </div>
-            `).join('');
+
+            const general = filtered.filter(i => !i.year);
+            const years   = [...new Set(filtered.filter(i => i.year).map(i => i.year))].sort();
+
+            let html = general.map(itemRowHtml).join('');
+
+            years.forEach(year => {
+                const key       = `${type}-${year}`;
+                const yearItems = filtered.filter(i => i.year === year);
+                const isOpen    = !!openYears[key];
+                html += `
+                    <button class="year-toggle ${isOpen ? 'open' : ''}" onclick="toggleYear('${key}')">
+                        <span class="chevron">▶</span> ${year} <span style="color:#8B5474">(${yearItems.length})</span>
+                    </button>
+                    ${isOpen ? yearItems.map(itemRowHtml).join('') : ''}`;
+            });
+
+            el.innerHTML = html;
+        }
+
+        function toggleYear(key) {
+            openYears[key] = !openYears[key];
+            render();
         }
 
         function toggleAddRow(type) {
@@ -432,10 +507,22 @@
             const title = input.value.trim();
             if (!title) return;
 
-            const created = await createWatchlistItem({ title, type, status: 'SOON' });
+            const dateInput   = document.getElementById('addDate' + type);
+            const releaseDate = dateInput.value || null;
+            const year        = releaseDate ? parseInt(releaseDate.substring(0, 4)) : null;
+
+            let season = null;
+            if (type === 'SERIES') {
+                const seasonInput = document.getElementById('addSeasonSERIES');
+                season = seasonInput.value ? parseInt(seasonInput.value) : null;
+            }
+
+            const created = await createWatchlistItem({ title, type, status: 'SOON', releaseDate, season, year });
             if (created) {
                 items.push(created);
                 input.value = '';
+                dateInput.value = '';
+                if (type === 'SERIES') document.getElementById('addSeasonSERIES').value = '';
                 document.getElementById('addRow' + type).classList.remove('active');
                 render();
             }
