@@ -229,5 +229,62 @@ async function unshareTask(taskId, userId) {
     }
 }
 
+// Get all watchlist items
+async function getWatchlist() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/watchlist`);
+        if (!response.ok) throw new Error('Failed to fetch watchlist');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching watchlist:', error);
+        return [];
+    }
+}
+
+// Create a watchlist item
+async function createWatchlistItem(item) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/watchlist`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item)
+        });
+        if (!response.ok) throw new Error('Failed to create watchlist item');
+        return await response.json();
+    } catch (error) {
+        console.error('Error creating watchlist item:', error);
+        return null;
+    }
+}
+
+// Update a watchlist item
+async function updateWatchlistItem(id, item) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/watchlist/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item)
+        });
+        if (!response.ok) throw new Error('Failed to update watchlist item');
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating watchlist item:', error);
+        return null;
+    }
+}
+
+// Delete a watchlist item
+async function deleteWatchlistItem(id) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/watchlist/${id}`, {
+            method: 'DELETE'
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Error deleting watchlist item:', error);
+        return false;
+    }
+}
+
 // Initialize - load auth if available
 loadAuth();

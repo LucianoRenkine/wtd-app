@@ -1,0 +1,47 @@
+-- Seed inicial de Watchlist para WTD
+-- Ejecutar UNA sola vez después de que el backend haya creado la tabla watchlist_items
+
+INSERT INTO watchlist_items (title, type, status, created_at) VALUES
+-- Series
+('Squid Games (S3)', 'SERIES', 'NO', NOW()),
+('Sandman (S2)', 'SERIES', 'NO', NOW()),
+('Menem', 'SERIES', 'NO', NOW()),
+('The Summer I Turned Pretty (S3)', 'SERIES', 'YES', NOW()),
+('Poker Face (S2)', 'SERIES', 'NO', NOW()),
+('Wednesday (S2)', 'SERIES', 'YES', NOW()),
+('Peacemaker (S2)', 'SERIES', 'SOON', NOW()),
+('Eyes of Wakanda', 'SERIES', 'NO', NOW()),
+('Only Murders in the Building (S5)', 'SERIES', 'NO', NOW()),
+('Gen V (S2)', 'SERIES', 'YES', NOW()),
+('The Morning Show (S4)', 'SERIES', 'NO', NOW()),
+('Slow Horses (S5)', 'SERIES', 'NO', NOW()),
+('Marvel Zombies', 'SERIES', 'NO', NOW()),
+('The Diplomat (S3)', 'SERIES', 'SOON', NOW()),
+('It: Welcome to Derry', 'SERIES', 'SOON', NOW()),
+('The Witcher (S4)', 'SERIES', 'NO', NOW()),
+('Mayor of Kingstown (S4)', 'SERIES', 'NO', NOW()),
+('Maxton Hall (S2)', 'SERIES', 'YES', NOW()),
+('Stranger Things (S5)', 'SERIES', 'YES', NOW()),
+('Percy Jackson (S3)', 'SERIES', 'SOON', NOW()),
+
+-- Películas
+('Lilo & Stitch', 'MOVIE', 'YES', NOW()),
+('Ballerina', 'MOVIE', 'NO', NOW()),
+('Elio', 'MOVIE', 'NO', NOW()),
+('How To Train Your Dragon', 'MOVIE', 'YES', NOW()),
+('F1', 'MOVIE', 'YES', NOW()),
+('M3GAN 2.0', 'MOVIE', 'YES', NOW()),
+('Jurassic World Rebirth', 'MOVIE', 'SOON', NOW()),
+('Superman', 'MOVIE', 'YES', NOW()),
+('The Fantastic Four: First Steps', 'MOVIE', 'YES', NOW()),
+('Amores Materialistas', 'MOVIE', 'YES', NOW()),
+('La Hora de la Desaparición', 'MOVIE', 'YES', NOW()),
+('Homo Argentum', 'MOVIE', 'YES', NOW()),
+('The Conjuring: Last Rites', 'MOVIE', 'SOON', NOW()),
+('One Battle After Another', 'MOVIE', 'YES', NOW()),
+('Avatar: The Way Of Water (Re)', 'MOVIE', 'YES', NOW()),
+('The Black Phone 2', 'MOVIE', 'YES', NOW()),
+('Now You See Me 3', 'MOVIE', 'YES', NOW()),
+('Harry Potter: Goblet of Fire (Re)', 'MOVIE', 'YES', NOW()),
+('Wicked: For Good', 'MOVIE', 'SOON', NOW()),
+('Zootopia 2', 'MOVIE', 'YES', NOW());

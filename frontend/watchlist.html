@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watchlist - WTD</title>
+    <script>if (!localStorage.getItem('wtdAuth')) location.replace('login.html');</script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -102,72 +103,173 @@
         }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
-        /* ── Main content ── */
-        .content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 60px);
-            padding: 40px 24px;
-            text-align: center;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
         }
 
-        .message {
-            font-size: 1.15em;
-            color: #a090a0;
-            line-height: 1.8;
-            max-width: 480px;
-            margin-bottom: 48px;
-            font-style: italic;
+        .page-header { margin-bottom: 32px; text-align: center; }
+        .page-title {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #C4849E 0%, #8B5474 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+        .page-subtitle { color: #6a5870; font-size: 0.9em; font-style: italic; }
+
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
 
-        .countdown {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .countdown-unit {
-            background: rgba(139, 84, 116, 0.08);
-            border: 1px solid rgba(139, 84, 116, 0.2);
+        .section {
+            background: rgba(13, 9, 18, 0.5);
+            border: 1px solid rgba(139, 84, 116, 0.18);
             border-radius: 14px;
-            padding: 20px 28px;
-            min-width: 90px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
+            padding: 22px;
         }
 
-        .countdown-num {
-            font-family: 'Courier New', monospace;
-            font-size: 2.4em;
+        .section-title {
+            font-size: 1.1em;
             font-weight: 700;
             color: #C4849E;
-            line-height: 1;
-            letter-spacing: -1px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .countdown-label {
-            font-size: 0.65em;
-            color: #6a5870;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .done-msg {
-            font-size: 1.3em;
+        .add-btn {
+            background: rgba(139, 84, 116, 0.15);
+            border: 1px solid rgba(139, 84, 116, 0.3);
             color: #C4849E;
-            font-style: italic;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
         }
+        .add-btn:hover { background: rgba(139, 84, 116, 0.3); }
 
-        @media (max-width: 480px) {
+        .add-row {
+            display: none;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .add-row.active { display: flex; }
+        .add-row input {
+            flex: 1;
+            background: rgba(5, 2, 10, 0.5);
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            border-radius: 8px;
+            color: #d0d0d0;
+            padding: 8px 12px;
+            font-size: 0.88em;
+            font-family: inherit;
+        }
+        .add-row input:focus { outline: none; border-color: #8B5474; }
+        .add-row button {
+            background: #8B5474;
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .add-row button:hover { background: #C4849E; }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 4px;
+            border-bottom: 1px solid rgba(139, 84, 116, 0.08);
+        }
+        .item-row:last-child { border-bottom: none; }
+
+        .item-title { flex: 1; font-size: 0.92em; color: #d0d0d0; }
+
+        .status-select {
+            appearance: none;
+            -webkit-appearance: none;
+            border: none;
+            border-radius: 14px;
+            padding: 5px 26px 5px 14px;
+            font-size: 0.78em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 10px;
+        }
+        .status-select.YES  { background-color: rgba(126, 200, 154, 0.2); color: #7ec89a; }
+        .status-select.NO   { background-color: rgba(196, 100, 100, 0.2); color: #e09090; }
+        .status-select.SOON { background-color: rgba(150, 150, 150, 0.2); color: #b0b0b0; }
+        .status-select option { background: #1A1220; color: #d0d0d0; }
+
+        .item-delete-btn {
+            background: none;
+            border: 1px solid rgba(139, 84, 116, 0.2);
+            color: #5a4860;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.72em;
+            flex-shrink: 0;
+            opacity: 0;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .item-row:hover .item-delete-btn { opacity: 1; }
+        .item-delete-btn:hover { background: rgba(180, 80, 80, 0.2); color: #e08090; border-color: rgba(180, 80, 80, 0.3); }
+
+        .empty-state { text-align: center; padding: 30px; color: #4a3850; font-style: italic; font-size: 0.88em; }
+
+        /* Delete modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: linear-gradient(135deg, rgba(18, 12, 22, 0.98), rgba(10, 8, 16, 0.98));
+            border: 1px solid rgba(139, 84, 116, 0.4);
+            border-radius: 16px;
+            padding: 36px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-icon { font-size: 2.2em; margin-bottom: 14px; }
+        .modal-text { font-size: 1em; color: #d0d0d0; margin-bottom: 24px; line-height: 1.6; }
+        .modal-btns { display: flex; gap: 10px; justify-content: center; }
+        .modal-btn { padding: 10px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 0.9em; cursor: pointer; transition: all 0.2s; }
+        .modal-btn.cancel { background: rgba(139, 84, 116, 0.12); color: #d0d0d0; border: 1px solid rgba(139, 84, 116, 0.25); }
+        .modal-btn.cancel:hover { background: rgba(139, 84, 116, 0.2); }
+        .modal-btn.confirm { background: #8B5474; color: white; }
+        .modal-btn.confirm:hover { background: #C4849E; }
+
+        @media (max-width: 720px) {
+            .columns { grid-template-columns: 1fr; }
             header { padding: 0 20px; }
-            .countdown-unit { padding: 16px 18px; min-width: 72px; }
-            .countdown-num { font-size: 1.9em; }
         }
     </style>
 </head>
@@ -193,18 +295,53 @@
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="content">
-        <p class="message">
-            Te prometo que estoy trabajando en esta página.<br>
-            Estará disponible en:
-        </p>
-        <div class="countdown" id="countdown"></div>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Watchlist</h1>
+            <p class="page-subtitle">Todo lo que queremos ver, juntos.</p>
+        </div>
+
+        <div class="columns">
+            <div class="section">
+                <div class="section-title">
+                    Series
+                    <button class="add-btn" onclick="toggleAddRow('SERIES')">+</button>
+                </div>
+                <div class="add-row" id="addRowSERIES">
+                    <input type="text" id="addInputSERIES" placeholder="Título de la serie…" onkeydown="if(event.key==='Enter') addItem('SERIES')">
+                    <button onclick="addItem('SERIES')">Agregar</button>
+                </div>
+                <div id="listSERIES"><div class="empty-state">Cargando…</div></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    Películas
+                    <button class="add-btn" onclick="toggleAddRow('MOVIE')">+</button>
+                </div>
+                <div class="add-row" id="addRowMOVIE">
+                    <input type="text" id="addInputMOVIE" placeholder="Título de la película…" onkeydown="if(event.key==='Enter') addItem('MOVIE')">
+                    <button onclick="addItem('MOVIE')">Agregar</button>
+                </div>
+                <div id="listMOVIE"><div class="empty-state">Cargando…</div></div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        /* ── Auth guard ── */
-        if (!localStorage.getItem('wtdAuth')) location.replace('login.html');
+    <!-- Delete modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-icon">🎬</div>
+            <p class="modal-text">¿Eliminar este título de la watchlist?</p>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+                <button class="modal-btn confirm" onclick="confirmDelete()">Eliminar</button>
+            </div>
+        </div>
+    </div>
 
+    <script src="js/api.js?v=2"></script>
+    <script>
         /* ── Hamburger ── */
         const hamburger      = document.getElementById('hamburger');
         const sidebar        = document.getElementById('sidebar');
@@ -227,46 +364,97 @@
             window.location.href = 'login.html';
         }
 
-        /* ── Countdown to 2026-07-01 00:00 ART (UTC-3) ── */
-        const TARGET = new Date('2026-07-01T03:00:00Z'); // 00:00 ART = 03:00 UTC
+        /* ── State ── */
+        let items = [];
+        let pendingDeleteId = null;
 
-        function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
-
-        function tick() {
-            const diff = TARGET - Date.now();
-            const el   = document.getElementById('countdown');
-
-            if (diff <= 0) {
-                el.innerHTML = '<p class="done-msg">¡Ya está disponible! 🎉</p>';
+        async function init() {
+            if (!loadAuth()) {
+                window.location.href = 'login.html';
                 return;
             }
-
-            const d = Math.floor(diff / 86400000);
-            const h = Math.floor((diff % 86400000) / 3600000);
-            const m = Math.floor((diff % 3600000)  / 60000);
-            const s = Math.floor((diff % 60000)    / 1000);
-
-            el.innerHTML = `
-                <div class="countdown-unit">
-                    <span class="countdown-num">${d}</span>
-                    <span class="countdown-label">Días</span>
-                </div>
-                <div class="countdown-unit">
-                    <span class="countdown-num">${pad(h)}</span>
-                    <span class="countdown-label">Horas</span>
-                </div>
-                <div class="countdown-unit">
-                    <span class="countdown-num">${pad(m)}</span>
-                    <span class="countdown-label">Min</span>
-                </div>
-                <div class="countdown-unit">
-                    <span class="countdown-num">${pad(s)}</span>
-                    <span class="countdown-label">Seg</span>
-                </div>`;
+            items = await getWatchlist();
+            render();
         }
 
-        tick();
-        setInterval(tick, 1000);
+        function render() {
+            renderList('SERIES');
+            renderList('MOVIE');
+        }
+
+        function renderList(type) {
+            const el = document.getElementById('list' + type);
+            const filtered = items.filter(i => i.type === type);
+            if (!filtered.length) {
+                el.innerHTML = '<div class="empty-state">Nada por aquí todavía</div>';
+                return;
+            }
+            el.innerHTML = filtered.map(item => `
+                <div class="item-row">
+                    <span class="item-title">${item.title}</span>
+                    <select class="status-select ${item.status}" onchange="changeStatus(${item.id}, this.value)">
+                        <option value="YES"  ${item.status === 'YES'  ? 'selected' : ''}>Yes</option>
+                        <option value="NO"   ${item.status === 'NO'   ? 'selected' : ''}>No</option>
+                        <option value="SOON" ${item.status === 'SOON' ? 'selected' : ''}>Soon</option>
+                    </select>
+                    <button class="item-delete-btn" onclick="askDelete(${item.id})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleAddRow(type) {
+            const row = document.getElementById('addRow' + type);
+            row.classList.toggle('active');
+            if (row.classList.contains('active')) {
+                document.getElementById('addInput' + type).focus();
+            }
+        }
+
+        async function addItem(type) {
+            const input = document.getElementById('addInput' + type);
+            const title = input.value.trim();
+            if (!title) return;
+
+            const created = await createWatchlistItem({ title, type, status: 'SOON' });
+            if (created) {
+                items.push(created);
+                input.value = '';
+                document.getElementById('addRow' + type).classList.remove('active');
+                render();
+            }
+        }
+
+        async function changeStatus(id, status) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+            item.status = status;
+            render();
+            await updateWatchlistItem(id, item);
+        }
+
+        function askDelete(id) {
+            pendingDeleteId = id;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            pendingDeleteId = null;
+        }
+
+        async function confirmDelete() {
+            if (!pendingDeleteId) return;
+            await deleteWatchlistItem(pendingDeleteId);
+            items = items.filter(i => i.id !== pendingDeleteId);
+            closeModal();
+            render();
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', e => {
+            if (e.target === document.getElementById('deleteModal')) closeModal();
+        });
+
+        init();
     </script>
 </body>
 </html>
