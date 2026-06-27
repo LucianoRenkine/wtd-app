@@ -25,6 +25,9 @@ public class WatchlistController {
     @PostMapping
     public WatchlistItem create(@RequestBody WatchlistItem item) {
         item.setId(null);
+        if (item.getType() == WatchlistItem.MediaType.SERIES && item.getSeason() == null) {
+            item.setSeason(1);
+        }
         return watchlistItemRepository.save(item);
     }
 
