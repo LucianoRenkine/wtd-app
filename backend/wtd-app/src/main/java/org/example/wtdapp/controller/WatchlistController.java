@@ -38,6 +38,7 @@ public class WatchlistController {
         item.setTitle(details.getTitle());
         item.setType(details.getType());
         item.setStatus(details.getStatus());
+        item.setReleaseDate(details.getReleaseDate());
         return ResponseEntity.ok(watchlistItemRepository.save(item));
     }
 

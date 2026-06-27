@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,6 +28,8 @@ public class WatchlistItem {
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
     private WatchStatus status = WatchStatus.SOON;
+
+    private LocalDate releaseDate;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

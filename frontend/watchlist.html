@@ -196,6 +196,15 @@
         .item-row:last-child { border-bottom: none; }
 
         .item-title { flex: 1; font-size: 0.92em; color: #d0d0d0; }
+        .item-release-date {
+            font-size: 0.72em;
+            color: #6a5870;
+            background: rgba(139, 84, 116, 0.08);
+            border-radius: 10px;
+            padding: 2px 8px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
 
         .status-select {
             appearance: none;
@@ -340,7 +349,7 @@
         </div>
     </div>
 
-    <script src="js/api.js?v=2"></script>
+    <script src="js/api.js?v=3"></script>
     <script>
         /* ── Hamburger ── */
         const hamburger      = document.getElementById('hamburger');
@@ -382,6 +391,13 @@
             renderList('MOVIE');
         }
 
+        const MONTHS_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+        function formatReleaseDate(dateStr) {
+            const d = new Date(dateStr + 'T12:00:00');
+            return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
+        }
+
         function renderList(type) {
             const el = document.getElementById('list' + type);
             const filtered = items.filter(i => i.type === type);
@@ -392,6 +408,7 @@
             el.innerHTML = filtered.map(item => `
                 <div class="item-row">
                     <span class="item-title">${item.title}</span>
+                    ${item.releaseDate ? `<span class="item-release-date">${formatReleaseDate(item.releaseDate)}</span>` : ''}
                     <select class="status-select ${item.status}" onchange="changeStatus(${item.id}, this.value)">
                         <option value="YES"  ${item.status === 'YES'  ? 'selected' : ''}>Yes</option>
                         <option value="NO"   ${item.status === 'NO'   ? 'selected' : ''}>No</option>
