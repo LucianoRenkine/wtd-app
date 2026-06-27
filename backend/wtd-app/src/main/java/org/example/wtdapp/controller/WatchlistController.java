@@ -19,7 +19,7 @@ public class WatchlistController {
 
     @GetMapping
     public List<WatchlistItem> getAll() {
-        return watchlistItemRepository.findAll();
+        return watchlistItemRepository.findAllByOrderByIdAsc();
     }
 
     @PostMapping

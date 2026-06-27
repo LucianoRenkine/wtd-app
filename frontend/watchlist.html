@@ -450,7 +450,7 @@
 
         function itemRowHtml(item) {
             const locked = isLocked(item);
-            const displayTitle = item.season ? `${item.title} (S${item.season})` : item.title;
+            const displayTitle = (item.season && item.season > 1) ? `${item.title} (S${item.season})` : item.title;
             const effectiveStatus = locked ? 'SOON' : item.status;
             return `
                 <div class="item-row ${locked ? 'locked' : ''}">
