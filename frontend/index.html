@@ -10,7 +10,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #fbfbfd 0%, #f3f3f6 100%);
+            background: #fbfbfd;
             color: #1c1b22;
             line-height: 1.6;
         }
@@ -69,7 +69,7 @@
             top: 0;
             width: 300px;
             height: 100vh;
-            background: linear-gradient(180deg, #f3f3f6 0%, #fbfbfd 100%);
+            background: #f3f3f6;
             border-right: 1px solid rgba(166, 61, 99, 0.3);
             padding: 80px 20px 30px;
             transition: left 0.3s ease;
@@ -152,7 +152,7 @@
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 16px;
-            background: linear-gradient(135deg, #1c1b22 0%, #a63d63 60%, #7d2c4a 100%);
+            background: #1c1b22;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -219,7 +219,7 @@
         }
 
         .hero-btn.primary {
-            background: linear-gradient(135deg, #a63d63 0%, #1c1b22 100%);
+            background: #a63d63;
             color: white;
         }
 
@@ -504,7 +504,7 @@
             right: -440px;
             width: 420px;
             height: 100vh;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+            background: #ffffff;
             border-left: 1px solid rgba(166, 61, 99, 0.25);
             z-index: 310;
             display: flex;
@@ -639,7 +639,7 @@
         .delete-modal.active { display: flex; opacity: 1; }
 
         .delete-modal-content {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%);
+            background: #ffffff;
             border: 1px solid rgba(166, 61, 99, 0.5);
             border-radius: 16px;
             padding: 40px;
@@ -710,7 +710,7 @@
             .upcoming-section { padding: 50px 30px; }
         }
     </style>
-    <link rel="stylesheet" href="css/theme.css?v=1">
+    <link rel="stylesheet" href="css/theme.css?v=3">
 </head>
 <body>
 
@@ -754,12 +754,28 @@
 
             <div class="hero-actions">
                 <a href="calendar.html" class="hero-btn primary">Ver Calendario</a>
-                <a href="proximas.html" class="hero-btn secondary">Próximas Tareas</a>
             </div>
         </div>
 
-        <!-- ── Right: Nuestros Números ── -->
+        <!-- ── Right: lo que viene ── -->
         <div class="hero-right">
+            <div class="agenda-head">
+                <div class="numbers-title">Lo que viene</div>
+                <a href="calendar.html" class="view-all-link">Calendario →</a>
+            </div>
+            <div class="agenda-list" id="agendaList">
+                <p class="agenda-empty">Cargando…</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Nuestros Números -->
+    <section class="numbers-section">
+        <div class="insights-container">
+            <div class="insights-header"><h2>Nuestros números</h2></div>
+            <div class="numbers-body">
+
 
             <div class="numbers-title">Nuestros Números</div>
 
@@ -825,9 +841,9 @@
             <div class="romantic-phrase">
                 <p id="romantic-text">"Cargando..."</p>
             </div>
+                    </div>
         </div>
     </section>
-
 
     <!-- Insights -->
     <section class="insights-section">
@@ -856,19 +872,6 @@
                     <div class="progress-track"><div class="progress-fill" id="doneBar"></div></div>
                     <div class="progress-note" id="doneNote">0 de 0 tareas</div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Upcoming Tasks -->
-    <section class="upcoming-section">
-        <div class="upcoming-container">
-            <div class="upcoming-header">
-                <h2>Próximas Tareas</h2>
-                <a href="proximas.html" class="view-all-link">Ver todas →</a>
-            </div>
-            <div class="upcoming-list" id="upcomingList">
-                <p class="no-upcoming">No hay tareas próximas</p>
             </div>
         </div>
     </section>
@@ -908,7 +911,8 @@
         <p style="margin-top:6px">© 2026 What to Do · <a href="#" class="footer-link">Privacidad</a></p>
     </footer>
 
-    <script src="js/api.js?v=3"></script>
+    <script src="js/catalog.js?v=2"></script>
+    <script src="js/api.js?v=4"></script>
     <script>
         /* ── Auth guard ── */
         if (!localStorage.getItem('wtdAuth')) {
@@ -1018,40 +1022,65 @@
         let upcomingTasks = [];
 
         async function loadUpcomingTasks() {
-            const today    = new Date();
-            const tomorrow = new Date(today.getTime() + 86400000);
-            const weekEnd  = new Date(today.getTime() + 8 * 86400000);
-            const from = tomorrow.toISOString().split('T')[0];
-            const to   = weekEnd.toISOString().split('T')[0];
+            // Desde hoy hasta dentro de dos semanas: lo que realmente "viene"
+            const today   = new Date();
+            const horizon = new Date(today.getTime() + 14 * 86400000);
+            const from = today.toISOString().split('T')[0];
+            const to   = horizon.toISOString().split('T')[0];
 
             const tasks = await getTasksByDateRange(from, to);
             upcomingTasks = tasks
                 .filter(t => !t.completed)
-                .sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''))
-                .slice(0, 5);
+                .sort((a, b) => (a.startDate || '').localeCompare(b.startDate || '')
+                             || (a.startTime || '99').localeCompare(b.startTime || '99'))
+                .slice(0, 8);
 
-            const list = document.getElementById('upcomingList');
+            renderAgenda();
+        }
+
+        function dayLabel(dateStr) {
+            const d     = new Date(dateStr + 'T12:00:00');
+            const today = new Date(); today.setHours(12, 0, 0, 0);
+            const diff  = Math.round((d - today) / 86400000);
+            if (diff === 0) return 'Hoy';
+            if (diff === 1) return 'Mañana';
+            const label = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
+            return label.charAt(0).toUpperCase() + label.slice(1);
+        }
+
+        function renderAgenda() {
+            const list = document.getElementById('agendaList');
             if (!upcomingTasks.length) {
-                list.innerHTML = '<p class="no-upcoming">No hay tareas próximas</p>';
+                list.innerHTML = '<p class="agenda-empty">Nada agendado por ahora ✨</p>';
                 return;
             }
-            list.innerHTML = upcomingTasks.map(task => {
-                const d = new Date(task.startDate + 'T12:00:00')
-                    .toLocaleDateString('es-ES', { weekday:'short', month:'short', day:'numeric' });
-                const time    = task.startTime ? ' · ' + task.startTime.substring(0, 5) : '';
-                const color   = task.category?.color || '#a63d63';
-                const catName = task.category?.name  || '';
-                return `
-                <div class="upcoming-item">
-                    <div class="upcoming-item-content" onclick="openTaskDetail(${task.id})">
-                        <div class="upcoming-item-title">${task.title}</div>
-                        <div class="upcoming-item-date">${d}${time}</div>
-                        ${task.description ? `<div class="upcoming-item-desc">${task.description}</div>` : ''}
-                    </div>
-                    <span class="upcoming-item-category" style="background:${color};color:white">${catName}</span>
-                    <button class="delete-upcoming-btn" onclick="event.stopPropagation();askDeleteUpcoming(${task.id})">✕</button>
-                </div>`;
-            }).join('');
+
+            // Agrupadas por día para escanearlas de un vistazo
+            const groups = [];
+            upcomingTasks.forEach(task => {
+                const last = groups[groups.length - 1];
+                if (last && last.date === task.startDate) last.tasks.push(task);
+                else groups.push({ date: task.startDate, tasks: [task] });
+            });
+
+            list.innerHTML = groups.map(g => `
+                <div class="agenda-group">
+                    <div class="agenda-day">${dayLabel(g.date)}</div>
+                    ${g.tasks.map(task => {
+                        const cat  = catStyle(task.category);
+                        const prio = prioStyle(task.priority);
+                        return `
+                        <div class="agenda-item" onclick="openTaskDetail(${task.id})"
+                             style="border-left:${prio.bar}px solid ${cat.color};opacity:${prio.opacity}">
+                            <span class="agenda-icon">${cat.icon}</span>
+                            <div class="agenda-text">
+                                <div class="agenda-title" style="font-weight:${prio.weight}">${task.title}</div>
+                                <div class="agenda-meta">${task.startTime ? task.startTime.substring(0, 5) + ' · ' : ''}${task.category?.name || 'Sin categoría'}${prio.mark ? ' · ' + prio.mark : ''}</div>
+                            </div>
+                            ${task.sharedWith?.length ? '<span class="agenda-shared">💕</span>' : ''}
+                        </div>`;
+                    }).join('')}
+                </div>`).join('');
         }
 
         /* ── Task detail panel ── */

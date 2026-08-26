@@ -42,10 +42,9 @@ body {
 }
 
 .hero-title {
-    background: linear-gradient(120deg, var(--ink) 0%, var(--ink) 45%, var(--accent) 100%) !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
+    background: none !important;
+    -webkit-text-fill-color: var(--ink) !important;
+    color: var(--ink) !important;
 }
 
 /* ── Header ── */
@@ -231,7 +230,7 @@ footer {
 }
 .bar-fill {
     width: 100%; border-radius: 8px;
-    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-ink) 100%);
+    background: var(--accent);
     min-height: 3px;
     animation: barGrow .7s cubic-bezier(.4,0,.2,1) both;
 }
@@ -261,7 +260,7 @@ footer {
 .progress-track { height: 8px; background: rgba(28,27,34,.06); border-radius: 99px; overflow: hidden; }
 .progress-fill {
     height: 100%; width: 0; border-radius: 99px;
-    background: linear-gradient(90deg, var(--ok) 0%, #34c896 100%);
+    background: var(--ok);
     transition: width 1s cubic-bezier(.4,0,.2,1);
 }
 .progress-note { font-size: .78em; color: var(--muted); margin-top: 10px; }
@@ -277,3 +276,84 @@ footer {
 .back-link:hover, .back-btn:hover { color: var(--accent-ink) !important; }
 .empty-state-text, .no-tasks, .no-upcoming { color: var(--muted) !important; }
 .toast { border-radius: 12px !important; box-shadow: var(--shadow-lg) !important; }
+
+/* ── Home: agenda "Lo que viene" ── */
+.hero { align-items: stretch; }
+.hero-right { justify-content: flex-start !important; padding-top: 60px !important; gap: 16px !important; }
+
+.agenda-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+.agenda-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+    padding-right: 4px;
+}
+.agenda-group { display: flex; flex-direction: column; gap: 7px; }
+.agenda-day {
+    font-size: 0.7em;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 2px;
+}
+.agenda-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 11px 14px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .18s, transform .18s;
+}
+.agenda-item:hover { box-shadow: var(--shadow-md); transform: translateX(2px); }
+.agenda-icon { font-size: 1.05em; flex-shrink: 0; }
+.agenda-text { flex: 1; min-width: 0; }
+.agenda-title {
+    font-size: 0.92em;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.agenda-meta { font-size: 0.75em; color: var(--muted); margin-top: 2px; }
+.agenda-shared { flex-shrink: 0; font-size: 0.85em; }
+.agenda-empty {
+    color: var(--muted);
+    font-size: 0.9em;
+    font-style: italic;
+    padding: 20px 0;
+}
+
+/* ── Home: "Nuestros números" como sección propia ── */
+.numbers-section { padding: 56px 70px 0; }
+.numbers-body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px 40px;
+    align-items: center;
+}
+.numbers-section .numbers-title { display: none; }
+.numbers-body .numbers-top { grid-column: 1; }
+.numbers-body .stats-grid { grid-column: 2; grid-template-columns: repeat(4, 1fr); }
+.numbers-body .romantic-phrase { grid-column: 1 / -1; }
+
+@media (max-width: 900px) {
+    .numbers-section { padding: 40px 24px 0; }
+    .numbers-body { grid-template-columns: 1fr; }
+    .numbers-body .numbers-top, .numbers-body .stats-grid { grid-column: 1; }
+    .numbers-body .stats-grid { grid-template-columns: 1fr 1fr; }
+    .agenda-list { max-height: none; }
+}
+
+.counter-display { white-space: nowrap; font-size: clamp(1.3em, 2.3vw, 2.1em) !important; }

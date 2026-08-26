@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #fbfbfd 0%, #f3f3f6 100%);
+            background: #fbfbfd;
             color: #1c1b22;
             line-height: 1.6;
         }
@@ -73,7 +73,7 @@
             top: 0;
             width: 300px;
             height: 100vh;
-            background: linear-gradient(180deg, #f3f3f6 0%, #fbfbfd 100%);
+            background: #fbfbfd;
             border-right: 1px solid rgba(166, 61, 99, 0.3);
             padding: 80px 20px 30px;
             transition: left 0.3s ease;
@@ -112,9 +112,9 @@
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
         .container {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 28px 28px 48px;
         }
 
         .page-title {
@@ -125,12 +125,7 @@
             letter-spacing: 1px;
         }
 
-        .calendar-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 24px;
-            align-items: start;
-        }
+        .calendar-wrapper { display: block; }
 
         /* ── Calendar macOS style ── */
         .calendar-section {
@@ -205,10 +200,10 @@
         .day-header:last-child { border-right: none; }
 
         .day-cell {
-            min-height: 108px;
+            min-height: max(122px, calc((100vh - 260px) / 6));
             display: flex;
             flex-direction: column;
-            padding: 6px 5px 4px;
+            padding: 7px 7px 6px;
             border-right: 1px solid rgba(28, 27, 34, 0.055);
             border-bottom: 1px solid rgba(28, 27, 34, 0.055);
             cursor: pointer;
@@ -220,7 +215,7 @@
         .day-cell:hover { background: rgba(28, 27, 34, 0.039); }
 
         .day-num {
-            font-size: 0.82em;
+            font-size: 0.85em;
             font-weight: 500;
             color: #7a7389;
             width: 24px;
@@ -248,19 +243,35 @@
         .day-cell.selected .day-num { outline: 1px solid #a63d63; }
 
         .event-pill {
-            display: block;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 0.68em;
-            color: white;
-            margin-bottom: 2px;
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            padding: 3px 7px 3px 5px;
+            border-radius: 5px;
+            font-size: 0.71em;
+            margin-bottom: 3px;
             overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            font-weight: 500;
-            line-height: 1.5;
-            opacity: 0.92;
+            line-height: 1.45;
+            cursor: pointer;
+            border-left-style: solid;
+            transition: filter 0.15s;
         }
+        .event-pill:hover { filter: brightness(0.94); }
+        .event-pill .pill-icon { flex-shrink: 0; font-size: 1.05em; }
+        .event-pill .pill-text {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .event-pill .pill-time { opacity: 0.72; font-weight: 500; }
+        .event-pill .pill-mark {
+            margin-left: auto;
+            flex-shrink: 0;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        .event-pill.done .pill-text { text-decoration: line-through; opacity: 0.55; }
 
         .event-more {
             font-size: 0.65em;
@@ -268,189 +279,154 @@
             padding: 1px 5px;
         }
 
-        /* ── Right panel sticky ── */
-        .right-panel {
-            position: sticky;
-            top: 80px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            border-radius: 12px;
-            overflow: hidden;
-            backdrop-filter: blur(8px);
-            max-height: calc(100vh - 100px);
-            display: flex;
-            flex-direction: column;
+        /* ── Entrada rápida dentro de la celda ── */
+        .quick-add {
+            width: 100%;
+            border: none !important;
+            background: rgba(166, 61, 99, 0.07) !important;
+            border-radius: 5px !important;
+            padding: 3px 6px;
+            font-size: 0.72em;
+            color: #1c1b22;
+            outline: 1px dashed rgba(166, 61, 99, 0.45) !important;
+            margin-top: 2px;
+        }
+        .quick-add::placeholder { color: #a49dae; }
+        .quick-add:focus { outline: 1px solid #a63d63 !important; box-shadow: none !important; }
+
+        /* ── Composer (modal de una tarea) ── */
+        .composer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(28, 27, 34, 0.32);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 600;
+            padding: 24px;
+        }
+        .composer-overlay.active { display: flex; }
+
+        .composer {
+            background: #fff;
+            border: 1px solid rgba(28, 27, 34, 0.09);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 560px;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(28, 27, 34, 0.18);
+            animation: popIn 0.2s ease;
         }
 
-        /* ── Tabs ── */
-        .tab-bar {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.11);
-            flex-shrink: 0;
+        .composer-head {
+            padding: 22px 26px 0;
         }
-        .tab-btn {
-            background: none;
-            border: none;
-            color: #5b5468;
-            padding: 14px 10px;
+        .composer-title-input {
+            width: 100%;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            font-size: 1.45em;
+            font-weight: 700;
+            color: #1c1b22;
+            padding: 0 0 6px !important;
+            background: transparent !important;
+        }
+        .composer-title-input::placeholder { color: #c4c0cc; }
+        .composer-when {
             font-size: 0.82em;
-            font-weight: 600;
-            cursor: pointer;
-            letter-spacing: 0.3px;
-            transition: all 0.2s;
-            border-bottom: 2px solid transparent;
-            font-family: inherit;
-        }
-        .tab-btn:hover { color: #a63d63; background: rgba(28, 27, 34, 0.028); }
-        .tab-btn.active {
-            color: #1c1b22;
-            border-bottom-color: #a63d63;
-            background: rgba(28, 27, 34, 0.039);
-        }
-        .tab-pane { display: none; padding: 20px; overflow-y: auto; flex: 1; }
-        .tab-pane.active { display: block; }
-
-        .form-section {
-            /* kept for compat but now used inside tab-pane */
+            color: #837e90;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(28, 27, 34, 0.07);
         }
 
-        .form-section h3 {
-            color: #1c1b22;
-            margin-bottom: 16px;
-            font-size: 1.05em;
-            font-weight: 600;
-        }
+        .composer-body { padding: 20px 26px 4px; display: flex; flex-direction: column; gap: 18px; }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
+        .field-label {
             display: block;
-            margin-bottom: 5px;
-            color: #a63d63;
-            font-weight: 600;
-            font-size: 0.9em;
+            font-size: 0.68em;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #837e90;
+            margin-bottom: 8px;
         }
 
-        .form-group input,
-        .form-group textarea,
-        .form-group select,
-        .form-group time-input {
+        .time-row { display: flex; align-items: center; gap: 10px; }
+        .time-row input { flex: 1; padding: 9px 11px; font-size: 0.9em; }
+        .time-row .sep { color: #a49dae; font-size: 0.85em; }
+
+        .composer textarea {
             width: 100%;
-            padding: 10px;
-            background: rgba(246, 243, 252, 0.9);
-            border: 2px solid rgba(28, 27, 34, 0.11);
-            border-radius: 8px;
-            color: #1c1b22;
-            font-family: inherit;
-            font-size: 0.9em;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #a63d63;
-        }
-
-        .form-group textarea {
+            min-height: 66px;
             resize: vertical;
-            min-height: 60px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #a63d63 0%, #1c1b22 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            width: 100%;
+            padding: 10px 12px;
             font-size: 0.9em;
+            line-height: 1.5;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(166, 61, 99, 0.3);
-        }
-
-        .tasks-list {
-            margin-top: 30px;
-        }
-
-        .tasks-list h3 {
-            color: #1c1b22;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .task-item {
-            background: rgba(246, 243, 252, 0.9);
-            padding: 15px;
-            border-left: 4px solid #a63d63;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .task-item.completed {
-            opacity: 0.6;
-        }
-
-        .task-item.completed .task-title {
-            text-decoration: line-through;
-        }
-
-        .task-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .task-title {
+        /* Chips de categoría y prioridad */
+        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border-radius: 99px;
+            border: 1px solid rgba(28, 27, 34, 0.11);
+            background: #fff;
+            color: #45424f;
+            font-size: 0.85em;
             font-weight: 600;
-            color: #1c1b22;
-            margin-bottom: 3px;
-        }
-
-        .task-category {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            color: white;
-            font-weight: 600;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .task-btn {
-            background: rgba(166, 61, 99, 0.3);
-            border: 1px solid #a63d63;
-            color: #a63d63;
-            padding: 5px 8px;
-            border-radius: 4px;
             cursor: pointer;
-            font-size: 0.8em;
-            transition: all 0.3s;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            user-select: none;
         }
-
-        .task-btn:hover {
-            background: #a63d63;
-            color: white;
+        .chip:hover { border-color: rgba(28, 27, 34, 0.24); }
+        .chip .chip-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .chip.selected {
+            border-color: currentColor;
+            background: color-mix(in srgb, currentColor 9%, #fff);
         }
+        .chip:focus-visible { outline: 2px solid #a63d63; outline-offset: 2px; }
 
+        .composer-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px 26px 22px;
+            margin-top: 6px;
+            border-top: 1px solid rgba(28, 27, 34, 0.07);
+        }
+        .composer-hint { font-size: 0.72em; color: #a49dae; }
+        .composer-hint kbd {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(28, 27, 34, 0.055);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 0.95em;
+        }
+        .composer-actions { display: flex; gap: 8px; }
+        .btn-save, .btn-ghost {
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .btn-save { background: #1c1b22; color: #fff; border: 1px solid #1c1b22; }
+        .btn-save:hover { background: #000; }
+        .btn-save:disabled { opacity: 0.5; cursor: default; }
+        .btn-ghost {
+            background: #fff;
+            color: #45424f;
+            border: 1px solid rgba(28, 27, 34, 0.14);
+        }
+        .btn-ghost:hover { background: #f6f6f9; }
         .no-tasks {
             color: #5b5468;
             text-align: center;
@@ -473,9 +449,8 @@
         }
 
         @media (max-width: 1024px) {
-            .calendar-wrapper {
-                grid-template-columns: 1fr;
-            }
+            .container { padding: 20px 14px 40px; }
+            .day-cell { min-height: 96px; }
         }
 
         @media (max-width: 768px) {
@@ -505,7 +480,7 @@
             right: -440px;
             width: 420px;
             height: 100vh;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+            background: #ffffff;
             border-left: 1px solid rgba(166, 61, 99, 0.25);
             z-index: 310;
             display: flex;
@@ -684,7 +659,7 @@
         .modal-overlay.active { display: flex; }
 
         .modal {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95));
+            background: rgba(255, 255, 255, 0.9);
             border: 1px solid rgba(166, 61, 99, 0.4);
             border-radius: 16px;
             padding: 36px;
@@ -739,7 +714,7 @@
         .toast.error { border-color: rgba(244, 63, 94, 0.5); color: #f43f5e; }
         .toast.success { border-color: rgba(16, 185, 129, 0.5); color: #0b8a5e; }
     </style>
-    <link rel="stylesheet" href="css/theme.css?v=1">
+    <link rel="stylesheet" href="css/theme.css?v=3">
 </head>
 <body>
     <header>
@@ -781,71 +756,58 @@
                 </div>
             </div>
 
-            <!-- Right Panel (sticky, tabbed) -->
-            <div class="right-panel">
-                <div class="tab-bar">
-                    <button class="tab-btn active" id="tabBtnTasks" onclick="showTab('tasks')">📅 Tareas del día</button>
-                    <button class="tab-btn" id="tabBtnForm" onclick="showTab('form')">+ Nueva tarea</button>
-                </div>
+        </div>
+    </div>
 
-                <!-- Tab: Tareas del día -->
-                <div class="tab-pane active" id="tabPaneTasks">
-                    <h3 id="selectedDateTitle">Tareas del día</h3>
-                    <div id="tasksList" class="tasks-list">
-                        <div class="no-tasks">Selecciona un día para ver sus tareas</div>
+
+    <!-- Composer: detalles de la tarea -->
+    <div class="composer-overlay" id="composerOverlay">
+        <form class="composer" id="composerForm">
+            <div class="composer-head">
+                <input type="text" class="composer-title-input" id="cTitle" placeholder="Nombre de la tarea" required>
+                <div class="composer-when" id="cWhen"></div>
+            </div>
+
+            <div class="composer-body">
+                <div>
+                    <label class="field-label">Horario</label>
+                    <div class="time-row">
+                        <input type="time" id="cStart" placeholder="Desde">
+                        <span class="sep">→</span>
+                        <input type="time" id="cEnd" placeholder="Hasta">
                     </div>
                 </div>
 
-                <!-- Tab: Nueva tarea -->
-                <div class="tab-pane" id="tabPaneForm">
-                    <h3>Nueva Tarea</h3>
-                    <form id="taskForm">
-                        <div class="form-group">
-                            <label>Título *</label>
-                            <input type="text" id="taskTitle" required placeholder="Ingresa una tarea">
-                        </div>
-                        <div class="form-group">
-                            <label>Descripción</label>
-                            <textarea id="taskDescription" placeholder="Detalles..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Fecha *</label>
-                            <input type="date" id="taskDate" required>
-                        </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                            <div class="form-group">
-                                <label>Hora inicio</label>
-                                <input type="time" id="taskStartTime">
-                            </div>
-                            <div class="form-group">
-                                <label>Hora fin</label>
-                                <input type="time" id="taskEndTime">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Categoría *</label>
-                            <select id="taskCategory" required>
-                                <option value="">Cargando categorías...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Prioridad</label>
-                            <select id="taskPriority">
-                                <option value="MEDIUM">Normal</option>
-                                <option value="LOW">Baja</option>
-                                <option value="HIGH">Alta</option>
-                            </select>
-                        </div>
-                        <label class="share-label" id="shareField" style="display:none">
-                            <input type="checkbox" id="taskShared">
-                            <span class="share-box">✓</span>
-                            <span>💕 Tarea compartida con <strong id="partnerNameLabel">…</strong></span>
-                        </label>
-                        <button type="submit" class="btn">Agregar Tarea</button>
-                    </form>
+                <div>
+                    <label class="field-label" for="cDesc">Descripción</label>
+                    <textarea id="cDesc" placeholder="Detalles, links, lo que sea…"></textarea>
+                </div>
+
+                <div>
+                    <label class="field-label">Categoría</label>
+                    <div class="chip-row" id="cCategories"></div>
+                </div>
+
+                <div>
+                    <label class="field-label">Prioridad</label>
+                    <div class="chip-row" id="cPriorities"></div>
+                </div>
+
+                <label class="share-label" id="cShareField" style="display:none">
+                    <input type="checkbox" id="cShared">
+                    <span class="share-box">✓</span>
+                    <span>💕 Tarea compartida con <strong id="cPartnerName">…</strong></span>
+                </label>
+            </div>
+
+            <div class="composer-foot">
+                <span class="composer-hint"><kbd>Enter</kbd> guarda · <kbd>Esc</kbd> cancela</span>
+                <div class="composer-actions">
+                    <button type="button" class="btn-ghost" onclick="closeComposer()">Cancelar</button>
+                    <button type="submit" class="btn-save" id="cSubmit">Guardar</button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Delete Modal -->
@@ -880,7 +842,8 @@
         </div>
     </div>
 
-    <script src="js/api.js?v=3"></script>
+    <script src="js/catalog.js?v=2"></script>
+    <script src="js/api.js?v=4"></script>
     <script>
         /* ── Hamburger ── */
         const hamburger      = document.getElementById('hamburger');
@@ -904,13 +867,6 @@
             window.location.href = 'login.html';
         }
 
-        /* ── Tabs ── */
-        function showTab(name) {
-            document.getElementById('tabPaneTasks').classList.toggle('active', name === 'tasks');
-            document.getElementById('tabPaneForm').classList.toggle('active', name === 'form');
-            document.getElementById('tabBtnTasks').classList.toggle('active', name === 'tasks');
-            document.getElementById('tabBtnForm').classList.toggle('active', name === 'form');
-        }
 
         // State
         let currentDate = new Date();
@@ -926,27 +882,23 @@
                 return;
             }
 
-            // Set today's date as default
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('taskDate').value = today;
-
             // Load categories
             await loadCategories();
+            renderPriorityChips();
 
             // Load tasks
             await loadTasks();
 
             // Render calendar
             renderCalendar();
-            renderTasksForSelectedDate();
 
             // Load partner
             const users = await getUsers();
             const partner = users.find(u => u.id !== currentUserId && u.role !== 'admin');
             if (partner) {
                 partnerId = partner.id;
-                document.getElementById('partnerNameLabel').textContent = partner.nombre;
-                document.getElementById('shareField').style.display = '';
+                document.getElementById('cPartnerName').textContent = partner.nombre;
+                document.getElementById('cShareField').style.display = '';
             }
 
             // Update user info
@@ -957,12 +909,7 @@
 
         async function loadCategories() {
             categories = await getCategories();
-            const categorySelect = document.getElementById('taskCategory');
-            if (categories.length > 0) {
-                categorySelect.innerHTML = categories.map(cat =>
-                    `<option value="${cat.id}">${cat.name}</option>`
-                ).join('');
-            }
+            renderCategoryChips();
         }
 
         async function loadTasks() {
@@ -1051,17 +998,13 @@
                     cell.classList.add('selected');
                 }
 
-                // Event pills
+                // Píldoras de eventos
                 const dayTasks = allTasks.filter(t => t.startDate === dayStr);
-                const MAX_PILLS = 3;
+                const isSelected = cell.classList.contains('selected');
+                const MAX_PILLS = isSelected ? 3 : 4;
+
                 dayTasks.slice(0, MAX_PILLS).forEach(task => {
-                    const pill = document.createElement('div');
-                    pill.className = 'event-pill';
-                    pill.style.backgroundColor = task.category?.color || '#a63d63';
-                    const time = task.startTime ? task.startTime.substring(0,5) + ' ' : '';
-                    pill.textContent = time + task.title;
-                    pill.title = task.title;
-                    cell.appendChild(pill);
+                    cell.appendChild(buildPill(task));
                 });
                 if (dayTasks.length > MAX_PILLS) {
                     const more = document.createElement('div');
@@ -1070,70 +1013,102 @@
                     cell.appendChild(more);
                 }
 
-                // Click handler
-                cell.addEventListener('click', () => {
-                    selectedDate = date;
-                    renderCalendar();
-                    renderTasksForSelectedDate();
+                // Entrada rápida en el día seleccionado
+                if (isSelected) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'quick-add';
+                    input.id = 'quickAdd';
+                    input.placeholder = '+ Tarea…';
+                    input.autocomplete = 'off';
+                    input.value = quickAddDraft;
+                    input.addEventListener('click', e => e.stopPropagation());
+                    input.addEventListener('input', () => { quickAddDraft = input.value; });
+                    input.addEventListener('keydown', e => {
+                        if (isEnter(e)) {
+                            e.preventDefault();
+                            const title = input.value.trim();
+                            if (!title) return;
+                            quickAddDraft = '';
+                            input.value = '';
+                            openComposer(title, dayStr);
+                        } else if (e.key === 'Escape') {
+                            input.blur();
+                        }
+                    });
+                    cell.appendChild(input);
+                }
 
-                    const onForm = document.getElementById('tabPaneForm').classList.contains('active');
-                    if (onForm) {
-                        // Stay on form, just update the date field
-                        document.getElementById('taskDate').value = dayStr;
-                    } else {
-                        showTab('tasks');
+                // Seleccionar el día y dejar el cursor listo para escribir
+                cell.addEventListener('click', () => {
+                    if (dayStr === selectedDate.toISOString().split('T')[0]) {
+                        focusQuickAdd();
+                        return;
                     }
+                    selectedDate = date;
+                    quickAddDraft = '';
+                    renderCalendar();
+                    focusQuickAdd();
                 });
             }
 
             return cell;
         }
 
-        function renderTasksForSelectedDate() {
-            const selectedStr = selectedDate.toISOString().split('T')[0];
-            const dayTasks = allTasks.filter(t => t.startDate === selectedStr);
+        /* Una píldora = color de categoría + ícono + barra de prioridad */
+        function buildPill(task) {
+            const cat  = catStyle(task.category);
+            const prio = prioStyle(task.priority);
 
-            const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-                'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-            const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+            const pill = document.createElement('div');
+            pill.className = 'event-pill' + (task.completed ? ' done' : '');
+            pill.style.backgroundColor = cat.color + '1f';
+            pill.style.color = cat.color;
+            pill.style.borderLeftWidth = prio.bar + 'px';
+            pill.style.borderLeftColor = cat.color;
+            pill.style.fontWeight = prio.weight;
+            pill.style.opacity = prio.opacity;
 
-            const dateStr = `${dayNames[selectedDate.getDay()]} ${selectedDate.getDate()} de ${monthNames[selectedDate.getMonth()]}`;
-            document.getElementById('selectedDateTitle').textContent = `Tareas del ${dateStr}`;
+            const time = task.startTime
+                ? `<span class="pill-time">${task.startTime.substring(0, 5)}</span> `
+                : '';
+            pill.innerHTML =
+                `<span class="pill-icon">${cat.icon}</span>` +
+                `<span class="pill-text">${time}${escapeHtml(task.title)}</span>` +
+                (prio.mark ? `<span class="pill-mark">${prio.mark}</span>` : '') +
+                (task.sharedWith?.length ? `<span class="pill-mark">💕</span>` : '');
+            pill.title = task.title;
+            pill.addEventListener('click', e => { e.stopPropagation(); openDetail(task.id); });
+            return pill;
+        }
 
-            const tasksList = document.getElementById('tasksList');
-            if (dayTasks.length === 0) {
-                tasksList.innerHTML = '<div class="no-tasks">No hay tareas para este día</div>';
-                return;
-            }
+        /* Algunos navegadores/entornos mandan e.key vacío: chequeamos también el código */
+        function isEnter(e) {
+            return e.key === 'Enter' || e.keyCode === 13 || e.which === 13;
+        }
 
-            tasksList.innerHTML = dayTasks.map((task, idx) => `
-                <div class="task-item ${task.completed ? 'completed' : ''}">
-                    <div class="task-content" onclick="openDetail(${task.id})">
-                        <div class="task-title">${task.title}</div>
-                        ${task.startTime ? `<small style="color: #8c8499;">${task.startTime}${task.endTime ? ` - ${task.endTime}` : ''}</small><br>` : ''}
-                        <span class="task-category" style="background-color: ${task.category?.color || '#8c8499'}">${task.category?.name || 'Sin categoría'}</span>
-                        ${task.sharedWith?.length ? '<span style="font-size:0.82em">💕</span>' : ''}
-                    </div>
-                    <div class="task-actions">
-                        <button class="task-btn" onclick="toggleTask(${task.id})">✓</button>
-                        <button class="task-btn" onclick="askDelete(${task.id})">✕</button>
-                    </div>
-                </div>
-            `).join('');
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c =>
+                ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+        }
+
+        function focusQuickAdd() {
+            requestAnimationFrame(() => {
+                const el = document.getElementById('quickAdd');
+                if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+            });
         }
 
         async function toggleTask(taskId) {
             const task = allTasks.find(t => t.id === taskId);
             if (!task) return;
             task.completed = !task.completed;
-            renderTasksForSelectedDate(); // optimistic update
             renderCalendar();
             const updated = await updateTask(taskId, task);
             if (updated) {
                 showToast(task.completed ? '¡Tarea completada! ✓' : 'Tarea desmarcada', 'success');
             } else {
                 task.completed = !task.completed; // rollback
-                renderTasksForSelectedDate();
                 renderCalendar();
                 showToast('No se pudo actualizar la tarea', 'error');
             }
@@ -1163,7 +1138,6 @@
             if (deleted) {
                 allTasks = allTasks.filter(t => t.id !== pendingDeleteId);
                 renderCalendar();
-                renderTasksForSelectedDate();
             }
             closeModal();
         }
@@ -1177,34 +1151,132 @@
             if (e.target === document.getElementById('deleteModal')) closeModal();
         });
 
-        // Form submission
-        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+        /* ── Composer: chips, apertura, guardado ── */
+        let composerDate  = null;
+        let composerCatId = null;
+        let composerPrio  = 'MEDIUM';
+        let quickAddDraft = '';
+
+        function renderCategoryChips() {
+            const row = document.getElementById('cCategories');
+            row.innerHTML = categories.map(cat => {
+                const st = catStyle(cat);
+                return `<button type="button" class="chip" data-cat="${cat.id}" style="color:${st.color}">
+                            <span class="chip-dot" style="background:${st.color}"></span><span>${st.icon}</span><span>${cat.name}</span>
+                        </button>`;
+            }).join('');
+            row.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', () => selectCategory(Number(chip.dataset.cat)));
+            });
+        }
+
+        function selectCategory(id) {
+            composerCatId = id;
+            if (id) localStorage.setItem('wtdLastCategory', id);
+            document.querySelectorAll('#cCategories .chip').forEach(c =>
+                c.classList.toggle('selected', Number(c.dataset.cat) === id));
+        }
+
+        function renderPriorityChips() {
+            const row = document.getElementById('cPriorities');
+            row.innerHTML = PRIORITY_ORDER.map(key => {
+                const st = PRIORITY_STYLE[key];
+                return `<button type="button" class="chip" data-prio="${key}" style="color:${st.color}">
+                            <span class="chip-dot" style="background:${st.color}"></span><span>${st.label}${st.mark ? ' ' + st.mark : ''}</span>
+                        </button>`;
+            }).join('');
+            row.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', () => selectPriority(chip.dataset.prio));
+            });
+        }
+
+        function selectPriority(key) {
+            composerPrio = key;
+            localStorage.setItem('wtdLastPriority', key);
+            document.querySelectorAll('#cPriorities .chip').forEach(c =>
+                c.classList.toggle('selected', c.dataset.prio === key));
+        }
+
+        function openComposer(title, dayStr) {
+            composerDate = dayStr;
+            const d = new Date(dayStr + 'T12:00:00');
+            const days   = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+            const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+            document.getElementById('cTitle').value = title;
+            document.getElementById('cWhen').textContent =
+                `${days[d.getDay()]} ${d.getDate()} de ${months[d.getMonth()]} de ${d.getFullYear()}`;
+            document.getElementById('cStart').value = '';
+            document.getElementById('cEnd').value   = '';
+            document.getElementById('cDesc').value  = '';
+            document.getElementById('cShared').checked = false;
+
+            // Arranca con lo último que usaste: menos clicks en el caso común
+            const lastCat = Number(localStorage.getItem('wtdLastCategory'));
+            const known   = categories.some(c => c.id === lastCat);
+            selectCategory(known ? lastCat : (categories[0]?.id ?? null));
+            selectPriority(PRIORITY_STYLE[localStorage.getItem('wtdLastPriority')] ? localStorage.getItem('wtdLastPriority') : 'MEDIUM');
+
+            document.getElementById('composerOverlay').classList.add('active');
+            requestAnimationFrame(() => document.getElementById('cStart').focus());
+        }
+
+        function closeComposer() {
+            document.getElementById('composerOverlay').classList.remove('active');
+            composerDate = null;
+            focusQuickAdd();
+        }
+
+        document.getElementById('composerOverlay').addEventListener('click', e => {
+            if (e.target.id === 'composerOverlay') closeComposer();
+        });
+
+        /* Enter guarda desde cualquier campo salvo la descripción
+           (ahí Enter hace salto de línea y Cmd/Ctrl+Enter guarda). */
+        document.getElementById('composerForm').addEventListener('keydown', e => {
+            if (!isEnter(e)) return;
+            const inTextarea = e.target.tagName === 'TEXTAREA';
+            if (inTextarea && !(e.metaKey || e.ctrlKey)) return;
             e.preventDefault();
+            document.getElementById('composerForm').requestSubmit();
+        });
+
+        document.getElementById('composerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('cTitle').value.trim();
+            if (!title || !composerDate) return;
+
+            const btn = document.getElementById('cSubmit');
+            btn.disabled = true;
 
             const newTask = {
-                title: document.getElementById('taskTitle').value,
-                description: document.getElementById('taskDescription').value,
-                startDate: document.getElementById('taskDate').value,
-                startTime: document.getElementById('taskStartTime').value || null,
-                endTime: document.getElementById('taskEndTime').value || null,
-                category: { id: document.getElementById('taskCategory').value },
-                priority: document.getElementById('taskPriority').value,
+                title,
+                description: document.getElementById('cDesc').value || null,
+                startDate: composerDate,
+                startTime: document.getElementById('cStart').value || null,
+                endTime:   document.getElementById('cEnd').value   || null,
+                category:  composerCatId ? { id: composerCatId } : null,
+                priority:  composerPrio,
                 completed: false,
                 createdBy: { id: currentUserId }
             };
 
             const created = await createTask(newTask);
-            if (created) {
-                if (document.getElementById('taskShared').checked && partnerId) {
-                    await shareTask(created.id, partnerId);
-                    created.sharedWith = [{ id: partnerId }];
-                }
-                allTasks.push(created);
-                document.getElementById('taskForm').reset();
-                document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
-                renderCalendar();
-                renderTasksForSelectedDate();
+            btn.disabled = false;
+
+            if (!created) {
+                showToast('No se pudo crear la tarea', 'error');
+                return;
             }
+            if (document.getElementById('cShared').checked && partnerId) {
+                await shareTask(created.id, partnerId);
+                created.sharedWith = [{ id: partnerId }];
+            }
+            allTasks.push(created);
+            closeComposer();
+            renderCalendar();
+            focusQuickAdd();
+            showToast('Tarea agregada ✓', 'success');
         });
 
         // Navigation
@@ -1221,7 +1293,7 @@
         document.getElementById('todayBtn').addEventListener('click', () => {
             currentDate = new Date();
             selectedDate = new Date();
-            loadTasks().then(() => { renderCalendar(); renderTasksForSelectedDate(); });
+            loadTasks().then(() => renderCalendar());
         });
 
         function showToast(msg, type = 'info') {
@@ -1307,6 +1379,53 @@
             closeDetail();
             askDelete(id);
         }
+
+        /* ── Atajos de teclado globales ── */
+        document.addEventListener('keydown', e => {
+            const composerOpen = document.getElementById('composerOverlay').classList.contains('active');
+            const detailOpen   = document.getElementById('detailPanel').classList.contains('active');
+            const modalOpen    = document.getElementById('deleteModal').classList.contains('active');
+
+            if (e.key === 'Escape') {
+                if (modalOpen)         { closeModal();    return; }
+                if (composerOpen)      { closeComposer(); return; }
+                if (detailOpen)        { closeDetail();   return; }
+                document.activeElement?.blur();
+                return;
+            }
+            if (composerOpen || modalOpen) return;
+
+            const typing = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
+
+            // Enter en cualquier lado: cursor listo para escribir en el día elegido
+            if (isEnter(e) && !typing) {
+                e.preventDefault();
+                focusQuickAdd();
+                return;
+            }
+
+            // Flechas: moverse por los días (también con el cursor en la entrada vacía)
+            const inEmptyQuickAdd = document.activeElement?.id === 'quickAdd'
+                                    && !document.activeElement.value;
+            if (typing && !inEmptyQuickAdd) return;
+
+            const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+            if (step === undefined) return;
+            e.preventDefault();
+
+            const next = new Date(selectedDate);
+            next.setDate(next.getDate() + step);
+            selectedDate = next;
+            quickAddDraft = '';
+
+            if (next.getMonth() !== currentDate.getMonth() || next.getFullYear() !== currentDate.getFullYear()) {
+                currentDate = new Date(next);
+                loadTasks().then(() => { renderCalendar(); focusQuickAdd(); });
+            } else {
+                renderCalendar();
+                focusQuickAdd();
+            }
+        });
 
         // Start
         init();
