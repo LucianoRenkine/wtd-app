@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "wtd-frontend", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "4321", "--directory", "frontend"], "port": 4321 }
+  ]
+}

@@ -13,8 +13,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0D0A10 0%, #1A1220 100%);
-            color: #d0d0d0;
+            background: linear-gradient(135deg, #fbfbfd 0%, #f3f3f6 100%);
+            color: #1c1b22;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,14 +23,14 @@
         }
 
         .login-container {
-            background: linear-gradient(135deg, rgba(20, 14, 26, 0.9) 0%, rgba(10, 8, 16, 0.9) 100%);
-            border: 2px solid rgba(139, 84, 116, 0.4);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.95) 100%);
+            border: 2px solid rgba(166, 61, 99, 0.4);
             border-radius: 15px;
             padding: 50px;
             max-width: 500px;
             width: 100%;
             backdrop-filter: blur(10px);
-            box-shadow: 0 20px 60px rgba(139, 84, 116, 0.2);
+            box-shadow: 0 20px 60px rgba(28, 27, 34, 0.11);
             animation: slideUp 0.8s ease;
         }
 
@@ -53,13 +53,13 @@
         .logo {
             font-size: 2.5em;
             font-weight: 800;
-            color: #8B5474;
+            color: #a63d63;
             margin-bottom: 10px;
             letter-spacing: 2px;
         }
 
         .login-subtitle {
-            color: #999;
+            color: #8c8499;
             font-size: 1em;
         }
 
@@ -70,7 +70,7 @@
         .form-group label {
             display: block;
             margin-bottom: 10px;
-            color: #8B5474;
+            color: #a63d63;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -78,10 +78,10 @@
         .form-group select {
             width: 100%;
             padding: 12px;
-            background: rgba(5, 2, 10, 0.4);
-            border: 2px solid rgba(139, 84, 116, 0.2);
+            background: rgba(246, 243, 252, 0.9);
+            border: 2px solid rgba(28, 27, 34, 0.11);
             border-radius: 8px;
-            color: #d0d0d0;
+            color: #1c1b22;
             font-family: inherit;
             font-size: 1em;
             transition: border-color 0.3s;
@@ -90,16 +90,16 @@
 
         .form-group select:focus {
             outline: none;
-            border-color: #8B5474;
+            border-color: #a63d63;
         }
 
         .form-group select option {
-            background: #1A1220;
-            color: #d0d0d0;
+            background: #f3f3f6;
+            color: #1c1b22;
         }
 
         .login-btn {
-            background: linear-gradient(135deg, #8B5474 0%, #C4849E 100%);
+            background: linear-gradient(135deg, #a63d63 0%, #1c1b22 100%);
             color: white;
             border: none;
             padding: 14px 30px;
@@ -113,7 +113,7 @@
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(139, 84, 116, 0.4);
+            box-shadow: 0 10px 25px rgba(166, 61, 99, 0.4);
         }
 
         .login-btn:active {
@@ -128,13 +128,13 @@
 
         .loading {
             text-align: center;
-            color: #999;
+            color: #8c8499;
         }
 
         .error {
-            background: rgba(139, 84, 116, 0.2);
-            border: 2px solid #8B5474;
-            color: #C4849E;
+            background: rgba(28, 27, 34, 0.11);
+            border: 2px solid #a63d63;
+            color: #1c1b22;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -147,7 +147,7 @@
         }
 
         .back-link a {
-            color: #8B5474;
+            color: #a63d63;
             text-decoration: none;
             transition: all 0.3s;
         }
@@ -156,6 +156,7 @@
             text-decoration: underline;
         }
     </style>
+    <link rel="stylesheet" href="css/theme.css?v=1">
 </head>
 <body>
     <div class="login-container">
