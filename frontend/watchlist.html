@@ -311,6 +311,20 @@
 
         .empty-state { text-align: center; padding: 30px; color: #b8b2c4; font-style: italic; font-size: 0.88em; }
 
+        .wip-panel {
+            max-width: 420px;
+            margin: 40px auto 0;
+            padding: 48px 36px;
+            text-align: center;
+            background: #fff;
+            border: 1px solid rgba(28, 27, 34, 0.09);
+            border-radius: 16px;
+            color: #45424f;
+        }
+        .wip-panel svg { color: #a63d63; margin-bottom: 18px; }
+        .wip-panel h2 { font-size: 1.15em; font-weight: 700; color: #1c1b22; margin-bottom: 10px; }
+        .wip-panel p { font-size: 0.9em; line-height: 1.6; color: #7a7389; }
+
         /* Delete modal */
         .modal-overlay {
             position: fixed;
@@ -375,37 +389,15 @@
             <p class="page-subtitle">Todo lo que queremos ver, juntos.</p>
         </div>
 
-        <div class="columns">
-            <div class="section">
-                <div class="section-title">
-                    Series
-                    <button class="add-btn" onclick="toggleAddRow('SERIES')">+</button>
-                </div>
-                <div class="add-row" id="addRowSERIES">
-                    <input type="text" id="addInputSERIES" placeholder="Título de la serie…" onkeydown="if(event.key==='Enter') addItem('SERIES')">
-                    <div class="add-row-extra">
-                        <input type="number" id="addSeasonSERIES" placeholder="Temporada" min="1">
-                        <input type="date" id="addDateSERIES" title="Fecha de estreno (opcional)">
-                        <button onclick="addItem('SERIES')">Agregar</button>
-                    </div>
-                </div>
-                <div id="listSERIES"><div class="empty-state">Cargando…</div></div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">
-                    Películas
-                    <button class="add-btn" onclick="toggleAddRow('MOVIE')">+</button>
-                </div>
-                <div class="add-row" id="addRowMOVIE">
-                    <input type="text" id="addInputMOVIE" placeholder="Título de la película…" onkeydown="if(event.key==='Enter') addItem('MOVIE')">
-                    <div class="add-row-extra">
-                        <input type="date" id="addDateMOVIE" title="Fecha de estreno (opcional)">
-                        <button onclick="addItem('MOVIE')">Agregar</button>
-                    </div>
-                </div>
-                <div id="listMOVIE"><div class="empty-state">Cargando…</div></div>
-            </div>
+        <div class="wip-panel">
+            <svg viewBox="0 0 48 48" width="40" height="40" fill="none" aria-hidden="true">
+                <rect x="7" y="14" width="34" height="27" rx="4" stroke="currentColor" stroke-width="2"/>
+                <path d="M7 21h34" stroke="currentColor" stroke-width="2"/>
+                <path d="M16 8v10M32 8v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M17 29l4.5 4.5L31 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/>
+            </svg>
+            <h2>Todavía en desarrollo</h2>
+            <p>La estamos puliendo para que quede tan cómoda como el resto de la app. Vuelvo pronto por acá.</p>
         </div>
     </div>
 
@@ -455,8 +447,7 @@
                 window.location.href = 'login.html';
                 return;
             }
-            items = await getWatchlist();
-            render();
+            // Página en desarrollo: por ahora no hace falta traer nada.
         }
 
         function render() {
