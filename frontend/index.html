@@ -769,7 +769,7 @@
             <ul>
                 <li><a href="#" class="active">Home</a></li>
                 <li><a href="calendar.html">Calendario</a></li>
-                <li><a href="proximas.html">Próximas Tareas</a></li>
+                <li><a href="proximas.html">Tareas</a></li>
                 <li><a href="watchlist.html">Watchlist</a></li>
                 <hr class="sidebar-divider">
                 <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
@@ -1075,7 +1075,8 @@
 
             const tasks = await getTasksByDateRange(from, to);
             upcomingTasks = tasks
-                .filter(t => !t.completed)
+                // Prioridad Nula es calendario-only: no aparece acá.
+                .filter(t => !t.completed && t.priority !== 'NONE')
                 .sort((a, b) => (a.startDate || '').localeCompare(b.startDate || '')
                              || (a.startTime || '99').localeCompare(b.startTime || '99'))
                 .slice(0, 8);

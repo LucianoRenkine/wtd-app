@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Próximas Tareas - WTD</title>
+    <title>Tareas - WTD</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -112,6 +112,7 @@
             background: #a63d63;
             border: none;
             color: white;
+            text-decoration: none;
             padding: 8px 18px;
             border-radius: 20px;
             font-size: 0.85em;
@@ -127,191 +128,6 @@
         .new-task-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(166, 61, 99, 0.4);
-        }
-
-        /* ── Drawer ── */
-        .drawer-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(46, 32, 60, 0.5);
-            z-index: 60;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .drawer-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .drawer {
-            position: fixed;
-            top: 0;
-            right: -440px;
-            width: 420px;
-            height: 100vh;
-            background: #ffffff;
-            border-left: 1px solid rgba(166, 61, 99, 0.25);
-            z-index: 70;
-            display: flex;
-            flex-direction: column;
-            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto;
-        }
-
-        .drawer.active { right: 0; }
-
-        .drawer-header {
-            padding: 22px 28px 18px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(8px);
-        }
-
-        .drawer-title {
-            font-size: 1em;
-            font-weight: 700;
-            color: #1c1b22;
-            letter-spacing: 0.5px;
-        }
-
-        .drawer-close {
-            background: none;
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            color: #7a7389;
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .drawer-close:hover {
-            background: rgba(28, 27, 34, 0.083);
-            color: #1c1b22;
-            border-color: #a63d63;
-        }
-
-        .drawer-body {
-            padding: 28px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .field label {
-            font-size: 0.72em;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #a63d63;
-        }
-
-        .field input,
-        .field textarea,
-        .field select {
-            background: rgba(246, 243, 252, 0.9);
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            border-radius: 10px;
-            color: #1c1b22;
-            font-family: inherit;
-            font-size: 0.92em;
-            padding: 11px 14px;
-            transition: border-color 0.2s;
-            width: 100%;
-        }
-
-        .field input:focus,
-        .field textarea:focus,
-        .field select:focus {
-            outline: none;
-            border-color: #a63d63;
-            background: rgba(28, 27, 34, 0.033);
-        }
-
-        .field textarea {
-            resize: vertical;
-            min-height: 70px;
-        }
-
-        .field select option {
-            background: #f3f3f6;
-        }
-
-        .field-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .drawer-footer {
-            padding: 20px 28px;
-            border-top: 1px solid rgba(28, 27, 34, 0.066);
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-submit {
-            flex: 1;
-            background: #a63d63;
-            border: none;
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.9em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(166, 61, 99, 0.4);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-cancel {
-            background: none;
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            color: #857d95;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-cancel:hover {
-            background: rgba(28, 27, 34, 0.044);
-            color: #1c1b22;
-        }
-
-        .field-error {
-            font-size: 0.75em;
-            color: #1c1b22;
-            display: none;
         }
 
         /* Toast */
@@ -341,10 +157,6 @@
         .toast.error { border-color: rgba(244, 63, 94, 0.5); color: #f43f5e; }
         .toast.success { border-color: rgba(16, 185, 129, 0.5); color: #0b8a5e; }
 
-        @media (max-width: 500px) {
-            .drawer { width: 100%; right: -100%; }
-        }
-
         /* ── Layout ── */
         .container {
             max-width: 860px;
@@ -356,6 +168,98 @@
         .page-header {
             margin-bottom: 32px;
         }
+
+        /* ── Estado (Pendientes/Todas) + Seleccionar ── */
+        .toolbar-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .status-toggle {
+            display: flex;
+            background: rgba(28, 27, 34, 0.045);
+            border-radius: 9px;
+            padding: 3px;
+        }
+        .status-btn {
+            border: none;
+            background: none;
+            padding: 7px 16px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #837e90;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+        .status-btn.active { background: #fff; color: #1c1b22; box-shadow: 0 1px 2px rgba(28,27,34,.1); }
+        .select-mode-btn {
+            background: none;
+            border: 1px solid rgba(28, 27, 34, 0.11);
+            color: #45424f;
+            padding: 7px 16px;
+            border-radius: 9px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .select-mode-btn:hover { background: rgba(28, 27, 34, 0.055); }
+        .select-mode-btn.active { background: #1c1b22; color: #fff; border-color: #1c1b22; }
+
+        /* ── Selección múltiple ── */
+        .task-select-box {
+            display: none;
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+            cursor: pointer;
+            accent-color: #a63d63;
+        }
+        #timeline.selecting .task-select-box,
+        .completed-list.selecting .task-select-box { display: block; }
+        #timeline.selecting .task-actions,
+        .completed-list.selecting .task-actions { display: none; }
+        .task-card.selected { background: rgba(166, 61, 99, 0.07); border-color: rgba(166, 61, 99, 0.35); }
+
+        .bulk-bar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #1c1b22;
+            color: #fff;
+            padding: 12px 14px 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 12px 32px rgba(28, 27, 34, 0.28);
+            z-index: 210;
+        }
+        .bulk-count { font-size: 0.85em; font-weight: 600; white-space: nowrap; }
+        .bulk-actions { display: flex; gap: 8px; }
+        .bulk-btn {
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.82em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-family: inherit;
+        }
+        .bulk-btn.complete { background: rgba(16, 185, 129, 0.22); color: #34d399; }
+        .bulk-btn.complete:hover { background: rgba(16, 185, 129, 0.32); }
+        .bulk-btn.delete { background: rgba(225, 29, 72, 0.22); color: #fb7185; }
+        .bulk-btn.delete:hover { background: rgba(225, 29, 72, 0.32); }
+        .bulk-btn.cancel { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .bulk-btn.cancel:hover { background: rgba(255, 255, 255, 0.18); }
+        .bulk-btn:disabled { opacity: 0.35; cursor: default; }
+
+        .group-label.past { color: #a49dae; }
 
         .page-title {
             font-size: 2em;
@@ -854,6 +758,18 @@
             text-align: center;
             padding: 24px;
         }
+        .detail-link-row {
+            display: block;
+            margin-top: 14px;
+            padding: 10px 14px;
+            border: 1px solid rgba(28, 27, 34, 0.11);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #a63d63;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .detail-link-row:hover { background: rgba(166, 61, 99, 0.06); border-color: rgba(166, 61, 99, 0.3); }
         .detail-actions {
             display: flex;
             gap: 10px;
@@ -939,7 +855,7 @@
     <header>
         <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
         <a href="index.html" class="logo">WTD</a>
-        <button class="new-task-btn" onclick="openDrawer()">+ Nueva tarea</button>
+        <a class="new-task-btn" href="calendar.html?new=1">+ Nueva tarea</a>
     </header>
 
     <div class="sidebar" id="sidebar">
@@ -947,7 +863,7 @@
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="calendar.html">Calendario</a></li>
-                <li><a href="proximas.html" class="active">Próximas Tareas</a></li>
+                <li><a href="proximas.html" class="active">Tareas</a></li>
                 <li><a href="watchlist.html">Watchlist</a></li>
                 <hr class="sidebar-divider">
                 <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
@@ -959,8 +875,17 @@
     <div class="container">
 
         <div class="page-header">
-            <h1 class="page-title">Próximas Tareas</h1>
+            <h1 class="page-title">Tareas</h1>
             <p class="page-subtitle">Todo lo que viene, organizado.</p>
+        </div>
+
+        <!-- Estado + selección múltiple -->
+        <div class="toolbar-row">
+            <div class="status-toggle">
+                <button class="status-btn active" data-status="PENDING" onclick="setStatusFilter('PENDING', this)">Pendientes</button>
+                <button class="status-btn" data-status="ALL" onclick="setStatusFilter('ALL', this)">Todas</button>
+            </div>
+            <button class="select-mode-btn" id="selectModeBtn" onclick="toggleSelectionMode()">Seleccionar</button>
         </div>
 
         <!-- Mini stats -->
@@ -1011,6 +936,16 @@
 
     <div class="toast" id="toast"></div>
 
+    <!-- Barra de acciones en bloque (modo Seleccionar) -->
+    <div class="bulk-bar" id="bulkBar" style="display:none">
+        <span class="bulk-count" id="bulkCount">0 seleccionadas</span>
+        <div class="bulk-actions">
+            <button class="bulk-btn complete" onclick="bulkComplete()">✓ Completar</button>
+            <button class="bulk-btn delete" onclick="bulkDeleteAsk()">✕ Eliminar</button>
+            <button class="bulk-btn cancel" onclick="toggleSelectionMode()">Cancelar</button>
+        </div>
+    </div>
+
     <!-- Detail Panel -->
     <div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
     <div class="detail-panel" id="detailPanel">
@@ -1022,6 +957,7 @@
             <div class="detail-task-title" id="detailTaskTitle"></div>
             <div class="detail-meta-row" id="detailMetaRow"></div>
             <div id="detailDescBlock"></div>
+            <a href="#" id="detailLinkRow" class="detail-link-row" target="_blank" rel="noopener" style="display:none"></a>
         </div>
         <div class="detail-actions">
             <button class="detail-btn complete" id="detailCompleteBtn" onclick="detailToggleDone()">✓ Completar</button>
@@ -1030,77 +966,8 @@
         </div>
     </div>
 
-    <!-- Drawer overlay -->
-    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 
-    <!-- Drawer -->
-    <div class="drawer" id="drawer">
-        <div class="drawer-header">
-            <span class="drawer-title">Nueva Tarea</span>
-            <button class="drawer-close" onclick="closeDrawer()">✕</button>
-        </div>
-
-        <form class="drawer-body" id="drawerForm" onsubmit="submitTask(event)">
-            <div class="field">
-                <label>Título *</label>
-                <input type="text" id="fTitle" placeholder="¿Qué hay que hacer?" required autocomplete="off">
-                <span class="field-error" id="errTitle">El título es obligatorio</span>
-            </div>
-
-            <div class="field">
-                <label>Descripción</label>
-                <textarea id="fDesc" placeholder="Detalles opcionales…"></textarea>
-            </div>
-
-            <div class="field-row">
-                <div class="field">
-                    <label>Fecha *</label>
-                    <input type="date" id="fDate" required>
-                </div>
-                <div class="field">
-                    <label>Categoría *</label>
-                    <select id="fCategory" required>
-                        <option value="">Elegir…</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="field-row">
-                <div class="field">
-                    <label>Hora inicio</label>
-                    <input type="time" id="fStartTime">
-                </div>
-                <div class="field">
-                    <label>Hora fin</label>
-                    <input type="time" id="fEndTime">
-                </div>
-            </div>
-
-            <div class="field">
-                <label>Prioridad</label>
-                <select id="fPriority">
-                    <option value="MEDIUM">Normal</option>
-                    <option value="LOW">Baja</option>
-                    <option value="HIGH">Alta</option>
-                </select>
-            </div>
-
-            <div class="field" id="shareField" style="display:none">
-                <label>Compartir</label>
-                <label class="share-label">
-                    <input type="checkbox" id="fShared">
-                    <span class="share-box">✓</span>
-                    <span>💕 Tarea compartida con <strong id="fPartnerName">…</strong></span>
-                </label>
-            </div>
-        </form>
-
-        <div class="drawer-footer">
-            <button class="btn-cancel" onclick="closeDrawer()">Cancelar</button>
-            <button class="btn-submit" id="submitBtn" onclick="submitTask(event)">Agregar tarea</button>
-        </div>
-    </div>
-
+    <script src="js/catalog.js?v=2"></script>
     <script src="js/api.js?v=5"></script>
     <script>
         /* ── Hamburger ── */
@@ -1129,9 +996,12 @@
         let allTasks      = [];
         let categories    = [];
         let activeFilter  = 'all';
-        let pendingDeleteId = null;
+        let statusFilter  = 'PENDING'; // 'PENDING' | 'ALL'
+        let pendingDeleteId  = null;
+        let pendingBulkIds   = null;   // Set<id> cuando el modal de borrado es en bloque
         let showCompleted = false;
-        let partnerId     = null;
+        let selectionMode = false;
+        let selectedIds   = new Set();
 
         const MONTHS   = ['enero','febrero','marzo','abril','mayo','junio',
                           'julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -1151,14 +1021,6 @@
 
             categories = await getCategories();
             buildFilters();
-
-            const users = await getUsers();
-            const partner = users.find(u => u.id !== currentUserId && u.role !== 'admin');
-            if (partner) {
-                partnerId = partner.id;
-                document.getElementById('fPartnerName').textContent = partner.nombre;
-                document.getElementById('shareField').style.display = '';
-            }
 
             await loadTasks();
             render();
@@ -1189,37 +1051,55 @@
             render();
         }
 
+        function setStatusFilter(status, btn) {
+            statusFilter = status;
+            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            render();
+        }
+
         /* ── Render ── */
         function render() {
             const today    = new Date(); today.setHours(0,0,0,0);
             const tomorrow = new Date(today.getTime() + 86400000);
             const weekEnd  = new Date(today.getTime() + 7 * 86400000);
-
-            /* Stats */
             const todayStr = today.toISOString().split('T')[0];
 
-            /* Filter — excluye hoy y fechas pasadas */
-            const tasks = allTasks.filter(t => {
-                if (t.completed) return false;
-                if (t.startDate <= todayStr) return false;
-                if (activeFilter === 'all') return true;
-                return t.category?.id == activeFilter;
-            });
+            // Prioridad Nula = calendario-only, no se lista acá ni en el home.
+            const visible = allTasks.filter(t => t.priority !== 'NONE');
+
+            /* Stats — siempre sobre pendientes, sea cual sea el filtro activo */
             document.getElementById('statHoy').textContent =
-                allTasks.filter(t => !t.completed && t.startDate === todayStr).length;
+                visible.filter(t => !t.completed && t.startDate === todayStr).length;
             document.getElementById('statSemana').textContent =
-                allTasks.filter(t => !t.completed && new Date(t.startDate) < weekEnd).length;
+                visible.filter(t => !t.completed && new Date(t.startDate) < weekEnd).length;
             document.getElementById('statTotal').textContent =
-                allTasks.filter(t => !t.completed).length;
+                visible.filter(t => !t.completed).length;
             document.getElementById('statCompletadas').textContent =
-                allTasks.filter(t => t.completed).length;
+                visible.filter(t => t.completed).length;
+
+            /* Filtro de estado (Pendientes/Todas) + categoría */
+            const matchesCategory = t => activeFilter === 'all' || t.category?.id == activeFilter;
+            let tasks;
+            if (statusFilter === 'ALL') {
+                tasks = visible.filter(matchesCategory);
+            } else {
+                tasks = visible.filter(t => !t.completed && t.startDate >= todayStr && matchesCategory(t));
+            }
+
+            // Orden cronológico ascendente (fecha, después horario)
+            tasks.sort((a, b) =>
+                (a.startDate + (a.startTime || '99:99')).localeCompare(b.startDate + (b.startTime || '99:99')));
+
+            document.getElementById('timeline').className = 'timeline' + (selectionMode ? ' selecting' : '');
 
             if (!tasks.length) {
                 document.getElementById('timeline').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">✨</div>
-                        <div class="empty-state-text">Sin tareas pendientes — ¡a disfrutar!</div>
+                        <div class="empty-state-text">${statusFilter === 'ALL' ? 'Todavía no hay nada acá' : 'Sin tareas pendientes — ¡a disfrutar!'}</div>
                     </div>`;
+                renderBulkBar();
                 return;
             }
 
@@ -1240,10 +1120,11 @@
                 let groupLabel = `${WEEKDAYS[date.getDay()]} ${date.getDate()} de ${MONTHS[date.getMonth()]}`;
                 let groupTag   = '';
 
-                if (isToday)       groupTag = `<span class="group-label today">Hoy</span>`;
-                else if (isTmrw)   groupTag = `<span class="group-label">Mañana</span>`;
+                if (isToday)             groupTag = `<span class="group-label today">Hoy</span>`;
+                else if (isTmrw)         groupTag = `<span class="group-label">Mañana</span>`;
+                else if (date < today)   groupTag = `<span class="group-label past">Pasado</span>`;
                 else if (date < weekEnd) groupTag = `<span class="group-label">Esta semana</span>`;
-                else               groupTag = `<span class="group-label">Más adelante</span>`;
+                else                     groupTag = `<span class="group-label">Más adelante</span>`;
 
                 const count  = groups[dateStr].length;
                 const cards  = groups[dateStr].map(t => taskCard(t)).join('');
@@ -1259,24 +1140,28 @@
                 </div>`;
             });
 
-            /* Completed section */
-            const completedTasks = allTasks
-                .filter(t => t.completed)
-                .sort((a, b) => (b.startDate || '').localeCompare(a.startDate || ''));
+            /* Completadas: como sección aparte solo tiene sentido en modo
+               Pendientes — en Todas ya van mezcladas, tachadas en su lugar. */
+            if (statusFilter === 'PENDING') {
+                const completedTasks = visible
+                    .filter(t => t.completed && matchesCategory(t))
+                    .sort((a, b) => (b.startDate || '').localeCompare(a.startDate || ''));
 
-            if (completedTasks.length > 0) {
-                html += `
-                <div>
-                    <button class="completed-toggle-btn ${showCompleted ? 'open' : ''}" onclick="toggleCompleted()">
-                        <span class="chevron">▶</span>
-                        Completadas
-                        <span style="color:#a63d63;margin-left:2px">(${completedTasks.length})</span>
-                    </button>
-                    ${showCompleted ? `<div class="completed-list">${completedTasks.map(t => taskCard(t)).join('')}</div>` : ''}
-                </div>`;
+                if (completedTasks.length > 0) {
+                    html += `
+                    <div>
+                        <button class="completed-toggle-btn ${showCompleted ? 'open' : ''}" onclick="toggleCompleted()">
+                            <span class="chevron">▶</span>
+                            Completadas
+                            <span style="color:#a63d63;margin-left:2px">(${completedTasks.length})</span>
+                        </button>
+                        <div class="completed-list ${selectionMode ? 'selecting' : ''}" ${showCompleted ? '' : 'style="display:none"'}>${completedTasks.map(t => taskCard(t)).join('')}</div>
+                    </div>`;
+                }
             }
 
             document.getElementById('timeline').innerHTML = html;
+            renderBulkBar();
         }
 
         function toggleCompleted() {
@@ -1285,21 +1170,24 @@
         }
 
         function taskCard(task) {
-            const color   = task.category?.color || '#a63d63';
-            const catName = task.category?.name  || 'Sin categoría';
-            const time    = task.startTime
-                ? task.startTime.substring(0, 5)
-                : '——';
-            const creator = task.createdBy?.nombre || '';
+            const cat  = catStyle(task.category);
+            const prio = prioStyle(task.priority);
+            const time = task.startTime ? task.startTime.substring(0, 5) : '——';
+            const creator  = task.createdBy?.nombre || '';
+            const selected = selectedIds.has(task.id);
+            const opacityStyle = task.completed ? '' : `opacity:${prio.opacity};`;
 
             return `
-            <div class="task-card" id="tc-${task.id}" onclick="openDetail(${task.id})" style="cursor:pointer">
-                <div class="task-strip" style="background:${color}"></div>
+            <div class="task-card ${task.completed ? 'completed' : ''} ${selected ? 'selected' : ''}"
+                 id="tc-${task.id}" onclick="handleCardClick(${task.id})" style="cursor:pointer;${opacityStyle}">
+                <input type="checkbox" class="task-select-box" ${selected ? 'checked' : ''}
+                       onclick="event.stopPropagation();toggleSelect(${task.id})">
+                <div class="task-strip" style="background:${cat.color};width:${Math.max(prio.bar, 3)}px"></div>
                 <div class="task-time">${time}</div>
                 <div class="task-info">
-                    <div class="task-name">${task.title}</div>
+                    <div class="task-name" style="font-weight:${prio.weight}">${task.title}${prio.mark ? ' ' + prio.mark : ''}</div>
                     <div class="task-meta">
-                        <span class="task-category" style="background:${color}">${catName}</span>
+                        <span class="task-category" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>
                         <span class="task-creator">${creator}</span>
                         ${task.sharedWith?.length ? '<span class="task-shared-badge">💕</span>' : ''}
                     </div>
@@ -1311,6 +1199,66 @@
                     <button class="task-action-btn"      onclick="event.stopPropagation();askDelete(${task.id})"  title="Eliminar">✕</button>
                 </div>
             </div>`;
+        }
+
+        /* ── Selección múltiple ── */
+        function toggleSelectionMode() {
+            selectionMode = !selectionMode;
+            if (!selectionMode) selectedIds.clear();
+            document.getElementById('selectModeBtn').classList.toggle('active', selectionMode);
+            document.getElementById('selectModeBtn').textContent = selectionMode ? 'Cancelar' : 'Seleccionar';
+            render();
+        }
+
+        function toggleSelect(id) {
+            if (selectedIds.has(id)) selectedIds.delete(id);
+            else selectedIds.add(id);
+            render();
+        }
+
+        function handleCardClick(id) {
+            if (selectionMode) { toggleSelect(id); return; }
+            openDetail(id);
+        }
+
+        function renderBulkBar() {
+            const bar = document.getElementById('bulkBar');
+            if (!selectionMode) { bar.style.display = 'none'; return; }
+            bar.style.display = 'flex';
+            const n = selectedIds.size;
+            document.getElementById('bulkCount').textContent = `${n} seleccionada${n !== 1 ? 's' : ''}`;
+            bar.querySelectorAll('.bulk-btn.complete, .bulk-btn.delete').forEach(b => b.disabled = n === 0);
+        }
+
+        async function bulkComplete() {
+            const ids = [...selectedIds];
+            if (!ids.length) return;
+            await Promise.all(ids.map(id => {
+                const task = allTasks.find(t => t.id === id);
+                return task ? updateTask(id, { ...task, completed: true }) : null;
+            }));
+            toast(`${ids.length} tarea${ids.length !== 1 ? 's' : ''} completada${ids.length !== 1 ? 's' : ''} ✓`, 'success');
+            selectedIds.clear();
+            await loadTasks();
+            render();
+        }
+
+        function bulkDeleteAsk() {
+            if (!selectedIds.size) return;
+            pendingBulkIds = new Set(selectedIds);
+            document.getElementById('modalIcon').textContent = '💔';
+            document.getElementById('modalText').textContent =
+                `¿Eliminar ${pendingBulkIds.size} tarea${pendingBulkIds.size !== 1 ? 's' : ''}?`;
+            document.getElementById('modalConfirmBtn').style.background = '';
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function toast(msg, type = 'info') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = `toast ${type} show`;
+            clearTimeout(el._t);
+            el._t = setTimeout(() => el.classList.remove('show'), 3000);
         }
 
         /* ── Actions ── */
@@ -1349,6 +1297,16 @@
         }
 
         async function confirmDelete() {
+            if (pendingBulkIds) {
+                const ids = [...pendingBulkIds];
+                await Promise.all(ids.map(id => deleteTask(id)));
+                allTasks = allTasks.filter(t => !pendingBulkIds.has(t.id));
+                selectedIds.clear();
+                toast(`${ids.length} tarea${ids.length !== 1 ? 's' : ''} eliminada${ids.length !== 1 ? 's' : ''}`, 'success');
+                closeModal();
+                render();
+                return;
+            }
             if (!pendingDeleteId) return;
             await deleteTask(pendingDeleteId);
             allTasks = allTasks.filter(t => t.id !== pendingDeleteId);
@@ -1359,111 +1317,13 @@
         function closeModal() {
             document.getElementById('deleteModal').classList.remove('active');
             pendingDeleteId = null;
+            pendingBulkIds  = null;
         }
 
         document.getElementById('deleteModal').addEventListener('click', e => {
             if (e.target === document.getElementById('deleteModal')) closeModal();
         });
 
-        /* ── Drawer ── */
-        async function openDrawer() {
-            document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
-
-            // Cargar categorías en el momento (no depender de init)
-            const cats = await getCategories();
-            if (cats.length > 0) categories = cats;
-
-            const sel = document.getElementById('fCategory');
-            if (categories.length > 0) {
-                sel.innerHTML = '<option value="">Elegir…</option>' +
-                    categories.map(c =>
-                        `<option value="${c.id}">${c.name}</option>`
-                    ).join('');
-            } else {
-                sel.innerHTML = '<option value="">Sin conexión al servidor</option>';
-                toast('No se pudo conectar con el servidor', 'error');
-            }
-
-            document.getElementById('drawer').classList.add('active');
-            document.getElementById('drawerOverlay').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('fTitle').focus(), 350);
-        }
-
-        function closeDrawer() {
-            document.getElementById('drawer').classList.remove('active');
-            document.getElementById('drawerOverlay').classList.remove('active');
-            document.body.style.overflow = '';
-            document.getElementById('drawerForm').reset();
-        }
-
-        function toast(msg, type = 'info') {
-            const el = document.getElementById('toast');
-            el.textContent = msg;
-            el.className = `toast ${type} show`;
-            clearTimeout(el._t);
-            el._t = setTimeout(() => el.classList.remove('show'), 3000);
-        }
-
-        async function submitTask(e) {
-            e.preventDefault();
-
-            const title    = document.getElementById('fTitle').value.trim();
-            const catVal   = document.getElementById('fCategory').value;
-            const dateVal  = document.getElementById('fDate').value;
-
-            if (!title) {
-                document.getElementById('errTitle').style.display = 'block';
-                document.getElementById('fTitle').focus();
-                return;
-            }
-            document.getElementById('errTitle').style.display = 'none';
-
-            if (!catVal) {
-                toast('Elegí una categoría', 'error');
-                document.getElementById('fCategory').focus();
-                return;
-            }
-
-            if (!dateVal) {
-                toast('Elegí una fecha', 'error');
-                document.getElementById('fDate').focus();
-                return;
-            }
-
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = 'Guardando…';
-
-            const task = {
-                title,
-                description: document.getElementById('fDesc').value.trim() || null,
-                startDate:   dateVal,
-                startTime:   document.getElementById('fStartTime').value || null,
-                endTime:     document.getElementById('fEndTime').value   || null,
-                category:    { id: parseInt(catVal) },
-                priority:    document.getElementById('fPriority').value,
-                completed:   false,
-                createdBy:   { id: currentUserId }
-            };
-
-            const created = await createTask(task);
-
-            btn.disabled = false;
-            btn.textContent = 'Agregar tarea';
-
-            if (created) {
-                if (document.getElementById('fShared').checked && partnerId) {
-                    await shareTask(created.id, partnerId);
-                }
-                toast('Tarea agregada ✓', 'success');
-                closeDrawer();
-                await loadTasks();
-                render();
-            } else {
-                toast('No se pudo guardar. ¿Está el backend corriendo?', 'error');
-            }
-        }
 
         /* ── Detail Panel ── */
         let detailTaskId = null;
@@ -1475,22 +1335,31 @@
 
             document.getElementById('detailTaskTitle').textContent = task.title;
 
-            const color   = task.category?.color || '#a63d63';
-            const catName = task.category?.name  || 'Sin categoría';
+            const cat  = catStyle(task.category);
+            const prio = prioStyle(task.priority);
 
-            let metaHTML = `<span class="detail-badge" style="background:${color}">${catName}</span>`;
+            let metaHTML = `<span class="detail-badge" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>`;
+            metaHTML += `<span class="detail-info-item">${task.itemType === 'EVENT' ? 'Evento' : 'Tarea'}</span>`;
 
             if (task.startDate) {
                 const d = new Date(task.startDate + 'T12:00:00');
-                metaHTML += `<span class="detail-info-item">${WEEKDAYS[d.getDay()]} ${d.getDate()} de ${MONTHS[d.getMonth()]}</span>`;
+                let dateStr = `${WEEKDAYS[d.getDay()]} ${d.getDate()} de ${MONTHS[d.getMonth()]}`;
+                if (task.endDate && task.endDate !== task.startDate) {
+                    const dEnd = new Date(task.endDate + 'T12:00:00');
+                    dateStr += ` → ${WEEKDAYS[dEnd.getDay()]} ${dEnd.getDate()} de ${MONTHS[dEnd.getMonth()]}`;
+                }
+                metaHTML += `<span class="detail-info-item">${dateStr}</span>`;
             }
-            if (task.startTime) {
+            if (task.allDay) {
+                metaHTML += `<span class="detail-info-item">Todo el día</span>`;
+            } else if (task.startTime) {
                 const t   = task.startTime.substring(0, 5);
                 const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
                 metaHTML += `<span class="detail-info-item">${t}${end}</span>`;
             }
-            const priorityLabel = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
-            if (priorityLabel) metaHTML += `<span class="detail-info-item">Prioridad ${priorityLabel}</span>`;
+            if (prio.label !== 'Sin prioridad') {
+                metaHTML += `<span class="detail-info-item">Prioridad ${prio.label}${prio.mark ? ' ' + prio.mark : ''}</span>`;
+            }
             if (task.createdBy?.nombre) metaHTML += `<span class="detail-info-item">Por ${task.createdBy.nombre}</span>`;
             if (task.sharedWith?.length) metaHTML += `<span class="detail-info-item shared">Compartida</span>`;
 
@@ -1503,6 +1372,15 @@
             } else {
                 descEl.className   = 'detail-desc-empty';
                 descEl.textContent = 'Sin descripción';
+            }
+
+            const linkEl = document.getElementById('detailLinkRow');
+            if (task.link) {
+                linkEl.href = task.link;
+                linkEl.textContent = '🔗 ' + task.link;
+                linkEl.style.display = '';
+            } else {
+                linkEl.style.display = 'none';
             }
 
             const btn = document.getElementById('detailCompleteBtn');

@@ -837,7 +837,7 @@
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="calendar.html" class="active">Calendario</a></li>
-                <li><a href="proximas.html">Próximas Tareas</a></li>
+                <li><a href="proximas.html">Tareas</a></li>
                 <li><a href="watchlist.html">Watchlist</a></li>
                 <hr class="sidebar-divider">
                 <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
@@ -1024,8 +1024,12 @@
 
             // ¿Venimos de otra página a editar una tarea puntual?
             // (calendar.html?edit=<id> — home y Tareas usan este link.)
-            const editId = new URLSearchParams(location.search).get('edit');
+            const params = new URLSearchParams(location.search);
+            const editId = params.get('edit');
+            const newFor = params.get('new'); // '1' = hoy, o una fecha YYYY-MM-DD puntual
             let editTask = null;
+            let jumpToNewDay = null;
+
             if (editId) {
                 editTask = await getTaskById(Number(editId));
                 if (editTask) {
@@ -1033,6 +1037,12 @@
                     currentDate  = new Date(d);
                     selectedDate = new Date(d);
                 }
+                history.replaceState(null, '', 'calendar.html');
+            } else if (newFor) {
+                jumpToNewDay = /^\d{4}-\d{2}-\d{2}$/.test(newFor) ? newFor : new Date().toISOString().split('T')[0];
+                const d = new Date(jumpToNewDay + 'T12:00:00');
+                currentDate  = new Date(d);
+                selectedDate = new Date(d);
                 history.replaceState(null, '', 'calendar.html');
             }
 
@@ -1043,6 +1053,7 @@
             renderCalendar();
 
             if (editTask) openComposerForEdit(editTask);
+            else if (jumpToNewDay) focusQuickAdd();
 
             // Load partner
             const users = await getUsers();
