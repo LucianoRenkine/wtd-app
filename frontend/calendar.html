@@ -708,6 +708,8 @@
             color: #1c1b22;
             border: 1px solid rgba(28, 27, 34, 0.11);
         }
+        .icon-edit { flex-shrink: 0; }
+        .icon-edit-label { vertical-align: -2px; margin-right: 3px; }
         .detail-btn.edit:hover { background: rgba(28, 27, 34, 0.1); }
         .detail-btn.delete {
             background: rgba(225, 29, 72, 0.1);
@@ -971,7 +973,7 @@
         </div>
         <div class="detail-actions">
             <button class="detail-btn complete" id="detailCompleteBtn" onclick="detailToggleDone()">✓ Completar</button>
-            <button class="detail-btn edit" onclick="detailEdit()">✏️ Editar</button>
+            <button class="detail-btn edit" onclick="detailEdit()"><svg class="icon-edit icon-edit-label" viewBox="0 0 20 20" width="13" height="13" fill="none" aria-hidden="true"><path d="M12.6 3.4 16.6 7.4 6.8 17.2H2.8v-4L12.6 3.4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M10.6 5.4 14.6 9.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Editar</button>
             <button class="detail-btn delete" onclick="detailAskDelete()">✕ Eliminar</button>
         </div>
     </div>
@@ -1228,7 +1230,7 @@
                 (task.sharedWith?.length ? `<span class="pill-mark">💕</span>` : '') +
                 `<span class="pill-actions">
                     <button type="button" class="pill-action-btn done" title="Completar">✓</button>
-                    <button type="button" class="pill-action-btn edit" title="Editar">✏️</button>
+                    <button type="button" class="pill-action-btn edit" title="Editar"><svg class="icon-edit" viewBox="0 0 20 20" width="11" height="11" fill="none" aria-hidden="true"><path d="M12.6 3.4 16.6 7.4 6.8 17.2H2.8v-4L12.6 3.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M10.6 5.4 14.6 9.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                     <button type="button" class="pill-action-btn delete" title="Eliminar">✕</button>
                 </span>`;
             pill.title = task.title;

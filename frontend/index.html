@@ -601,6 +601,8 @@
         .tdp-btn.complete.done-state { background: rgba(5, 150, 105, 0.22); color: #0b8a5e; }
         .tdp-btn.edit { background: rgba(28, 27, 34, 0.055); color: #1c1b22; border: 1px solid rgba(28, 27, 34, 0.11); }
         .tdp-btn.edit:hover { background: rgba(28, 27, 34, 0.1); }
+        .icon-edit { flex-shrink: 0; }
+        .icon-edit-label { vertical-align: -2px; margin-right: 3px; }
         .tdp-btn.delete { background: rgba(225, 29, 72,0.1); color: #be123c; border: 1px solid rgba(225, 29, 72,0.18); }
         .tdp-btn.delete:hover { background: rgba(225, 29, 72,0.2); color: #e11d48; }
 
@@ -943,7 +945,7 @@
         </div>
         <div class="tdp-footer">
             <button class="tdp-btn complete" id="tdpCompleteBtn" onclick="tdpToggleDone()">✓ Completar</button>
-            <button class="tdp-btn edit" onclick="tdpEdit()">✏️ Editar</button>
+            <button class="tdp-btn edit" onclick="tdpEdit()"><svg class="icon-edit icon-edit-label" viewBox="0 0 20 20" width="13" height="13" fill="none" aria-hidden="true"><path d="M12.6 3.4 16.6 7.4 6.8 17.2H2.8v-4L12.6 3.4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M10.6 5.4 14.6 9.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Editar</button>
             <button class="tdp-btn delete" onclick="tdpDelete()">✕ Eliminar</button>
         </div>
     </div>
@@ -1123,7 +1125,7 @@
                             ${task.sharedWith?.length ? '<span class="agenda-shared">💕</span>' : ''}
                             <span class="agenda-actions">
                                 <button type="button" class="agenda-action-btn done" title="Completar" onclick="event.stopPropagation();toggleUpcomingDone(${task.id})">✓</button>
-                                <button type="button" class="agenda-action-btn edit" title="Editar" onclick="event.stopPropagation();window.location.href='calendar.html?edit=${task.id}'">✏️</button>
+                                <button type="button" class="agenda-action-btn edit" title="Editar" onclick="event.stopPropagation();window.location.href='calendar.html?edit=${task.id}'"><svg class="icon-edit" viewBox="0 0 20 20" width="11" height="11" fill="none" aria-hidden="true"><path d="M12.6 3.4 16.6 7.4 6.8 17.2H2.8v-4L12.6 3.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M10.6 5.4 14.6 9.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                                 <button type="button" class="agenda-action-btn delete" title="Eliminar" onclick="event.stopPropagation();askDeleteUpcoming(${task.id})">✕</button>
                             </span>
                         </div>`;
