@@ -107,6 +107,7 @@
             .mobile-logo { display: block; }
             header { justify-content: space-between; }
             .profile-name { display: none; }
+            .page-header { flex-direction: column; }
         }
 
         .hamburger {
@@ -246,6 +247,10 @@
 
         /* ── Page title ── */
         .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
             margin-bottom: 32px;
         }
 
@@ -442,8 +447,12 @@
         }
 
         /* Group: Hoy / Mañana / etc. */
-        .group {
-            margin-bottom: 36px;
+        .day-block {
+            background: #fff;
+            border: 1px solid rgba(28, 27, 34, 0.09);
+            border-radius: 14px;
+            padding: 18px 20px 8px;
+            margin-bottom: 20px;
         }
 
         .group-header {
@@ -451,8 +460,26 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 14px;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
             border-bottom: 1px solid rgba(28, 27, 34, 0.066);
+        }
+
+        /* Fecha de cada día dentro de un bloque de rango ("Esta semana",
+           "Más adelante") que agrupa varios días distintos. */
+        .day-divider {
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #9a93a8;
+            padding: 12px 0 8px;
+            margin-top: 2px;
+            border-top: 1px solid rgba(28, 27, 34, 0.055);
+        }
+        .day-block-body .day-divider:first-child {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
         }
 
         .group-label {
@@ -930,7 +957,7 @@
         .share-label:has(input:checked) { color: #1c1b22; border-color: rgba(28, 27, 34, 0.35); }
         .task-shared-badge { font-size: 0.82em; }
     </style>
-    <link rel="stylesheet" href="css/theme.css?v=5">
+    <link rel="stylesheet" href="css/theme.css?v=6">
 </head>
 <body>
 
@@ -987,19 +1014,21 @@
     <div class="container">
 
         <div class="page-header">
-            <h1 class="page-title">Tareas</h1>
-            <p class="page-subtitle">Todo lo que viene, organizado.</p>
-        </div>
-
-        <!-- Estado + selección múltiple -->
-        <div class="toolbar-row">
-            <div class="status-toggle">
-                <button class="status-btn active" data-status="PENDING" onclick="setStatusFilter('PENDING', this)">Pendientes</button>
-                <button class="status-btn" data-status="ALL" onclick="setStatusFilter('ALL', this)">Todas</button>
+            <div class="page-header-text">
+                <h1 class="page-title">Tareas</h1>
+                <p class="page-subtitle">Todo lo que viene, organizado.</p>
             </div>
             <div class="toolbar-actions">
                 <button class="select-mode-btn" id="selectModeBtn" onclick="toggleSelectionMode()">Seleccionar</button>
                 <a class="new-task-btn" href="calendar.html?new=1">+ Nueva tarea</a>
+            </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="toolbar-row">
+            <div class="status-toggle">
+                <button class="status-btn active" data-status="PENDING" onclick="setStatusFilter('PENDING', this)">Pendientes</button>
+                <button class="status-btn" data-status="ALL" onclick="setStatusFilter('ALL', this)">Todas</button>
             </div>
         </div>
 
@@ -1220,40 +1249,61 @@
                 return;
             }
 
-            /* Group */
-            const groups = {};
+            /* Agrupar por RANGO (Hoy/Mañana/Esta semana/Más adelante/Pasado) y,
+               dentro de cada uno, por día exacto — así "Esta semana" y
+               "Más adelante" quedan en un solo bloque con la fecha de
+               cada día como separador interno, en vez de abrir un bloque
+               nuevo por cada día suelto. */
+            const RANGE_ORDER = ['past', 'today', 'tomorrow', 'week', 'later'];
+            const RANGE_LABEL = { past: 'Pasado', today: 'Hoy', tomorrow: 'Mañana', week: 'Esta semana', later: 'Más adelante' };
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+            function rangeKeyFor(dateStr) {
+                if (dateStr < todayStr) return 'past';
+                if (dateStr === todayStr) return 'today';
+                if (dateStr === tomorrowStr) return 'tomorrow';
+                return new Date(dateStr + 'T12:00:00') < weekEnd ? 'week' : 'later';
+            }
+
+            const ranges = {};
             tasks.forEach(t => {
-                const d = t.startDate;
-                if (!groups[d]) groups[d] = [];
-                groups[d].push(t);
+                const rk = rangeKeyFor(t.startDate);
+                if (!ranges[rk]) ranges[rk] = {};
+                if (!ranges[rk][t.startDate]) ranges[rk][t.startDate] = [];
+                ranges[rk][t.startDate].push(t);
             });
 
             let html = '';
-            Object.keys(groups).sort().forEach(dateStr => {
-                const date    = new Date(dateStr + 'T12:00:00');
-                const isToday = dateStr === todayStr;
-                const isTmrw  = dateStr === tomorrow.toISOString().split('T')[0];
+            RANGE_ORDER.forEach(rk => {
+                if (!ranges[rk]) return;
 
-                let groupLabel = `${WEEKDAYS[date.getDay()]} ${date.getDate()} de ${MONTHS[date.getMonth()]}`;
-                let groupTag   = '';
+                const dateKeys   = Object.keys(ranges[rk]).sort();
+                const totalCount = dateKeys.reduce((n, d) => n + ranges[rk][d].length, 0);
+                const isSingleDay = rk === 'today' || rk === 'tomorrow';
 
-                if (isToday)             groupTag = `<span class="group-label today">Hoy</span>`;
-                else if (isTmrw)         groupTag = `<span class="group-label">Mañana</span>`;
-                else if (date < today)   groupTag = `<span class="group-label past">Pasado</span>`;
-                else if (date < weekEnd) groupTag = `<span class="group-label">Esta semana</span>`;
-                else                     groupTag = `<span class="group-label">Más adelante</span>`;
+                let bodyHtml = '';
+                dateKeys.forEach(dateStr => {
+                    if (!isSingleDay) {
+                        const d = new Date(dateStr + 'T12:00:00');
+                        bodyHtml += `<div class="day-divider">${WEEKDAYS[d.getDay()]} ${d.getDate()} de ${MONTHS[d.getMonth()]}</div>`;
+                    }
+                    bodyHtml += ranges[rk][dateStr].map(t => taskCard(t)).join('');
+                });
 
-                const count  = groups[dateStr].length;
-                const cards  = groups[dateStr].map(t => taskCard(t)).join('');
+                let dateLabelHtml = '';
+                if (isSingleDay) {
+                    const d = new Date(dateKeys[0] + 'T12:00:00');
+                    dateLabelHtml = `<span class="group-date">${WEEKDAYS[d.getDay()]} ${d.getDate()} de ${MONTHS[d.getMonth()]}</span>`;
+                }
 
                 html += `
-                <div class="group">
+                <div class="day-block">
                     <div class="group-header">
-                        ${groupTag}
-                        <span class="group-date">${groupLabel}</span>
-                        <span class="group-count">${count} tarea${count !== 1 ? 's' : ''}</span>
+                        <span class="group-label ${rk === 'today' ? 'today' : ''} ${rk === 'past' ? 'past' : ''}">${RANGE_LABEL[rk]}</span>
+                        ${dateLabelHtml}
+                        <span class="group-count">${totalCount} tarea${totalCount !== 1 ? 's' : ''}</span>
                     </div>
-                    ${cards}
+                    <div class="day-block-body">${bodyHtml}</div>
                 </div>`;
             });
 
