@@ -30,6 +30,9 @@ public class TaskService {
             existingTask.setEndDate(taskDetails.getEndDate());
             existingTask.setStartTime(taskDetails.getStartTime());
             existingTask.setEndTime(taskDetails.getEndTime());
+            existingTask.setAllDay(taskDetails.getAllDay());
+            existingTask.setLink(taskDetails.getLink());
+            existingTask.setItemType(taskDetails.getItemType());
             existingTask.setCategory(taskDetails.getCategory());
             existingTask.setCompleted(taskDetails.getCompleted());
             existingTask.setPriority(taskDetails.getPriority());

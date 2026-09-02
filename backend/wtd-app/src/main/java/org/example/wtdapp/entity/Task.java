@@ -82,11 +82,27 @@ public class Task {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        applyDefaults();
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+        applyDefaults();
+    }
+
+    /**
+     * Jackson arma el objeto con el constructor de todos los argumentos que
+     * genera Lombok, así que cualquier campo ausente en el JSON llega en null
+     * acá, salteándose por completo el valor por defecto declarado en el
+     * campo. Sin esto, omitir "itemType" en un POST rompe el not-null de la
+     * columna en vez de caer en TASK.
+     */
+    private void applyDefaults() {
+        if (completed == null) completed = false;
+        if (priority == null) priority = Priority.NONE;
+        if (itemType == null) itemType = ItemType.TASK;
+        if (allDay == null) allDay = false;
     }
 
     public enum Priority {
