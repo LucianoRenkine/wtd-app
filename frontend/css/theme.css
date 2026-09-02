@@ -314,6 +314,11 @@ footer {
     flex: 1;
     min-height: 0;
     padding-right: 4px;
+    padding-bottom: 4px;
+    /* Si hay más tareas de las que entran, que se note como un desvanecido
+       y no como un corte a la mitad de una tarjeta. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent 100%);
 }
 .agenda-group { display: flex; flex-direction: column; gap: 7px; }
 .agenda-day {
@@ -382,7 +387,7 @@ footer {
     gap: 28px 40px;
     align-items: center;
 }
-.numbers-section .numbers-title { display: none; }
+.numbers-section .numbers-title { display: none !important; }
 .numbers-body .numbers-top { grid-column: 1; }
 .numbers-body .stats-grid { grid-column: 2; grid-template-columns: repeat(4, 1fr); }
 .numbers-body .romantic-phrase { grid-column: 1 / -1; }
