@@ -257,7 +257,6 @@
             transition: filter 0.15s;
         }
         .event-pill:hover { filter: brightness(0.94); }
-        .event-pill .pill-icon { flex-shrink: 0; font-size: 1.05em; }
         .event-pill .pill-text {
             overflow: hidden;
             display: -webkit-box;
@@ -335,14 +334,57 @@
             background: transparent !important;
         }
         .composer-title-input::placeholder { color: #c4c0cc; }
-        .composer-when {
-            font-size: 0.82em;
-            color: #837e90;
+        .composer-when-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
             padding-bottom: 18px;
             border-bottom: 1px solid rgba(28, 27, 34, 0.07);
         }
+        .composer-when { font-size: 0.82em; color: #837e90; }
+
+        /* Tarea / Evento */
+        .type-toggle {
+            display: flex;
+            flex-shrink: 0;
+            background: rgba(28, 27, 34, 0.045);
+            border-radius: 8px;
+            padding: 2px;
+        }
+        .type-btn {
+            border: none;
+            background: none;
+            padding: 5px 12px;
+            font-size: 0.78em;
+            font-weight: 600;
+            color: #837e90;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+        .type-btn.selected { background: #fff; color: #1c1b22; box-shadow: 0 1px 2px rgba(28,27,34,.1); }
+
+        .field-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .field-label-row .field-label { margin-bottom: 0; }
+        .allday-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78em;
+            color: #45424f;
+            cursor: pointer;
+            user-select: none;
+        }
+        .allday-toggle input { accent-color: #1c1b22; }
 
         .composer-body { padding: 20px 26px 4px; display: flex; flex-direction: column; gap: 18px; }
+        .composer-body input[type="date"] { padding: 9px 11px; font-size: 0.9em; }
 
         .field-label {
             display: block;
@@ -576,6 +618,19 @@
             text-align: center;
             padding: 24px;
         }
+        .detail-link-row {
+            display: block;
+            margin-top: 14px;
+            padding: 10px 14px;
+            border: 1px solid rgba(28, 27, 34, 0.11);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #a63d63;
+            text-decoration: none;
+            word-break: break-all;
+            transition: background .15s, border-color .15s;
+        }
+        .detail-link-row:hover { background: rgba(166, 61, 99, 0.06); border-color: rgba(166, 61, 99, 0.3); }
         .detail-actions {
             display: flex;
             gap: 10px;
@@ -765,13 +820,25 @@
         <form class="composer" id="composerForm">
             <div class="composer-head">
                 <input type="text" class="composer-title-input" id="cTitle" placeholder="Nombre de la tarea" required>
-                <div class="composer-when" id="cWhen"></div>
+                <div class="composer-when-row">
+                    <div class="composer-when" id="cWhen"></div>
+                    <div class="type-toggle" id="cTypeToggle">
+                        <button type="button" class="type-btn selected" data-type="TASK">Tarea</button>
+                        <button type="button" class="type-btn" data-type="EVENT">Evento</button>
+                    </div>
+                </div>
             </div>
 
             <div class="composer-body">
                 <div>
-                    <label class="field-label">Horario</label>
-                    <div class="time-row">
+                    <div class="field-label-row">
+                        <label class="field-label">Horario</label>
+                        <label class="allday-toggle">
+                            <input type="checkbox" id="cAllDay">
+                            <span>Todo el día</span>
+                        </label>
+                    </div>
+                    <div class="time-row" id="cTimeRow">
                         <input type="time" id="cStart" placeholder="Desde">
                         <span class="sep">→</span>
                         <input type="time" id="cEnd" placeholder="Hasta">
@@ -779,8 +846,18 @@
                 </div>
 
                 <div>
+                    <label class="field-label" for="cUntilDate">Hasta (si dura varios días)</label>
+                    <input type="date" id="cUntilDate">
+                </div>
+
+                <div>
                     <label class="field-label" for="cDesc">Descripción</label>
                     <textarea id="cDesc" placeholder="Detalles, links, lo que sea…"></textarea>
+                </div>
+
+                <div>
+                    <label class="field-label" for="cLink">Link</label>
+                    <input type="url" id="cLink" placeholder="https://…">
                 </div>
 
                 <div>
@@ -835,6 +912,7 @@
             <div class="detail-task-title" id="detailTaskTitle"></div>
             <div class="detail-meta-row" id="detailMetaRow"></div>
             <div id="detailDescBlock"></div>
+            <a href="#" id="detailLinkRow" class="detail-link-row" target="_blank" rel="noopener" style="display:none"></a>
         </div>
         <div class="detail-actions">
             <button class="detail-btn complete" id="detailCompleteBtn" onclick="detailToggleDone()">✓ Completar</button>
@@ -1073,7 +1151,6 @@
                 ? `<span class="pill-time">${task.startTime.substring(0, 5)}</span> `
                 : '';
             pill.innerHTML =
-                `<span class="pill-icon">${cat.icon}</span>` +
                 `<span class="pill-text">${time}${escapeHtml(task.title)}</span>` +
                 (prio.mark ? `<span class="pill-mark">${prio.mark}</span>` : '') +
                 (task.sharedWith?.length ? `<span class="pill-mark">💕</span>` : '');
@@ -1152,17 +1229,35 @@
         });
 
         /* ── Composer: chips, apertura, guardado ── */
-        let composerDate  = null;
-        let composerCatId = null;
-        let composerPrio  = 'MEDIUM';
-        let quickAddDraft = '';
+        let composerDate     = null;
+        let composerCatId    = null;
+        let composerPrio     = 'NONE';
+        let composerItemType = 'TASK';
+        let quickAddDraft    = '';
+
+        /* Tarea / Evento */
+        document.querySelectorAll('#cTypeToggle .type-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectItemType(btn.dataset.type));
+        });
+
+        function selectItemType(type) {
+            composerItemType = type;
+            document.querySelectorAll('#cTypeToggle .type-btn').forEach(b =>
+                b.classList.toggle('selected', b.dataset.type === type));
+        }
+
+        /* Todo el día: sin horario tiene sentido, así que ocultamos los
+           campos de hora en vez de dejarlos ahí sin usar. */
+        document.getElementById('cAllDay').addEventListener('change', e => {
+            document.getElementById('cTimeRow').style.display = e.target.checked ? 'none' : '';
+        });
 
         function renderCategoryChips() {
             const row = document.getElementById('cCategories');
             row.innerHTML = categories.map(cat => {
                 const st = catStyle(cat);
                 return `<button type="button" class="chip" data-cat="${cat.id}" style="color:${st.color}">
-                            <span class="chip-dot" style="background:${st.color}"></span><span>${st.icon}</span><span>${cat.name}</span>
+                            <span class="chip-dot" style="background:${st.color}"></span><span>${cat.name}</span>
                         </button>`;
             }).join('');
             row.querySelectorAll('.chip').forEach(chip => {
@@ -1192,7 +1287,6 @@
 
         function selectPriority(key) {
             composerPrio = key;
-            localStorage.setItem('wtdLastPriority', key);
             document.querySelectorAll('#cPriorities .chip').forEach(c =>
                 c.classList.toggle('selected', c.dataset.prio === key));
         }
@@ -1208,14 +1302,23 @@
                 `${days[d.getDay()]} ${d.getDate()} de ${months[d.getMonth()]} de ${d.getFullYear()}`;
             document.getElementById('cStart').value = '';
             document.getElementById('cEnd').value   = '';
+            document.getElementById('cUntilDate').value = '';
+            document.getElementById('cUntilDate').min   = dayStr;
             document.getElementById('cDesc').value  = '';
+            document.getElementById('cLink').value  = '';
             document.getElementById('cShared').checked = false;
+            document.getElementById('cAllDay').checked = false;
+            document.getElementById('cTimeRow').style.display = '';
 
-            // Arranca con lo último que usaste: menos clicks en el caso común
+            selectItemType('TASK');
+
+            // La categoría arranca con lo último que usaste: menos clicks en
+            // el caso común. La prioridad, en cambio, siempre arranca en
+            // "Sin prioridad" — es el default explícito de toda tarea nueva.
             const lastCat = Number(localStorage.getItem('wtdLastCategory'));
             const known   = categories.some(c => c.id === lastCat);
             selectCategory(known ? lastCat : (categories[0]?.id ?? null));
-            selectPriority(PRIORITY_STYLE[localStorage.getItem('wtdLastPriority')] ? localStorage.getItem('wtdLastPriority') : 'MEDIUM');
+            selectPriority('NONE');
 
             document.getElementById('composerOverlay').classList.add('active');
             requestAnimationFrame(() => document.getElementById('cStart').focus());
@@ -1246,17 +1349,28 @@
             const title = document.getElementById('cTitle').value.trim();
             if (!title || !composerDate) return;
 
-            const btn = document.getElementById('cSubmit');
+            const untilRaw = document.getElementById('cUntilDate').value || null;
+            if (untilRaw && untilRaw < composerDate) {
+                showToast('"Hasta" no puede ser antes del día elegido', 'error');
+                return;
+            }
+
+            const allDay = document.getElementById('cAllDay').checked;
+            const btn    = document.getElementById('cSubmit');
             btn.disabled = true;
 
             const newTask = {
                 title,
                 description: document.getElementById('cDesc').value || null,
+                link:      document.getElementById('cLink').value || null,
                 startDate: composerDate,
-                startTime: document.getElementById('cStart').value || null,
-                endTime:   document.getElementById('cEnd').value   || null,
+                endDate:   untilRaw,
+                allDay,
+                startTime: allDay ? null : (document.getElementById('cStart').value || null),
+                endTime:   allDay ? null : (document.getElementById('cEnd').value   || null),
                 category:  composerCatId ? { id: composerCatId } : null,
                 priority:  composerPrio,
+                itemType:  composerItemType,
                 completed: false,
                 createdBy: { id: currentUserId }
             };
@@ -1317,22 +1431,31 @@
 
             document.getElementById('detailTaskTitle').textContent = task.title;
 
-            const color   = task.category?.color || '#a63d63';
-            const catName = task.category?.name  || 'Sin categoría';
+            const cat  = catStyle(task.category);
+            const prio = prioStyle(task.priority);
 
-            let metaHTML = `<span class="detail-badge" style="background:${color}">${catName}</span>`;
+            let metaHTML = `<span class="detail-badge" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>`;
+            metaHTML += `<span class="detail-info-item">${task.itemType === 'EVENT' ? 'Evento' : 'Tarea'}</span>`;
 
             if (task.startDate) {
                 const d = new Date(task.startDate + 'T12:00:00');
-                metaHTML += `<span class="detail-info-item">${WEEKDAYS_DETAIL[d.getDay()]} ${d.getDate()} de ${MONTHS_DETAIL[d.getMonth()]}</span>`;
+                let dateStr = `${WEEKDAYS_DETAIL[d.getDay()]} ${d.getDate()} de ${MONTHS_DETAIL[d.getMonth()]}`;
+                if (task.endDate && task.endDate !== task.startDate) {
+                    const dEnd = new Date(task.endDate + 'T12:00:00');
+                    dateStr += ` → ${WEEKDAYS_DETAIL[dEnd.getDay()]} ${dEnd.getDate()} de ${MONTHS_DETAIL[dEnd.getMonth()]}`;
+                }
+                metaHTML += `<span class="detail-info-item">${dateStr}</span>`;
             }
-            if (task.startTime) {
+            if (task.allDay) {
+                metaHTML += `<span class="detail-info-item">Todo el día</span>`;
+            } else if (task.startTime) {
                 const t   = task.startTime.substring(0, 5);
                 const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
                 metaHTML += `<span class="detail-info-item">${t}${end}</span>`;
             }
-            const priorityLabel = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
-            if (priorityLabel) metaHTML += `<span class="detail-info-item">Prioridad ${priorityLabel}</span>`;
+            if (prio.label !== 'Sin prioridad') {
+                metaHTML += `<span class="detail-info-item">Prioridad ${prio.label}${prio.mark ? ' ' + prio.mark : ''}</span>`;
+            }
             if (task.createdBy?.nombre) metaHTML += `<span class="detail-info-item">Por ${task.createdBy.nombre}</span>`;
             if (task.sharedWith?.length) metaHTML += `<span class="detail-info-item shared">Compartida</span>`;
 
@@ -1345,6 +1468,15 @@
             } else {
                 descEl.className   = 'detail-desc-empty';
                 descEl.textContent = 'Sin descripción';
+            }
+
+            const linkEl = document.getElementById('detailLinkRow');
+            if (task.link) {
+                linkEl.href = task.link;
+                linkEl.textContent = '🔗 ' + task.link;
+                linkEl.style.display = '';
+            } else {
+                linkEl.style.display = 'none';
             }
 
             const btn = document.getElementById('detailCompleteBtn');

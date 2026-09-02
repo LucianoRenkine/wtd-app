@@ -1,14 +1,14 @@
 /* ── Catálogo compartido: categorías y prioridades ── */
 
-/* Colores e íconos por nombre de categoría. La paleta del backend es vieja
-   (flat-ui saturado), así que el front la reescribe con tonos sobrios. */
+/* Cada categoría es un bloque de color sólido, sin ícono — la lista de
+   categorías la maneja el backend (GET /tasks/categories), acá solo se
+   reescribe el color con una paleta más sobria que la de la base. */
 const CATEGORY_STYLE = {
-    'Estudio':  { color: '#4a72a8', icon: '📚' },
-    'Trabajo':  { color: '#2e7d5b', icon: '💼' },
-    'Personal': { color: '#a63d63', icon: '🌿' },
-    'Urgente':  { color: '#c25a34', icon: '🔥' }
+    'Estudio':  { color: '#4a72a8' },
+    'Trabajo':  { color: '#2e7d5b' },
+    'Personal': { color: '#a63d63' }
 };
-const CATEGORY_FALLBACK = { color: '#7a7389', icon: '•' };
+const CATEGORY_FALLBACK = { color: '#7a7389' };
 
 function catStyle(category) {
     const name = typeof category === 'string' ? category : (category && category.name);
@@ -16,14 +16,18 @@ function catStyle(category) {
 }
 
 /* Prioridad: las claves son el enum del backend (Task.Priority).
-   HIGH -> barra gruesa + "!!"   MEDIUM -> barra fina   LOW -> atenuada */
+   NONE es la ausencia de prioridad — default de toda tarea nueva, no se
+   marca de ninguna forma especial. LOW se ve atenuada. MEDIUM es el punto
+   neutro (ni negrita ni atenuada). HIGH va en negrita y se marca con 🔥
+   — la urgencia ya no depende de una categoría "Urgente". */
 const PRIORITY_STYLE = {
-    'HIGH':   { label: 'Alta',  mark: '!!', bar: 4, weight: 700, opacity: 1,    color: '#c25a34' },
-    'MEDIUM': { label: 'Media', mark: '',   bar: 2, weight: 600, opacity: 1,    color: '#45424f' },
-    'LOW':    { label: 'Baja',  mark: '',   bar: 2, weight: 500, opacity: 0.62, color: '#837e90' }
+    'NONE':   { label: 'Sin prioridad', mark: '',  bar: 2, weight: 500, opacity: 1,    color: '#a49dae' },
+    'LOW':    { label: 'Baja',          mark: '',  bar: 2, weight: 500, opacity: 0.62, color: '#837e90' },
+    'MEDIUM': { label: 'Media',         mark: '',  bar: 2, weight: 500, opacity: 1,    color: '#45424f' },
+    'HIGH':   { label: 'Alta',          mark: '🔥', bar: 4, weight: 700, opacity: 1,    color: '#c25a34' }
 };
-const PRIORITY_ORDER = ['HIGH', 'MEDIUM', 'LOW'];
+const PRIORITY_ORDER = ['NONE', 'LOW', 'MEDIUM', 'HIGH'];
 
 function prioStyle(priority) {
-    return PRIORITY_STYLE[(priority || 'MEDIUM').toUpperCase()] || PRIORITY_STYLE['MEDIUM'];
+    return PRIORITY_STYLE[(priority || 'NONE').toUpperCase()] || PRIORITY_STYLE['NONE'];
 }

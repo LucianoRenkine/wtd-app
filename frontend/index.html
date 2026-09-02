@@ -1072,10 +1072,10 @@
                         return `
                         <div class="agenda-item" onclick="openTaskDetail(${task.id})"
                              style="border-left:${prio.bar}px solid ${cat.color};opacity:${prio.opacity}">
-                            <span class="agenda-icon">${cat.icon}</span>
+                            <span class="agenda-dot" style="background:${cat.color}"></span>
                             <div class="agenda-text">
-                                <div class="agenda-title" style="font-weight:${prio.weight}">${task.title}</div>
-                                <div class="agenda-meta">${task.startTime ? task.startTime.substring(0, 5) + ' · ' : ''}${task.category?.name || 'Sin categoría'}${prio.mark ? ' · ' + prio.mark : ''}</div>
+                                <div class="agenda-title" style="font-weight:${prio.weight}">${task.title}${prio.mark ? ' ' + prio.mark : ''}</div>
+                                <div class="agenda-meta">${task.startTime ? task.startTime.substring(0, 5) + ' · ' : ''}${task.category?.name || 'Sin categoría'}</div>
                             </div>
                             ${task.sharedWith?.length ? '<span class="agenda-shared">💕</span>' : ''}
                         </div>`;
