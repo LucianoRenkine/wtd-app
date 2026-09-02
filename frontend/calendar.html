@@ -144,6 +144,42 @@
             border-bottom: 1px solid rgba(28, 27, 34, 0.083);
         }
 
+        /* ── Filtros del calendario ── */
+        .calendar-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 10px;
+            padding: 14px 24px;
+            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+        }
+        .cal-filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding-right: 10px;
+            border-right: 1px solid rgba(28, 27, 34, 0.09);
+        }
+        .cal-filter-group:last-of-type { border-right: none; }
+        .cal-filter-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            border: 1px solid rgba(28, 27, 34, 0.13);
+            color: #45424f;
+            padding: 6px 13px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .cal-filter-chip:hover { border-color: rgba(28, 27, 34, 0.28); }
+        .cal-filter-chip.active { background: #1c1b22; border-color: #1c1b22; color: #fff; }
+        .cal-filter-toggle.active { background: #a63d63; border-color: #a63d63; color: #fff; }
+        .cal-filter-chip .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
         .current-month {
             font-size: 1.6em;
             font-weight: 700;
@@ -272,6 +308,26 @@
             letter-spacing: -1px;
         }
         .event-pill.done .pill-text { text-decoration: line-through; opacity: 0.55; }
+
+        /* Tramos de una tarea de varios días: se pegan al borde de la celda
+           para que el color se vea continuo entre columnas vecinas. */
+        .event-pill.span-start {
+            border-radius: 5px 0 0 5px;
+            margin-right: -7px;
+            padding-right: 10px;
+        }
+        .event-pill.span-middle {
+            border-radius: 0;
+            margin-left: -7px;
+            margin-right: -7px;
+            border-left: none !important;
+            padding-left: 10px;
+        }
+        .event-pill.span-end {
+            border-radius: 0 5px 5px 0;
+            margin-left: -7px;
+            border-left: none !important;
+        }
 
         /* Acciones al hover: completar / editar / eliminar sin abrir el detalle */
         .pill-actions {
@@ -860,6 +916,11 @@
                         <button id="nextBtn">›</button>
                     </div>
                 </div>
+                <div class="calendar-filters">
+                    <div class="cal-filter-group" id="calCategoryFilters"></div>
+                    <div class="cal-filter-group" id="calPriorityFilters"></div>
+                    <button class="cal-filter-chip cal-filter-toggle" id="calSharedFilterBtn" onclick="toggleCalSharedFilter()">Compartidas</button>
+                </div>
                 <div class="calendar-grid" id="calendarGrid">
                     <div class="loading">Cargando calendario...</div>
                 </div>
@@ -1011,6 +1072,58 @@
         let categories = [];
         let partnerId = null;
 
+        /* ── Filtros del calendario ── */
+        let calCategoryFilter = 'all';
+        let calPriorityFilter = 'all';
+        let calSharedOnly     = false;
+
+        function renderCalFilters() {
+            const catRow = document.getElementById('calCategoryFilters');
+            catRow.innerHTML = `<button class="cal-filter-chip active" data-cat="all" onclick="setCalCategoryFilter('all', this)">Todas</button>` +
+                categories.map(cat => {
+                    const st = catStyle(cat);
+                    return `<button class="cal-filter-chip" data-cat="${cat.id}" onclick="setCalCategoryFilter(${cat.id}, this)">
+                                <span class="chip-dot" style="background:${st.color}"></span>${cat.name}
+                            </button>`;
+                }).join('');
+
+            const prioRow = document.getElementById('calPriorityFilters');
+            prioRow.innerHTML = `<button class="cal-filter-chip active" data-prio="all" onclick="setCalPriorityFilter('all', this)">Toda prioridad</button>` +
+                PRIORITY_ORDER.slice().reverse().map(key => {
+                    const st = PRIORITY_STYLE[key];
+                    return `<button class="cal-filter-chip" data-prio="${key}" onclick="setCalPriorityFilter('${key}', this)">
+                                <span class="chip-dot" style="background:${st.color}"></span>${st.label}
+                            </button>`;
+                }).join('');
+        }
+
+        function setCalCategoryFilter(catId, btn) {
+            calCategoryFilter = catId;
+            btn.parentElement.querySelectorAll('.cal-filter-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCalendar();
+        }
+
+        function setCalPriorityFilter(prio, btn) {
+            calPriorityFilter = prio;
+            btn.parentElement.querySelectorAll('.cal-filter-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCalendar();
+        }
+
+        function toggleCalSharedFilter() {
+            calSharedOnly = !calSharedOnly;
+            document.getElementById('calSharedFilterBtn').classList.toggle('active', calSharedOnly);
+            renderCalendar();
+        }
+
+        function taskPassesCalFilters(t) {
+            if (calCategoryFilter !== 'all' && t.category?.id != calCategoryFilter) return false;
+            if (calPriorityFilter !== 'all' && (t.priority || 'NONE') !== calPriorityFilter) return false;
+            if (calSharedOnly && !(t.sharedWith && t.sharedWith.length)) return false;
+            return true;
+        }
+
         // Initialize
         async function init() {
             if (!loadAuth()) {
@@ -1021,6 +1134,7 @@
             // Load categories
             await loadCategories();
             renderPriorityChips();
+            renderCalFilters();
 
             // ¿Venimos de otra página a editar una tarea puntual?
             // (calendar.html?edit=<id> — home y Tareas usan este link.)
@@ -1161,13 +1275,19 @@
                     cell.classList.add('selected');
                 }
 
-                // Píldoras de eventos
-                const dayTasks = allTasks.filter(t => t.startDate === dayStr);
+                // Píldoras de eventos — una tarea de varios días aparece en
+                // cada día que ocupa, no solo en el primero.
+                const dayTasks = allTasks.filter(taskPassesCalFilters).filter(t => {
+                    if (t.endDate && t.endDate !== t.startDate) {
+                        return dayStr >= t.startDate && dayStr <= t.endDate;
+                    }
+                    return t.startDate === dayStr;
+                });
                 const isSelected = cell.classList.contains('selected');
                 const MAX_PILLS = isSelected ? 3 : 4;
 
                 dayTasks.slice(0, MAX_PILLS).forEach(task => {
-                    cell.appendChild(buildPill(task));
+                    cell.appendChild(buildPill(task, dayStr, date));
                 });
                 if (dayTasks.length > MAX_PILLS) {
                     const more = document.createElement('div');
@@ -1219,26 +1339,52 @@
         }
 
         /* Una píldora = color de categoría + ícono + barra de prioridad */
-        function buildPill(task) {
+        /* Tareas de varios días: en cada celda se dibuja un tramo de la
+           misma barra. "start"/"middle"/"end" hacen que los tramos de un
+           mismo día-a-día se vean pegados entre celdas vecinas; el título
+           solo se repite al principio de la tarea o al empezar cada fila
+           que atraviesa (igual que en Google Calendar). */
+        function buildPill(task, dayStr, date) {
             const cat  = catStyle(task.category);
             const prio = prioStyle(task.priority);
+            const isMultiDay = task.endDate && task.endDate !== task.startDate;
+
+            let segClass  = '';
+            let showTitle = true;
+            let showTime  = !!task.startTime;
+
+            if (isMultiDay && dayStr && date) {
+                const isTaskStart = dayStr === task.startDate;
+                const isTaskEnd   = dayStr === task.endDate;
+                const isWeekStart = date.getDay() === 1; // lunes
+                const isWeekEnd   = date.getDay() === 0; // domingo
+                const segStart = isTaskStart || isWeekStart;
+                const segEnd   = isTaskEnd   || isWeekEnd;
+
+                if (segStart && !segEnd)      segClass = 'span-start';
+                else if (segEnd && !segStart) segClass = 'span-end';
+                else if (!segStart && !segEnd) segClass = 'span-middle';
+
+                showTitle = segStart;
+                showTime  = segStart && !!task.startTime;
+            }
 
             const pill = document.createElement('div');
-            pill.className = 'event-pill' + (task.completed ? ' done' : '');
+            pill.className = 'event-pill' + (task.completed ? ' done' : '') + (segClass ? ' ' + segClass : '');
             pill.style.backgroundColor = cat.color + '1f';
             pill.style.color = cat.color;
-            pill.style.borderLeftWidth = prio.bar + 'px';
+            pill.style.borderLeftWidth = (segClass === 'span-middle' || segClass === 'span-end') ? '0' : prio.bar + 'px';
             pill.style.borderLeftColor = cat.color;
             pill.style.fontWeight = prio.weight;
             pill.style.opacity = prio.opacity;
 
-            const time = task.startTime
+            const time = showTime
                 ? `<span class="pill-time">${task.startTime.substring(0, 5)}</span> `
                 : '';
             pill.innerHTML =
-                `<span class="pill-text">${time}${escapeHtml(task.title)}</span>` +
-                (prio.mark ? `<span class="pill-mark">${prio.mark}</span>` : '') +
-                (task.sharedWith?.length ? `<span class="pill-mark">💕</span>` : '') +
+                (showTitle ? `<span class="pill-text">${time}${escapeHtml(task.title)}</span>` : `<span class="pill-text">&nbsp;</span>`) +
+                (showTitle && prio.mark ? `<span class="pill-mark">${prio.mark}</span>` : '') +
+                (showTitle && task.sharedWith?.length ? `<span class="pill-mark">💕</span>` : '') +
                 `<span class="pill-actions">
                     <button type="button" class="pill-action-btn done" title="Completar">✓</button>
                     <button type="button" class="pill-action-btn edit" title="Editar"><svg class="icon-edit" viewBox="0 0 20 20" width="11" height="11" fill="none" aria-hidden="true"><path d="M12.6 3.4 16.6 7.4 6.8 17.2H2.8v-4L12.6 3.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M10.6 5.4 14.6 9.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
