@@ -277,22 +277,42 @@ footer {
 .empty-state-text, .no-tasks, .no-upcoming { color: var(--muted) !important; }
 .toast { border-radius: 12px !important; box-shadow: var(--shadow-lg) !important; }
 
-/* ── Home: agenda "Lo que viene" ── */
-.hero { align-items: stretch; }
-.hero-right { justify-content: flex-start !important; padding-top: 60px !important; gap: 16px !important; }
+/* ── Home: todo por encima del pliegue, sin scroll de página ──
+   "Lo que viene" + "Nuestros números" entran juntos en una pantalla;
+   solo la lista de tareas scrollea internamente si hay más de un par. */
+.above-fold {
+    height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.hero {
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0 !important; /* pisa el min-height:100vh del <style> de la página */
+}
+.hero-right {
+    justify-content: flex-start !important;
+    padding-top: 60px !important;
+    gap: 16px !important;
+    min-height: 0;
+}
+.numbers-section { flex: 0 0 auto; }
 
 .agenda-head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
+    flex-shrink: 0;
 }
 .agenda-list {
     display: flex;
     flex-direction: column;
     gap: 18px;
     overflow-y: auto;
-    max-height: calc(100vh - 220px);
+    flex: 1;
+    min-height: 0;
     padding-right: 4px;
 }
 .agenda-group { display: flex; flex-direction: column; gap: 7px; }
@@ -368,11 +388,15 @@ footer {
 .numbers-body .romantic-phrase { grid-column: 1 / -1; }
 
 @media (max-width: 900px) {
+    /* En mobile no alcanza el alto para todo junto sin scroll — se vuelve
+       a la página larga de siempre, con scroll normal. */
+    .above-fold { height: auto; overflow: visible; }
+    .hero { flex: none; min-height: auto !important; }
     .numbers-section { padding: 40px 24px 0; }
     .numbers-body { grid-template-columns: 1fr; }
     .numbers-body .numbers-top, .numbers-body .stats-grid { grid-column: 1; }
     .numbers-body .stats-grid { grid-template-columns: 1fr 1fr; }
-    .agenda-list { max-height: none; }
+    .agenda-list { flex: none; max-height: 340px; }
 }
 
 .counter-display { white-space: nowrap; font-size: clamp(1.3em, 2.3vw, 2.1em) !important; }
