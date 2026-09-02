@@ -328,6 +328,25 @@ footer {
 }
 .agenda-meta { font-size: 0.75em; color: var(--muted); margin-top: 2px; }
 .agenda-shared { flex-shrink: 0; font-size: 0.85em; }
+.agenda-actions { display: flex; gap: 4px; opacity: 0; transition: opacity .18s; flex-shrink: 0; }
+.agenda-item:hover .agenda-actions { opacity: 1; }
+.agenda-action-btn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.72em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, color .15s;
+}
+.agenda-action-btn:hover { background: rgba(28, 27, 34, 0.07); color: var(--ink); }
+.agenda-action-btn.done:hover  { color: #0f9d6b; }
+.agenda-action-btn.delete:hover { color: #e11d48; }
 .agenda-empty {
     color: var(--muted);
     font-size: 0.9em;

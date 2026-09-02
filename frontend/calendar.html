@@ -243,6 +243,7 @@
         .day-cell.selected .day-num { outline: 1px solid #a63d63; }
 
         .event-pill {
+            position: relative;
             display: flex;
             align-items: flex-start;
             gap: 5px;
@@ -271,6 +272,39 @@
             letter-spacing: -1px;
         }
         .event-pill.done .pill-text { text-decoration: line-through; opacity: 0.55; }
+
+        /* Acciones al hover: completar / editar / eliminar sin abrir el detalle */
+        .pill-actions {
+            display: none;
+            position: absolute;
+            top: 1px; right: 1px; bottom: 1px;
+            align-items: center;
+            gap: 1px;
+            padding: 0 3px;
+            background: #ffffff;
+            border-radius: 0 4px 4px 0;
+            box-shadow: -8px 0 6px -4px rgba(255, 255, 255, 0.95);
+        }
+        .event-pill:hover .pill-actions { display: flex; }
+        .pill-action-btn {
+            border: none;
+            background: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 4px;
+            font-size: 9px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            color: #45424f;
+            flex-shrink: 0;
+        }
+        .pill-action-btn:hover { background: rgba(28, 27, 34, 0.1); }
+        .pill-action-btn.done:hover  { color: #0f9d6b; }
+        .pill-action-btn.delete:hover { color: #e11d48; }
 
         .event-more {
             font-size: 0.65em;
@@ -342,7 +376,19 @@
             padding-bottom: 18px;
             border-bottom: 1px solid rgba(28, 27, 34, 0.07);
         }
-        .composer-when { font-size: 0.82em; color: #837e90; }
+        .composer-when-group { display: flex; align-items: center; gap: 10px; }
+        .composer-date-input {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            padding: 4px 2px !important;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #1c1b22;
+        }
+        .composer-date-input:focus { box-shadow: 0 0 0 2px rgba(166, 61, 99, 0.18) !important; border-radius: 6px !important; }
+        .composer-weekday { font-size: 0.82em; color: #837e90; text-transform: capitalize; }
 
         /* Tarea / Evento */
         .type-toggle {
@@ -657,6 +703,12 @@
         }
         .detail-btn.complete:hover { background: rgba(16, 185, 129, 0.22); }
         .detail-btn.complete.done-state { background: rgba(5, 150, 105, 0.22); color: #0b8a5e; }
+        .detail-btn.edit {
+            background: rgba(28, 27, 34, 0.055);
+            color: #1c1b22;
+            border: 1px solid rgba(28, 27, 34, 0.11);
+        }
+        .detail-btn.edit:hover { background: rgba(28, 27, 34, 0.1); }
         .detail-btn.delete {
             background: rgba(225, 29, 72, 0.1);
             color: #be123c;
@@ -821,7 +873,10 @@
             <div class="composer-head">
                 <input type="text" class="composer-title-input" id="cTitle" placeholder="Nombre de la tarea" required>
                 <div class="composer-when-row">
-                    <div class="composer-when" id="cWhen"></div>
+                    <div class="composer-when-group">
+                        <input type="date" id="cDate" class="composer-date-input" required>
+                        <span class="composer-weekday" id="cWeekday"></span>
+                    </div>
                     <div class="type-toggle" id="cTypeToggle">
                         <button type="button" class="type-btn selected" data-type="TASK">Tarea</button>
                         <button type="button" class="type-btn" data-type="EVENT">Evento</button>
@@ -916,12 +971,13 @@
         </div>
         <div class="detail-actions">
             <button class="detail-btn complete" id="detailCompleteBtn" onclick="detailToggleDone()">✓ Completar</button>
+            <button class="detail-btn edit" onclick="detailEdit()">✏️ Editar</button>
             <button class="detail-btn delete" onclick="detailAskDelete()">✕ Eliminar</button>
         </div>
     </div>
 
     <script src="js/catalog.js?v=2"></script>
-    <script src="js/api.js?v=4"></script>
+    <script src="js/api.js?v=5"></script>
     <script>
         /* ── Hamburger ── */
         const hamburger      = document.getElementById('hamburger');
@@ -964,11 +1020,27 @@
             await loadCategories();
             renderPriorityChips();
 
+            // ¿Venimos de otra página a editar una tarea puntual?
+            // (calendar.html?edit=<id> — home y Tareas usan este link.)
+            const editId = new URLSearchParams(location.search).get('edit');
+            let editTask = null;
+            if (editId) {
+                editTask = await getTaskById(Number(editId));
+                if (editTask) {
+                    const d = new Date(editTask.startDate + 'T12:00:00');
+                    currentDate  = new Date(d);
+                    selectedDate = new Date(d);
+                }
+                history.replaceState(null, '', 'calendar.html');
+            }
+
             // Load tasks
             await loadTasks();
 
             // Render calendar
             renderCalendar();
+
+            if (editTask) openComposerForEdit(editTask);
 
             // Load partner
             const users = await getUsers();
@@ -1153,9 +1225,23 @@
             pill.innerHTML =
                 `<span class="pill-text">${time}${escapeHtml(task.title)}</span>` +
                 (prio.mark ? `<span class="pill-mark">${prio.mark}</span>` : '') +
-                (task.sharedWith?.length ? `<span class="pill-mark">💕</span>` : '');
+                (task.sharedWith?.length ? `<span class="pill-mark">💕</span>` : '') +
+                `<span class="pill-actions">
+                    <button type="button" class="pill-action-btn done" title="Completar">✓</button>
+                    <button type="button" class="pill-action-btn edit" title="Editar">✏️</button>
+                    <button type="button" class="pill-action-btn delete" title="Eliminar">✕</button>
+                </span>`;
             pill.title = task.title;
             pill.addEventListener('click', e => { e.stopPropagation(); openDetail(task.id); });
+            pill.querySelector('.pill-action-btn.done').addEventListener('click', e => {
+                e.stopPropagation(); toggleTask(task.id);
+            });
+            pill.querySelector('.pill-action-btn.edit').addEventListener('click', e => {
+                e.stopPropagation(); openComposerForEdit(task);
+            });
+            pill.querySelector('.pill-action-btn.delete').addEventListener('click', e => {
+                e.stopPropagation(); askDelete(task.id);
+            });
             return pill;
         }
 
@@ -1233,7 +1319,22 @@
         let composerCatId    = null;
         let composerPrio     = 'NONE';
         let composerItemType = 'TASK';
+        let editingTaskId    = null;
         let quickAddDraft    = '';
+
+        const WEEKDAYS_LONG = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+        function updateWeekdayLabel() {
+            const val = document.getElementById('cDate').value;
+            document.getElementById('cWeekday').textContent =
+                val ? WEEKDAYS_LONG[new Date(val + 'T12:00:00').getDay()] : '';
+        }
+
+        document.getElementById('cDate').addEventListener('change', e => {
+            composerDate = e.target.value;
+            document.getElementById('cUntilDate').min = composerDate;
+            updateWeekdayLabel();
+        });
 
         /* Tarea / Evento */
         document.querySelectorAll('#cTypeToggle .type-btn').forEach(btn => {
@@ -1292,14 +1393,12 @@
         }
 
         function openComposer(title, dayStr) {
-            composerDate = dayStr;
-            const d = new Date(dayStr + 'T12:00:00');
-            const days   = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-            const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            editingTaskId = null;
+            composerDate  = dayStr;
 
             document.getElementById('cTitle').value = title;
-            document.getElementById('cWhen').textContent =
-                `${days[d.getDay()]} ${d.getDate()} de ${months[d.getMonth()]} de ${d.getFullYear()}`;
+            document.getElementById('cDate').value  = dayStr;
+            updateWeekdayLabel();
             document.getElementById('cStart').value = '';
             document.getElementById('cEnd').value   = '';
             document.getElementById('cUntilDate').value = '';
@@ -1320,13 +1419,44 @@
             selectCategory(known ? lastCat : (categories[0]?.id ?? null));
             selectPriority('NONE');
 
+            document.getElementById('cSubmit').textContent = 'Guardar';
             document.getElementById('composerOverlay').classList.add('active');
             requestAnimationFrame(() => document.getElementById('cStart').focus());
         }
 
+        /* Edita una tarea existente: precarga todo y el submit hace PUT
+           en vez de POST. Se llega acá desde el detalle, el hover de una
+           píldora/tarjeta, o desde otra página vía calendar.html?edit=<id>. */
+        function openComposerForEdit(task) {
+            editingTaskId = task.id;
+            composerDate  = task.startDate;
+
+            document.getElementById('cTitle').value = task.title;
+            document.getElementById('cDate').value  = task.startDate;
+            updateWeekdayLabel();
+            document.getElementById('cStart').value = task.startTime ? task.startTime.substring(0, 5) : '';
+            document.getElementById('cEnd').value   = task.endTime   ? task.endTime.substring(0, 5)   : '';
+            document.getElementById('cUntilDate').value = task.endDate || '';
+            document.getElementById('cUntilDate').min   = task.startDate;
+            document.getElementById('cDesc').value  = task.description || '';
+            document.getElementById('cLink').value  = task.link || '';
+            document.getElementById('cShared').checked = !!(task.sharedWith && task.sharedWith.length);
+            document.getElementById('cAllDay').checked = !!task.allDay;
+            document.getElementById('cTimeRow').style.display = task.allDay ? 'none' : '';
+
+            selectItemType(task.itemType === 'EVENT' ? 'EVENT' : 'TASK');
+            selectCategory(task.category?.id ?? null);
+            selectPriority(task.priority || 'NONE');
+
+            document.getElementById('cSubmit').textContent = 'Guardar cambios';
+            document.getElementById('composerOverlay').classList.add('active');
+            requestAnimationFrame(() => document.getElementById('cTitle').focus());
+        }
+
         function closeComposer() {
             document.getElementById('composerOverlay').classList.remove('active');
-            composerDate = null;
+            composerDate  = null;
+            editingTaskId = null;
             focusQuickAdd();
         }
 
@@ -1355,11 +1485,13 @@
                 return;
             }
 
-            const allDay = document.getElementById('cAllDay').checked;
-            const btn    = document.getElementById('cSubmit');
+            const existing   = editingTaskId ? allTasks.find(t => t.id === editingTaskId) : null;
+            const wasEditing = !!editingTaskId;
+            const allDay     = document.getElementById('cAllDay').checked;
+            const btn      = document.getElementById('cSubmit');
             btn.disabled = true;
 
-            const newTask = {
+            const payload = {
                 title,
                 description: document.getElementById('cDesc').value || null,
                 link:      document.getElementById('cLink').value || null,
@@ -1371,26 +1503,33 @@
                 category:  composerCatId ? { id: composerCatId } : null,
                 priority:  composerPrio,
                 itemType:  composerItemType,
-                completed: false,
+                completed: existing ? existing.completed : false,
                 createdBy: { id: currentUserId }
             };
 
-            const created = await createTask(newTask);
+            const saved = editingTaskId
+                ? await updateTask(editingTaskId, payload)
+                : await createTask(payload);
             btn.disabled = false;
 
-            if (!created) {
-                showToast('No se pudo crear la tarea', 'error');
+            if (!saved) {
+                showToast(editingTaskId ? 'No se pudieron guardar los cambios' : 'No se pudo crear la tarea', 'error');
                 return;
             }
-            if (document.getElementById('cShared').checked && partnerId) {
-                await shareTask(created.id, partnerId);
-                created.sharedWith = [{ id: partnerId }];
+
+            const wasShared  = !!(existing?.sharedWith?.length);
+            const wantShared = document.getElementById('cShared').checked;
+            if (wantShared && !wasShared && partnerId) {
+                await shareTask(saved.id, partnerId);
+            } else if (!wantShared && wasShared && partnerId) {
+                await unshareTask(saved.id, partnerId);
             }
-            allTasks.push(created);
+
             closeComposer();
+            await loadTasks();
             renderCalendar();
             focusQuickAdd();
-            showToast('Tarea agregada ✓', 'success');
+            showToast(wasEditing ? 'Cambios guardados ✓' : 'Tarea agregada ✓', 'success');
         });
 
         // Navigation
@@ -1510,6 +1649,13 @@
             const id = detailTaskId;
             closeDetail();
             askDelete(id);
+        }
+
+        function detailEdit() {
+            const task = allTasks.find(t => t.id === detailTaskId);
+            if (!task) return;
+            closeDetail();
+            openComposerForEdit(task);
         }
 
         /* ── Atajos de teclado globales ── */

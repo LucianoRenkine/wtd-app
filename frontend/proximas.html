@@ -880,6 +880,12 @@
         }
         .detail-btn.complete:hover { background: rgba(16, 185, 129, 0.22); }
         .detail-btn.complete.done-state { background: rgba(5, 150, 105, 0.22); color: #0b8a5e; }
+        .detail-btn.edit {
+            background: rgba(28, 27, 34, 0.055);
+            color: #1c1b22;
+            border: 1px solid rgba(28, 27, 34, 0.11);
+        }
+        .detail-btn.edit:hover { background: rgba(28, 27, 34, 0.1); }
         .detail-btn.delete {
             background: rgba(225, 29, 72, 0.1);
             color: #be123c;
@@ -1017,6 +1023,7 @@
         </div>
         <div class="detail-actions">
             <button class="detail-btn complete" id="detailCompleteBtn" onclick="detailToggleDone()">✓ Completar</button>
+            <button class="detail-btn edit" onclick="detailEdit()">✏️ Editar</button>
             <button class="detail-btn delete" onclick="detailAskDelete()">✕ Eliminar</button>
         </div>
     </div>
@@ -1092,7 +1099,7 @@
         </div>
     </div>
 
-    <script src="js/api.js?v=4"></script>
+    <script src="js/api.js?v=5"></script>
     <script>
         /* ── Hamburger ── */
         const hamburger     = document.getElementById('hamburger');
@@ -1298,6 +1305,7 @@
                 </div>
                 <div class="task-actions">
                     <button class="task-action-btn done" onclick="event.stopPropagation();toggleDone(${task.id})" title="Completar">✓</button>
+                    <button class="task-action-btn"      onclick="event.stopPropagation();window.location.href='calendar.html?edit=${task.id}'" title="Editar">✏️</button>
                     <button class="task-action-btn"      onclick="event.stopPropagation();askDelete(${task.id})"  title="Eliminar">✕</button>
                 </div>
             </div>`;
@@ -1526,6 +1534,12 @@
             const id = detailTaskId;
             closeDetail();
             askDelete(id);
+        }
+
+        function detailEdit() {
+            const id = detailTaskId;
+            closeDetail();
+            window.location.href = `calendar.html?edit=${id}`;
         }
 
         /* ── Start ── */

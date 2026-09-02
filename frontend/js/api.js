@@ -58,6 +58,18 @@ async function getUserById(userId) {
     }
 }
 
+// Get a single task by ID
+async function getTaskById(taskId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
+        if (!response.ok) throw new Error('Failed to fetch task');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching task:', error);
+        return null;
+    }
+}
+
 // Get tasks for a date range
 async function getTasksByDateRange(fromDate, toDate) {
     if (!currentUserId) {

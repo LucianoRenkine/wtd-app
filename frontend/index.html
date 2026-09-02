@@ -570,6 +570,18 @@
             min-height: 80px;
         }
         .tdp-no-desc { font-size: 0.88em; color: #b8b2c4; font-style: italic; text-align: center; padding: 24px; }
+        .tdp-link-row {
+            display: block;
+            margin-top: 14px;
+            padding: 10px 14px;
+            border: 1px solid rgba(28, 27, 34, 0.11);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #a63d63;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .tdp-link-row:hover { background: rgba(166, 61, 99, 0.06); border-color: rgba(166, 61, 99, 0.3); }
 
         .tdp-footer {
             display: flex;
@@ -584,6 +596,11 @@
             font-weight: 600; font-size: 0.88em; cursor: pointer;
             transition: all 0.2s; font-family: inherit;
         }
+        .tdp-btn.complete { background: rgba(16, 185, 129, 0.12); color: #0f9d6b; border: 1px solid rgba(16, 185, 129, 0.22); }
+        .tdp-btn.complete:hover { background: rgba(16, 185, 129, 0.22); }
+        .tdp-btn.complete.done-state { background: rgba(5, 150, 105, 0.22); color: #0b8a5e; }
+        .tdp-btn.edit { background: rgba(28, 27, 34, 0.055); color: #1c1b22; border: 1px solid rgba(28, 27, 34, 0.11); }
+        .tdp-btn.edit:hover { background: rgba(28, 27, 34, 0.1); }
         .tdp-btn.delete { background: rgba(225, 29, 72,0.1); color: #be123c; border: 1px solid rgba(225, 29, 72,0.18); }
         .tdp-btn.delete:hover { background: rgba(225, 29, 72,0.2); color: #e11d48; }
 
@@ -709,6 +726,27 @@
             .hero-right { padding: 40px 30px 50px; }
             .upcoming-section { padding: 50px 30px; }
         }
+
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(166, 61, 99, 0.4);
+            border-radius: 10px;
+            padding: 12px 22px;
+            font-size: 0.88em;
+            color: #1c1b22;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 400;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { border-color: rgba(244, 63, 94, 0.5); color: #f43f5e; }
+        .toast.success { border-color: rgba(16, 185, 129, 0.5); color: #0b8a5e; }
     </style>
     <link rel="stylesheet" href="css/theme.css?v=3">
 </head>
@@ -888,6 +926,8 @@
         </div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <!-- Task Detail Panel -->
     <div class="task-detail-overlay" id="taskDetailOverlay" onclick="closeTaskDetail()"></div>
     <div class="task-detail-panel" id="taskDetailPanel">
@@ -899,8 +939,11 @@
             <div class="tdp-title" id="tdpTitle"></div>
             <div class="tdp-meta" id="tdpMeta"></div>
             <div id="tdpDesc"></div>
+            <a href="#" id="tdpLinkRow" class="tdp-link-row" target="_blank" rel="noopener" style="display:none"></a>
         </div>
         <div class="tdp-footer">
+            <button class="tdp-btn complete" id="tdpCompleteBtn" onclick="tdpToggleDone()">✓ Completar</button>
+            <button class="tdp-btn edit" onclick="tdpEdit()">✏️ Editar</button>
             <button class="tdp-btn delete" onclick="tdpDelete()">✕ Eliminar</button>
         </div>
     </div>
@@ -912,7 +955,7 @@
     </footer>
 
     <script src="js/catalog.js?v=2"></script>
-    <script src="js/api.js?v=4"></script>
+    <script src="js/api.js?v=5"></script>
     <script>
         /* ── Auth guard ── */
         if (!localStorage.getItem('wtdAuth')) {
@@ -1078,6 +1121,11 @@
                                 <div class="agenda-meta">${task.startTime ? task.startTime.substring(0, 5) + ' · ' : ''}${task.category?.name || 'Sin categoría'}</div>
                             </div>
                             ${task.sharedWith?.length ? '<span class="agenda-shared">💕</span>' : ''}
+                            <span class="agenda-actions">
+                                <button type="button" class="agenda-action-btn done" title="Completar" onclick="event.stopPropagation();toggleUpcomingDone(${task.id})">✓</button>
+                                <button type="button" class="agenda-action-btn edit" title="Editar" onclick="event.stopPropagation();window.location.href='calendar.html?edit=${task.id}'">✏️</button>
+                                <button type="button" class="agenda-action-btn delete" title="Eliminar" onclick="event.stopPropagation();askDeleteUpcoming(${task.id})">✕</button>
+                            </span>
                         </div>`;
                     }).join('')}
                 </div>`).join('');
@@ -1095,21 +1143,30 @@
 
             document.getElementById('tdpTitle').textContent = task.title;
 
-            const color   = task.category?.color || '#a63d63';
-            const catName = task.category?.name  || 'Sin categoría';
-            let meta = `<span class="tdp-badge" style="background:${color}">${catName}</span>`;
+            const cat  = catStyle(task.category);
+            const prio = prioStyle(task.priority);
+            let meta = `<span class="tdp-badge" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>`;
+            meta += `<span class="tdp-info">${task.itemType === 'EVENT' ? 'Evento' : 'Tarea'}</span>`;
 
             if (task.startDate) {
                 const d = new Date(task.startDate + 'T12:00:00');
-                meta += `<span class="tdp-info">${WEEKDAYS_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]}</span>`;
+                let dateStr = `${WEEKDAYS_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]}`;
+                if (task.endDate && task.endDate !== task.startDate) {
+                    const dEnd = new Date(task.endDate + 'T12:00:00');
+                    dateStr += ` → ${WEEKDAYS_ES[dEnd.getDay()]} ${dEnd.getDate()} de ${MONTHS_ES[dEnd.getMonth()]}`;
+                }
+                meta += `<span class="tdp-info">${dateStr}</span>`;
             }
-            if (task.startTime) {
+            if (task.allDay) {
+                meta += `<span class="tdp-info">Todo el día</span>`;
+            } else if (task.startTime) {
                 const t   = task.startTime.substring(0, 5);
                 const end = task.endTime ? ` → ${task.endTime.substring(0, 5)}` : '';
                 meta += `<span class="tdp-info">${t}${end}</span>`;
             }
-            const prio = { LOW: 'Baja', MEDIUM: 'Normal', HIGH: 'Alta' }[task.priority];
-            if (prio) meta += `<span class="tdp-info">Prioridad ${prio}</span>`;
+            if (prio.label !== 'Sin prioridad') {
+                meta += `<span class="tdp-info">Prioridad ${prio.label}${prio.mark ? ' ' + prio.mark : ''}</span>`;
+            }
             if (task.createdBy?.nombre) meta += `<span class="tdp-info">Por ${task.createdBy.nombre}</span>`;
             if (task.sharedWith?.length) meta += `<span class="tdp-info shared">Compartida</span>`;
 
@@ -1124,6 +1181,24 @@
                 descEl.textContent = 'Sin descripción';
             }
 
+            const linkEl = document.getElementById('tdpLinkRow');
+            if (task.link) {
+                linkEl.href = task.link;
+                linkEl.textContent = '🔗 ' + task.link;
+                linkEl.style.display = '';
+            } else {
+                linkEl.style.display = 'none';
+            }
+
+            const completeBtn = document.getElementById('tdpCompleteBtn');
+            if (task.completed) {
+                completeBtn.textContent = '↩ Desmarcar';
+                completeBtn.classList.add('done-state');
+            } else {
+                completeBtn.textContent = '✓ Completar';
+                completeBtn.classList.remove('done-state');
+            }
+
             document.getElementById('taskDetailPanel').classList.add('active');
             document.getElementById('taskDetailOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1136,10 +1211,46 @@
             activeDetailId = null;
         }
 
+        function showToast(msg, type = 'info') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = `toast ${type} show`;
+            clearTimeout(el._t);
+            el._t = setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
         function tdpDelete() {
             const id = activeDetailId;
             closeTaskDetail();
             askDeleteUpcoming(id);
+        }
+
+        function tdpEdit() {
+            const id = activeDetailId;
+            closeTaskDetail();
+            window.location.href = `calendar.html?edit=${id}`;
+        }
+
+        async function tdpToggleDone() {
+            if (!activeDetailId) return;
+            await toggleUpcomingDone(activeDetailId);
+            closeTaskDetail();
+        }
+
+        /* Completar desde acá (detalle o hover) sin pasar por el calendario */
+        async function toggleUpcomingDone(taskId) {
+            const task = upcomingTasks.find(t => t.id === taskId);
+            if (!task) return;
+            task.completed = !task.completed;
+            renderAgenda(); // optimista
+            const updated = await updateTask(taskId, task);
+            if (updated) {
+                showToast(task.completed ? '¡Tarea completada! ✓' : 'Tarea desmarcada', 'success');
+            } else {
+                task.completed = !task.completed; // rollback
+                renderAgenda();
+                showToast('No se pudo actualizar la tarea', 'error');
+            }
         }
 
         /* ── Delete modal ── */
