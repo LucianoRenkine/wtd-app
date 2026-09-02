@@ -13,9 +13,12 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+    // Una tarea "cae" en el rango si su tramo [startDate, endDate ?: startDate]
+    // se solapa con [startDate, endDate] del pedido — así las de varios días
+    // aparecen en todos los días que ocupan, no solo en el primero.
     @Query("SELECT t FROM Task t WHERE " +
            "(t.createdBy = :user OR :user MEMBER OF t.sharedWith) AND " +
-           "t.startDate BETWEEN :startDate AND :endDate " +
+           "COALESCE(t.endDate, t.startDate) >= :startDate AND t.startDate <= :endDate " +
            "ORDER BY t.startDate ASC, t.startTime ASC")
     List<Task> findTasksByUserAndDateRange(
         @Param("user") User user,
@@ -25,7 +28,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t WHERE " +
            "(t.createdBy = :user OR :user MEMBER OF t.sharedWith) AND " +
-           "t.startDate = :date " +
+           "t.startDate <= :date AND COALESCE(t.endDate, t.startDate) >= :date " +
            "ORDER BY t.startTime ASC")
     List<Task> findTasksByUserAndDate(
         @Param("user") User user,
@@ -36,6 +39,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t WHERE " +
            "(t.createdBy = :user OR :user MEMBER OF t.sharedWith) " +
-           "ORDER BY t.startDate ASC")
+           "ORDER BY t.startDate ASC, t.startTime ASC")
     List<Task> findAllTasksForUser(@Param("user") User user);
+
+    // Eventos (no Tareas) todavía no completados: el job de auto-completado
+    // los revisa a todos y decide en Java si ya venció su horario.
+    List<Task> findByItemTypeAndCompletedFalse(Task.ItemType itemType);
 }

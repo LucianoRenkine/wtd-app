@@ -36,6 +36,16 @@ public class Task {
 
     private LocalTime endTime;
 
+    @Column(nullable = false, columnDefinition = "boolean not null default false")
+    private Boolean allDay = false;
+
+    @Column(columnDefinition = "TEXT")
+    private String link;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "item_type", length = 20, columnDefinition = "varchar(20) not null default 'TASK'")
+    private ItemType itemType = ItemType.TASK;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -49,7 +59,7 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private Priority priority = Priority.MEDIUM;
+    private Priority priority = Priority.NONE;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
@@ -80,10 +90,14 @@ public class Task {
     }
 
     public enum Priority {
-        LOW, MEDIUM, HIGH
+        NONE, LOW, MEDIUM, HIGH
     }
 
     public enum RecurrenceType {
         NONE, DAILY, WEEKLY, MONTHLY
+    }
+
+    public enum ItemType {
+        TASK, EVENT
     }
 }
