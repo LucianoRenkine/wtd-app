@@ -346,9 +346,8 @@
             font-weight: 700;
         }
 
-        .day-cell.other-month { background: rgba(28, 27, 34, 0.025); cursor: default; }
+        .day-cell.other-month { background: rgba(28, 27, 34, 0.025); }
         .day-cell.other-month .day-num { color: #c4c0cc; }
-        .day-cell.other-month:hover { background: rgba(28, 27, 34, 0.025); }
 
         .day-cell.selected { background: rgba(28, 27, 34, 0.055); }
         .day-cell.selected .day-num { outline: 1px solid #a63d63; }
@@ -1303,8 +1302,10 @@
         async function loadTasks() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            const from = new Date(year, month, 1).toISOString().split('T')[0];
-            const to = new Date(year, month + 1, 0).toISOString().split('T')[0];
+            // Margen de 6 días a cada lado: cubre los días de relleno del
+            // mes anterior/siguiente que se llegan a ver en la grilla.
+            const from = new Date(year, month, 1 - 6).toISOString().split('T')[0];
+            const to = new Date(year, month + 1, 6).toISOString().split('T')[0];
 
             allTasks = await getTasksByDateRange(from, to);
         }
@@ -1364,6 +1365,7 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             const date = new Date(year, month + monthOffset, day);
+            const dayStr = date.toISOString().split('T')[0];
 
             // Day number bubble
             const dayNum = document.createElement('div');
@@ -1373,78 +1375,81 @@
 
             if (otherMonth) {
                 cell.classList.add('other-month');
-            } else {
-                const dayStr = date.toISOString().split('T')[0];
-
-                // Today?
-                if (dayStr === new Date().toISOString().split('T')[0]) {
-                    cell.classList.add('today');
-                }
-
-                // Selected?
-                if (dayStr === selectedDate.toISOString().split('T')[0]) {
-                    cell.classList.add('selected');
-                }
-
-                // Píldoras de eventos — una tarea de varios días aparece en
-                // cada día que ocupa, no solo en el primero.
-                const dayTasks = allTasks.filter(taskPassesCalFilters).filter(t => {
-                    if (t.endDate && t.endDate !== t.startDate) {
-                        return dayStr >= t.startDate && dayStr <= t.endDate;
-                    }
-                    return t.startDate === dayStr;
-                });
-                const isSelected = cell.classList.contains('selected');
-                const MAX_PILLS = isSelected ? 3 : 4;
-
-                dayTasks.slice(0, MAX_PILLS).forEach(task => {
-                    cell.appendChild(buildPill(task, dayStr, date));
-                });
-                if (dayTasks.length > MAX_PILLS) {
-                    const more = document.createElement('div');
-                    more.className = 'event-more';
-                    more.textContent = `+${dayTasks.length - MAX_PILLS} más`;
-                    cell.appendChild(more);
-                }
-
-                // Entrada rápida en el día seleccionado
-                if (isSelected) {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'quick-add';
-                    input.id = 'quickAdd';
-                    input.placeholder = '+ Tarea…';
-                    input.autocomplete = 'off';
-                    input.value = quickAddDraft;
-                    input.addEventListener('click', e => e.stopPropagation());
-                    input.addEventListener('input', () => { quickAddDraft = input.value; });
-                    input.addEventListener('keydown', e => {
-                        if (isEnter(e)) {
-                            e.preventDefault();
-                            const title = input.value.trim();
-                            if (!title) return;
-                            quickAddDraft = '';
-                            input.value = '';
-                            openComposer(title, dayStr);
-                        } else if (e.key === 'Escape') {
-                            input.blur();
-                        }
-                    });
-                    cell.appendChild(input);
-                }
-
-                // Seleccionar el día y dejar el cursor listo para escribir
-                cell.addEventListener('click', () => {
-                    if (dayStr === selectedDate.toISOString().split('T')[0]) {
-                        focusQuickAdd();
-                        return;
-                    }
-                    selectedDate = date;
-                    quickAddDraft = '';
-                    renderCalendar();
-                    focusQuickAdd();
-                });
             }
+
+            // Today?
+            if (dayStr === new Date().toISOString().split('T')[0]) {
+                cell.classList.add('today');
+            }
+
+            // Selected? (un día del mes anterior/siguiente también puede
+            // seleccionarse, sin cambiar el mes que se está mirando)
+            if (dayStr === selectedDate.toISOString().split('T')[0]) {
+                cell.classList.add('selected');
+            }
+
+            // Píldoras de eventos — una tarea de varios días aparece en
+            // cada día que ocupa, no solo en el primero. También en los
+            // días de relleno del mes adyacente, para poder ver y sumar
+            // tareas ahí sin cambiar de mes.
+            const dayTasks = allTasks.filter(taskPassesCalFilters).filter(t => {
+                if (t.endDate && t.endDate !== t.startDate) {
+                    return dayStr >= t.startDate && dayStr <= t.endDate;
+                }
+                return t.startDate === dayStr;
+            });
+            const isSelected = cell.classList.contains('selected');
+            const MAX_PILLS = isSelected ? 3 : 4;
+
+            dayTasks.slice(0, MAX_PILLS).forEach(task => {
+                cell.appendChild(buildPill(task, dayStr, date));
+            });
+            if (dayTasks.length > MAX_PILLS) {
+                const more = document.createElement('div');
+                more.className = 'event-more';
+                more.textContent = `+${dayTasks.length - MAX_PILLS} más`;
+                cell.appendChild(more);
+            }
+
+            // Entrada rápida en el día seleccionado
+            if (isSelected) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'quick-add';
+                input.id = 'quickAdd';
+                input.placeholder = '+ Tarea…';
+                input.autocomplete = 'off';
+                input.value = quickAddDraft;
+                input.addEventListener('click', e => e.stopPropagation());
+                input.addEventListener('input', () => { quickAddDraft = input.value; });
+                input.addEventListener('keydown', e => {
+                    if (isEnter(e)) {
+                        e.preventDefault();
+                        const title = input.value.trim();
+                        if (!title) return;
+                        quickAddDraft = '';
+                        input.value = '';
+                        openComposer(title, dayStr);
+                    } else if (e.key === 'Escape') {
+                        input.blur();
+                    }
+                });
+                cell.appendChild(input);
+            }
+
+            // Seleccionar el día y dejar el cursor listo para escribir.
+            // Si es un día del mes anterior/siguiente, se selecciona en el
+            // lugar sin cambiar el mes que se está mostrando.
+            cell.addEventListener('click', () => {
+                if (dayStr === selectedDate.toISOString().split('T')[0]) {
+                    focusQuickAdd();
+                    return;
+                }
+                selectedDate = date;
+                quickAddDraft = '';
+                renderCalendar();
+                focusQuickAdd();
+            });
 
             return cell;
         }
