@@ -1,4 +1,15 @@
 // API Client for WTD Backend
+
+// Fecha local en formato "YYYY-MM-DD". OJO: nunca usar date.toISOString()
+// para esto — toISOString() convierte a UTC primero, y en GMT-3 eso hace
+// que después de las 21hs (24 - 3) el resultado ya sea el día siguiente.
+function toLocalDateStr(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const PROD_API = 'https://wtd-app-production.up.railway.app/api';
 // Permite apuntar el front local al backend de producción: localStorage.wtdApiBase = PROD_API

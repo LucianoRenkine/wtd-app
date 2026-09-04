@@ -1209,7 +1209,7 @@
             const today    = new Date(); today.setHours(0,0,0,0);
             const tomorrow = new Date(today.getTime() + 86400000);
             const weekEnd  = new Date(today.getTime() + 7 * 86400000);
-            const todayStr = today.toISOString().split('T')[0];
+            const todayStr = toLocalDateStr(today);
 
             // Prioridad Nula = calendario-only, no se lista acá ni en el home.
             const visible = allTasks.filter(t => t.priority !== 'NONE');
@@ -1256,7 +1256,7 @@
                nuevo por cada día suelto. */
             const RANGE_ORDER = ['past', 'today', 'tomorrow', 'week', 'later'];
             const RANGE_LABEL = { past: 'Pasado', today: 'Hoy', tomorrow: 'Mañana', week: 'Esta semana', later: 'Más adelante' };
-            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const tomorrowStr = toLocalDateStr(tomorrow);
 
             function rangeKeyFor(dateStr) {
                 if (dateStr < todayStr) return 'past';

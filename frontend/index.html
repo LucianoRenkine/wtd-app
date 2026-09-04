@@ -1217,8 +1217,8 @@
             // Desde hoy hasta dentro de dos semanas: lo que realmente "viene"
             const today   = new Date();
             const horizon = new Date(today.getTime() + 14 * 86400000);
-            const from = today.toISOString().split('T')[0];
-            const to   = horizon.toISOString().split('T')[0];
+            const from = toLocalDateStr(today);
+            const to   = toLocalDateStr(horizon);
 
             const tasks = await getTasksByDateRange(from, to);
             upcomingTasks = tasks
