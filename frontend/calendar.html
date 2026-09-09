@@ -346,8 +346,35 @@
             font-weight: 700;
         }
 
-        .day-cell.other-month { background: rgba(28, 27, 34, 0.025); }
-        .day-cell.other-month .day-num { color: #c4c0cc; }
+        /* Días de otro mes (antes/después del actual): el gris más
+           marcado — no son "acá", pasaron o no. */
+        .day-cell.other-month { background: rgba(28, 27, 34, 0.09); }
+        .day-cell.other-month .day-num { color: #9d97a8; }
+        .day-cell.other-month .event-pill { filter: grayscale(1); opacity: 0.6; }
+
+        /* Días ya pasados del mes actual: un gris más suave que el de
+           los meses vecinos — siguen siendo "este mes", solo que ya
+           se fueron. */
+        .day-cell.past:not(.other-month) { background: rgba(28, 27, 34, 0.05); }
+        .day-cell.past:not(.other-month) .day-num { color: #aaa4b3; }
+        .day-cell.past:not(.other-month) .event-pill { filter: grayscale(0.85); opacity: 0.7; }
+
+        /* Seleccionar un día gris (pasado o de otro mes) aclara el
+           gris en vez de sacarlo del todo — se sigue notando qué tipo
+           de día es mientras lo estás editando. */
+        .day-cell.selected.other-month,
+        .day-cell.selected.past {
+            background: rgba(28, 27, 34, 0.02);
+        }
+        .day-cell.selected.other-month .day-num,
+        .day-cell.selected.past .day-num {
+            color: #c4c0cc;
+        }
+        .day-cell.selected.other-month .event-pill,
+        .day-cell.selected.past .event-pill {
+            filter: grayscale(0.35);
+            opacity: 0.85;
+        }
 
         .day-cell.selected { background: rgba(28, 27, 34, 0.055); }
         .day-cell.selected .day-num { outline: 1px solid #a63d63; }
@@ -1377,9 +1404,12 @@
                 cell.classList.add('other-month');
             }
 
-            // Today?
-            if (dayStr === toLocalDateStr(new Date())) {
+            // Today? ¿Ya pasó?
+            const todayStr = toLocalDateStr(new Date());
+            if (dayStr === todayStr) {
                 cell.classList.add('today');
+            } else if (dayStr < todayStr) {
+                cell.classList.add('past');
             }
 
             // Selected? (un día del mes anterior/siguiente también puede
