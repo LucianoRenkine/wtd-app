@@ -11,7 +11,7 @@ function toLocalDateStr(date) {
 }
 
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const PROD_API = 'https://wtd-app-production.up.railway.app/api';
+const PROD_API = 'https://wtd-backend.onrender.com/api';
 // Permite apuntar el front local al backend de producción: localStorage.wtdApiBase = PROD_API
 const API_BASE_URL = localStorage.getItem('wtdApiBase')
     || (IS_LOCAL ? 'http://localhost:8080/api' : PROD_API);
