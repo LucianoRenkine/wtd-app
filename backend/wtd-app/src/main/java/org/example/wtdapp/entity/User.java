@@ -1,5 +1,6 @@
 package org.example.wtdapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class User {
     @Column(nullable = false)
     private String nombre;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String passwordHash;
 

@@ -98,6 +98,23 @@
             color: #1c1b22;
         }
 
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(246, 243, 252, 0.9);
+            border: 2px solid rgba(28, 27, 34, 0.11);
+            border-radius: 8px;
+            color: #1c1b22;
+            font-family: inherit;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #a63d63;
+        }
+
         .login-btn {
             background: #a63d63;
             color: white;
@@ -174,6 +191,10 @@
                     <option value="">Cargando usuarios...</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="userPassword">Contraseña:</label>
+                <input type="password" id="userPassword" class="password-input" autocomplete="current-password" required>
+            </div>
             <button type="submit" class="login-btn" id="loginBtn">Ingresar</button>
         </form>
 
@@ -208,15 +229,26 @@
                 showError('Por favor selecciona un usuario');
                 return;
             }
+            const password = document.getElementById('userPassword').value;
+            if (!password) {
+                showError('Ingresá la contraseña');
+                return;
+            }
 
-            const [userId, userName] = selected.split('|');
-            const user = await getUserById(userId);
+            const [userId] = selected.split('|');
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Ingresando...';
+
+            const user = await loginUser(userId, password);
 
             if (user) {
                 saveAuth(parseInt(userId), user);
                 window.location.href = 'index.html';
             } else {
-                showError('Error al cargar el usuario');
+                showError('Contraseña incorrecta');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Ingresar';
             }
         });
 

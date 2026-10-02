@@ -69,6 +69,24 @@ async function getUserById(userId) {
     }
 }
 
+// Verifica la contraseña del perfil contra el backend. Devuelve el
+// usuario si es correcta, o null si no (contraseña mala, usuario
+// inexistente, o falla de red).
+async function loginUser(userId, password) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+        });
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        console.error('Error logging in:', error);
+        return null;
+    }
+}
+
 // Get a single task by ID
 async function getTaskById(taskId) {
     try {
