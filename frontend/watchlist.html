@@ -642,6 +642,7 @@
                 <div class="block-head">
                     <h2 class="block-title">Quiero ver</h2>
                     <span class="block-count" id="cWant">0</span>
+                    <span class="block-hint">últimos lanzamientos primero</span>
                 </div>
                 <div class="panel" id="listWant"></div>
             </section>
@@ -703,6 +704,11 @@
             <div class="form-row" id="efDateRow">
                 <label for="efDate">Fecha de estreno</label>
                 <input class="field" id="efDate" type="date">
+            </div>
+            <div class="form-row" id="efRelRow" hidden>
+                <label for="efReleased">Fecha de lanzamiento</label>
+                <input class="field" id="efReleased" type="date">
+                <div class="eps-hint">Ordena "Quiero ver" (primero los lanzamientos más recientes).</div>
             </div>
             <div class="sched form-row" id="efSched" hidden></div>
             <div class="form-row" id="efEps" hidden>
@@ -776,7 +782,9 @@
              id, title,
              type:  'MOVIE' | 'SERIES',
              list:  'WANT' | 'WATCHING' | 'UPCOMING' | 'DONE',
-             releaseDate: 'YYYY-MM-DD' | null,   // solo UPCOMING
+             releaseDate: 'YYYY-MM-DD' | null,   // próximo estreno (UPCOMING / series con calendario)
+             releasedOn:  'YYYY-MM-DD' | null,   // cuándo salió (ordena "Quiero ver"); en series, el último capítulo
+             year: number | null,                // solo para filas viejas sin fecha exacta
              season, episode,                    // solo SERIES (progreso)
              note,
              createdAt,
@@ -824,7 +832,9 @@
                 return {
                     id: w.id, title: w.title, type: w.type,
                     list: w.releaseDate && daysUntil(w.releaseDate) > 0 ? 'UPCOMING' : 'WANT',
-                    releaseDate: w.releaseDate || null, schedule: null, avail: null,
+                    releaseDate: w.releaseDate && daysUntil(w.releaseDate) > 0 ? w.releaseDate : null,
+                    releasedOn: w.releaseDate && daysUntil(w.releaseDate) <= 0 ? w.releaseDate : null,
+                    year: w.year || null, schedule: null, avail: null,
                     season: w.season || null, episode: null, note: '',
                     createdAt: w.createdAt, external: null
                 };
@@ -1107,6 +1117,7 @@
                         moved = true;
                     }
                     if (moved) {
+                        it.releasedOn = epDate(s, s.released);   // fecha del último capítulo salido
                         it.avail = { season: s.season, count: s.released, total: s.total || null, full: false };
                         if (it.list === 'UPCOMING') it.list = 'WANT';
                         changed = true;
@@ -1120,6 +1131,7 @@
                 let guard = 0;
                 while (it.releaseDate && daysUntil(it.releaseDate) <= 0 && guard++ < 500) {
                     changed = true;
+                    it.releasedOn = it.releaseDate;
                     if (s && s.mode === 'FULL') {
                         it.avail = { season: s.season, count: s.total || null, total: s.total || null, full: true };
                         it.schedule = null;
@@ -1260,9 +1272,31 @@
             </article>`;
         }
 
+        /* Clave de orden por lanzamiento: fecha exacta, o el año si es lo único que hay. */
+        const releaseKey = it => it.releasedOn || (it.year ? `${it.year}-01-01` : '');
+
+        function releaseLabel(it) {
+            if (it.releasedOn) {
+                const d = parseDate(it.releasedOn);
+                return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+            }
+            return it.year ? String(it.year) : '';
+        }
+
+        // Más recientes primero; sin fecha al final (lo último agregado, arriba).
+        function byRelease(a, b) {
+            const ka = releaseKey(a), kb = releaseKey(b);
+            if (ka !== kb) return !ka ? 1 : !kb ? -1 : (ka < kb ? 1 : -1);
+            return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
+        }
+
         function wantRowHtml(it) {
             const paused = it.type === 'SERIES' && it.episode > 0;
-            const sub = paused ? `Pausada en T${it.season || 1} · Cap. ${it.episode}` : (it.note ? esc(it.note) : '');
+            const sub = [
+                releaseLabel(it),
+                paused ? `Pausada en T${it.season || 1} · Cap. ${it.episode}` : '',
+                it.note ? esc(it.note) : ''
+            ].filter(Boolean).join(' · ');
             const avail = it.type === 'SERIES' && it.avail ? `<div class="row-sub avail">${esc(availText(it.avail))}</div>` : '';
             return `
             <div class="row ${selected.has(String(it.id)) ? 'sel-on' : ''}" ${selectMode ? `onclick="toggleSel('${it.id}')"` : ''}>
@@ -1329,7 +1363,7 @@
         function render() {
             pruneSelection();
             const now  = visible('WATCHING');
-            const want = visible('WANT');
+            const want = visible('WANT').sort(byRelease);
             const done = visible('DONE');
             const up   = visible('UPCOMING').sort((a, b) => {
                 if (!a.releaseDate) return 1;
@@ -1379,8 +1413,11 @@
         /* ── Alta rápida ── */
         function syncQa() {
             const up = $('qaList').value === 'UPCOMING';
-            $('qaDate').hidden = !up;
-            if (!up) $('qaDate').value = '';
+            const want = $('qaList').value === 'WANT';
+            // Próximamente: fecha de estreno. Quiero ver: fecha de lanzamiento (opcional, para ordenar).
+            $('qaDate').hidden = !(up || want);
+            $('qaDate').title = $('qaDate').ariaLabel = up ? 'Fecha de estreno' : 'Fecha de lanzamiento (opcional)';
+            if (!up && !want) $('qaDate').value = '';
             // Temporada/capítulo: solo al agregar una serie que ya estás viendo.
             const prog = qaType === 'SERIES' && $('qaList').value === 'WATCHING';
             $('qaProg').hidden = !prog;
@@ -1413,6 +1450,8 @@
                 type: qaType,
                 list,
                 releaseDate,
+                releasedOn: list === 'WANT' ? ($('qaDate').value || null) : null,
+                year: null,
                 schedule,
                 avail: null,
                 season: qaType === 'SERIES' ? (schedule ? schedule.season : (parseInt($('qaSeason').value) || 1)) : null,
@@ -1624,6 +1663,7 @@
             $('efSched').hidden = !schedShow;
             $('efDateRow').hidden = !(list === 'UPCOMING' || (schedShow && $('efMode').value !== 'NONE')) || editHidesDate();
             $('efProgRow').hidden = !isSeries;
+            $('efRelRow').hidden = !(list !== 'UPCOMING' && !schedShow);
             renderEps();
         }
         $('efList').addEventListener('change', syncEditFields);
@@ -1637,6 +1677,7 @@
             $('efType').value = it.type;
             $('efList').value = it.list;
             $('efDate').value = it.releaseDate || '';
+            $('efReleased').value = it.releasedOn || '';
             $('efSeason').value = it.season || '';
             $('efEpisode').value = it.episode ?? '';
             $('efNote').value = it.note || '';
@@ -1677,6 +1718,7 @@
                 it.episode = null;
             }
             it.note = $('efNote').value.trim();
+            if (!$('efRelRow').hidden) it.releasedOn = $('efReleased').value || null;
             syncReleases();
             persist();
             closeEdit();
