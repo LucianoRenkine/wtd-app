@@ -165,6 +165,37 @@
         .sync-banner.info { background: rgba(15, 157, 107, 0.08); border-color: rgba(15, 157, 107, 0.22); color: #0b6e4c; }
         .sync-banner.warn { background: rgba(194, 90, 52, 0.09); border-color: rgba(194, 90, 52, 0.25); color: #8a3d1d; }
 
+        .top-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .top-right .btn-soft { padding: 9px 14px; }
+        #selBtn.on { background: #1c1b22; color: #fff; border-color: #1c1b22; }
+
+        /* Selección múltiple */
+        .sel-box { width: 20px; height: 20px; accent-color: #a63d63; cursor: pointer; flex-shrink: 0; margin-top: 1px; }
+        .now-card.sel-on { box-shadow: 0 0 0 2px #a63d63, 0 1px 2px rgba(28,27,34,.05); }
+        .row.sel-on { background: rgba(166, 61, 99, 0.07); }
+        body.selecting .row-actions, body.selecting .card-actions, body.selecting .progress { display: none; }
+        body.selecting .now-card, body.selecting .row { cursor: pointer; }
+        .sel-bar {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%);
+            width: min(760px, calc(100% - 24px));
+            background: #fff;
+            border: 1px solid rgba(28, 27, 34, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(28, 27, 34, 0.18);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            z-index: 120;
+        }
+        .sel-count { font-size: 0.88em; font-weight: 700; padding: 0 6px; }
+        .sel-bar .btn-soft:disabled { opacity: .4; cursor: default; pointer-events: none; }
+        .btn-soft.sel-del:hover { border-color: #e11d48; color: #e11d48; background: rgba(225, 29, 72, 0.06); }
+
         /* Barra de alta rápida */
         .quick-add {
             background: #fff;
@@ -561,10 +592,13 @@
                 <h1 class="page-title">Watchlist</h1>
                 <p class="page-subtitle" id="pageSub">Lo que estás viendo, lo que querés ver y lo que viene.</p>
             </div>
+            <div class="top-right">
+            <button type="button" class="btn-soft" id="selBtn">Seleccionar</button>
             <div class="seg" id="filterSeg" role="tablist" aria-label="Filtrar por tipo">
                 <button data-f="ALL" class="on">Todo <span class="n" id="nALL">0</span></button>
                 <button data-f="MOVIE">Películas <span class="n" id="nMOVIE">0</span></button>
                 <button data-f="SERIES">Series <span class="n" id="nSERIES">0</span></button>
+            </div>
             </div>
         </div>
 
@@ -628,6 +662,16 @@
             <button class="done-toggle" id="doneToggle"><span class="chev">▶</span> Ya vistas <span class="block-count" id="cDone">0</span></button>
             <div class="panel done-list" id="listDone" hidden></div>
         </section>
+    </div>
+
+    <!-- Barra de selección múltiple -->
+    <div class="sel-bar" id="selBar" hidden>
+        <span class="sel-count" id="selCount"></span>
+        <button type="button" class="btn-soft" id="selAll"></button>
+        <span class="spacer"></span>
+        <button type="button" class="btn-soft done" id="selDone">✓ Marcar como vistas</button>
+        <button type="button" class="btn-soft sel-del" id="selDel">Eliminar</button>
+        <button type="button" class="btn-ghost" id="selCancel">Cancelar</button>
     </div>
 
     <!-- Editar -->
@@ -856,7 +900,8 @@
                     const old = it.id;
                     it.id = res.id;
                     if (editingId === old) editingId = res.id;
-                    if (pendingDeleteId === old) pendingDeleteId = res.id;
+                    pendingDeleteIds = pendingDeleteIds.map(x => String(x) === String(old) ? res.id : x);
+                    if (selected.delete(String(old))) selected.add(String(res.id));
                     renumbered = true;
                 }
                 lastSaved.set(String(it.id), wireJson(it));
@@ -915,7 +960,9 @@
         let filter = 'ALL';
         let qaType = 'MOVIE';
         let editingId = null;
-        let pendingDeleteId = null;
+        let pendingDeleteIds = [];
+        let selectMode = false;
+        const selected = new Set();   // ids (como texto) de lo tildado
         let doneOpen = false;
 
         const $ = id => document.getElementById(id);
@@ -1169,13 +1216,20 @@
                 : '<span class="tag movie">Película</span>';
         }
 
+        function selBoxHtml(it) {
+            return selectMode
+                ? `<input type="checkbox" class="sel-box" ${selected.has(String(it.id)) ? 'checked' : ''} aria-label="Seleccionar ${esc(it.title)}">`
+                : '';
+        }
+
         function nowCardHtml(it) {
             const isSeries = it.type === 'SERIES';
             return `
-            <article class="now-card ${isSeries ? '' : 'movie'}">
+            <article class="now-card ${isSeries ? '' : 'movie'} ${selected.has(String(it.id)) ? 'sel-on' : ''}" ${selectMode ? `onclick="toggleSel('${it.id}')"` : ''}>
                 <div class="card-top">
+                    ${selBoxHtml(it)}
                     <div style="flex:1;min-width:0">
-                        <div class="card-title" onclick="openEdit('${it.id}')">${esc(it.title)}</div>
+                        <div class="card-title" ${selectMode ? '' : `onclick="openEdit('${it.id}')"`}>${esc(it.title)}</div>
                         ${isSeries ? `<div class="now-pos">Temporada ${it.season || 1} · Capítulo ${it.episode || 0}</div>` : ''}
                     </div>
                     ${tagHtml(it)}
@@ -1211,9 +1265,9 @@
             const sub = paused ? `Pausada en T${it.season || 1} · Cap. ${it.episode}` : (it.note ? esc(it.note) : '');
             const avail = it.type === 'SERIES' && it.avail ? `<div class="row-sub avail">${esc(availText(it.avail))}</div>` : '';
             return `
-            <div class="row">
-                <span class="dot ${it.type === 'MOVIE' ? 'movie' : ''}"></span>
-                <div class="row-main" onclick="openEdit('${it.id}')">
+            <div class="row ${selected.has(String(it.id)) ? 'sel-on' : ''}" ${selectMode ? `onclick="toggleSel('${it.id}')"` : ''}>
+                ${selBoxHtml(it) || `<span class="dot ${it.type === 'MOVIE' ? 'movie' : ''}"></span>`}
+                <div class="row-main" ${selectMode ? '' : `onclick="openEdit('${it.id}')"`}>
                     <div class="row-title">${esc(it.title)}</div>
                     ${avail}
                     ${sub ? `<div class="row-sub">${sub}</div>` : ''}
@@ -1273,6 +1327,7 @@
         }
 
         function render() {
+            pruneSelection();
             const now  = visible('WATCHING');
             const want = visible('WANT');
             const done = visible('DONE');
@@ -1307,6 +1362,7 @@
             $('nALL').textContent = items.length;
             $('nMOVIE').textContent = items.filter(i => i.type === 'MOVIE').length;
             $('nSERIES').textContent = items.filter(i => i.type === 'SERIES').length;
+            renderSelBar();
         }
 
         /* ── Filtro ── */
@@ -1404,24 +1460,88 @@
             render();
         }
 
-        function removeItem(id) {
-            const it = find(id);
-            if (!it) return;
-            pendingDeleteId = id;
+        /* ── Selección múltiple (Viendo ahora + Quiero ver) ── */
+        const selectable = () => [...visible('WATCHING'), ...visible('WANT')];
+
+        // Lo que quedó oculto por el filtro, o ya no existe, deja de estar seleccionado.
+        function pruneSelection() {
+            if (!selected.size) return;
+            const ok = new Set(selectable().map(i => String(i.id)));
+            [...selected].forEach(id => { if (!ok.has(id)) selected.delete(id); });
+        }
+
+        function toggleSel(id) {
+            const k = String(id);
+            if (selected.has(k)) selected.delete(k); else selected.add(k);
+            render();
+        }
+
+        function setSelectMode(on) {
+            selectMode = on;
+            if (!on) selected.clear();
+            document.body.classList.toggle('selecting', on);
+            $('selBtn').classList.toggle('on', on);
+            $('selBtn').textContent = on ? 'Salir de selección' : 'Seleccionar';
+            render();
+        }
+
+        function renderSelBar() {
+            $('selBar').hidden = !selectMode;
+            if (!selectMode) return;
+            const total = selectable().length;
+            const n = selected.size;
+            $('selCount').textContent = n === 0 ? 'Tocá para elegir' : `${n} ${n === 1 ? 'seleccionada' : 'seleccionadas'}`;
+            $('selAll').textContent = total && n === total ? 'Ninguna' : `Todas (${total})`;
+            $('selAll').disabled = total === 0;
+            $('selDone').disabled = $('selDel').disabled = n === 0;
+        }
+
+        $('selBtn').addEventListener('click', () => setSelectMode(!selectMode));
+        $('selCancel').addEventListener('click', () => setSelectMode(false));
+        $('selAll').addEventListener('click', () => {
+            const all = selectable().map(i => String(i.id));
+            if (all.length && selected.size === all.length) selected.clear();
+            else all.forEach(id => selected.add(id));
+            render();
+        });
+        $('selDone').addEventListener('click', () => {
+            const n = selected.size;
+            items.forEach(it => {
+                if (!selected.has(String(it.id))) return;
+                it.list = 'DONE';
+                it.schedule = null;      // una serie vista deja de esperar estrenos
+                it.releaseDate = null;
+            });
+            persist();
+            setSelectMode(false);
+            setBanner(`${n} ${n === 1 ? 'título marcado' : 'títulos marcados'} como vistos.`, 'info');
+            setTimeout(() => { if ($('syncBanner').classList.contains('info')) setBanner('', ''); }, 4000);
+        });
+        $('selDel').addEventListener('click', () => askDelete([...selected]));
+
+        function removeItem(id) { askDelete([id]); }
+
+        function askDelete(ids) {
+            const list = ids.map(find).filter(Boolean);
+            if (!list.length) return;
+            pendingDeleteIds = list.map(i => i.id);
             closeEdit();
-            $('delText').textContent = `¿Eliminar "${it.title}" de la watchlist?`;
+            $('delText').textContent = list.length === 1
+                ? `¿Eliminar "${list[0].title}" de la watchlist?`
+                : `¿Eliminar ${list.length} títulos de la watchlist?`;
             $('deleteModal').classList.add('active');
             $('delCancel').focus();
         }
         function closeDelete() {
-            pendingDeleteId = null;
+            pendingDeleteIds = [];
             $('deleteModal').classList.remove('active');
         }
         $('delConfirm').addEventListener('click', () => {
-            items = items.filter(i => String(i.id) !== String(pendingDeleteId));
+            const gone = new Set(pendingDeleteIds.map(String));
+            items = items.filter(i => !gone.has(String(i.id)));
             persist();
             closeDelete();
-            render();
+            if (selectMode) setSelectMode(false); else render();
         });
         $('delCancel').addEventListener('click', closeDelete);
         $('deleteModal').addEventListener('click', e => { if (e.target === $('deleteModal')) closeDelete(); });
@@ -1565,7 +1685,12 @@
         $('efCancel').addEventListener('click', closeEdit);
         $('efDelete').addEventListener('click', () => removeItem(editingId));
         $('editModal').addEventListener('click', e => { if (e.target === $('editModal')) closeEdit(); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeEdit(); closeDelete(); } });
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Escape') return;
+            const modalOpen = document.querySelector('.modal-overlay.active');
+            closeEdit(); closeDelete();
+            if (!modalOpen && selectMode) setSelectMode(false);
+        });
 
         init();
     </script>
