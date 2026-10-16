@@ -35,6 +35,12 @@ public class WatchlistItem {
 
     private Integer year;
 
+    /* El título completo tal como lo maneja el frontend (en qué lista está,
+       progreso, calendario de estrenos, nota…) serializado como JSON. Las
+       columnas de arriba quedan para consultas y compatibilidad. */
+    @Column(columnDefinition = "TEXT")
+    private String data;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

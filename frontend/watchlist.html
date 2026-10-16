@@ -152,6 +152,19 @@
         .seg .n { font-size: 0.82em; font-weight: 700; color: #a49dae; }
         .seg button.on .n { color: #a63d63; }
 
+        .sync-banner {
+            font-size: 0.85em;
+            line-height: 1.4;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: rgba(225, 29, 72, 0.07);
+            border: 1px solid rgba(225, 29, 72, 0.2);
+            color: #9f1239;
+        }
+        .sync-banner.info { background: rgba(15, 157, 107, 0.08); border-color: rgba(15, 157, 107, 0.22); color: #0b6e4c; }
+        .sync-banner.warn { background: rgba(194, 90, 52, 0.09); border-color: rgba(194, 90, 52, 0.25); color: #8a3d1d; }
+
         /* Barra de alta rápida */
         .quick-add {
             background: #fff;
@@ -546,7 +559,7 @@
         <div class="page-top">
             <div>
                 <h1 class="page-title">Watchlist</h1>
-                <p class="page-subtitle">Lo que estás viendo, lo que querés ver y lo que viene.</p>
+                <p class="page-subtitle" id="pageSub">Lo que estás viendo, lo que querés ver y lo que viene.</p>
             </div>
             <div class="seg" id="filterSeg" role="tablist" aria-label="Filtrar por tipo">
                 <button data-f="ALL" class="on">Todo <span class="n" id="nALL">0</span></button>
@@ -554,6 +567,8 @@
                 <button data-f="SERIES">Series <span class="n" id="nSERIES">0</span></button>
             </div>
         </div>
+
+        <div class="sync-banner" id="syncBanner" hidden></div>
 
         <!-- Alta rápida -->
         <form class="quick-add" id="quickAdd" autocomplete="off">
@@ -725,20 +740,167 @@
            }
            ════════════════════════════════════════════════════════════ */
 
-        /* Capa de almacenamiento. Hoy: localStorage por perfil. Para pasar
-           al backend / otra fuente, alcanza con reemplazar load() y save()
-           (pueden devolver promesas; ver init()). */
+        /* Capa de almacenamiento: la lista vive en el backend y es UNA sola
+           para todos los perfiles (se comparte). Cada título viaja como
+           { title, type, releaseDate, season, data } donde `data` es el item
+           completo serializado. localStorage queda solo como copia de
+           respaldo para poder mostrar algo si el servidor no responde. */
         const WatchStore = {
-            key() { return 'wtdWatchlist:' + (currentUserId ?? 'anon'); },
-            load() {
-                try { return JSON.parse(localStorage.getItem(this.key())) || []; }
-                catch (e) { return []; }
+            url: id => `${API_BASE_URL}/watchlist${id == null ? '' : '/' + id}`,
+            cacheKey() { return 'wtdWatchlistCache'; },
+
+            async list() {
+                const r = await fetch(this.url());
+                if (!r.ok) throw new Error('GET ' + r.status);
+                return r.json();
             },
-            save(items) {
-                try { localStorage.setItem(this.key(), JSON.stringify(items)); }
-                catch (e) { console.error('No se pudo guardar la watchlist', e); }
-            }
+            async create(wire) {
+                const r = await fetch(this.url(), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(wire) });
+                return r.ok ? r.json() : null;
+            },
+            async update(id, wire) {
+                const r = await fetch(this.url(id), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(wire) });
+                return r.ok ? r.json() : null;
+            },
+            async remove(id) {
+                const r = await fetch(this.url(id), { method: 'DELETE' });
+                return r.ok || r.status === 404;
+            },
+
+            /* item (frontend) <-> wire (backend) */
+            toWire(it) {
+                const { id, ...rest } = it;
+                return { title: it.title, type: it.type, releaseDate: it.releaseDate || null, season: it.season || null, data: JSON.stringify(rest) };
+            },
+            fromWire(w) {
+                if (w.data) {
+                    try { return { ...JSON.parse(w.data), id: w.id }; } catch (e) { /* cae al formato viejo */ }
+                }
+                // Filas anteriores a esta versión (solo título, tipo, fecha, temporada).
+                return {
+                    id: w.id, title: w.title, type: w.type,
+                    list: w.releaseDate && daysUntil(w.releaseDate) > 0 ? 'UPCOMING' : 'WANT',
+                    releaseDate: w.releaseDate || null, schedule: null, avail: null,
+                    season: w.season || null, episode: null, note: '',
+                    createdAt: w.createdAt, external: null
+                };
+            },
+
+            cacheSave(list) { try { localStorage.setItem(this.cacheKey(), JSON.stringify(list)); } catch (e) {} },
+            cacheLoad() { try { return JSON.parse(localStorage.getItem(this.cacheKey())) || []; } catch (e) { return []; } }
         };
+
+        /* Sincronización: en vez de guardar "todo", se compara cada título con
+           lo último que confirmó el servidor y se manda solo lo que cambió
+           (alta, edición o baja). Si un envío falla, la próxima vez se
+           reintenta solo porque la diferencia sigue ahí. */
+        const lastSaved = new Map();     // id -> JSON enviado y confirmado
+        let storeOnline = false;
+        let saving = false, savePending = false;
+        const isTemp = id => typeof id === 'string';
+
+        function setBanner(msg, kind) {
+            const el = $('syncBanner');
+            el.hidden = !msg;
+            el.className = 'sync-banner' + (kind ? ' ' + kind : '');
+            el.textContent = msg || '';
+        }
+        function wireJson(it) { return JSON.stringify(WatchStore.toWire(it)); }
+        function remember(list) {
+            lastSaved.clear();
+            list.forEach(it => lastSaved.set(String(it.id), wireJson(it)));
+        }
+        function hasUnsaved() {
+            return items.some(it => isTemp(it.id) || lastSaved.get(String(it.id)) !== wireJson(it))
+                || [...lastSaved.keys()].some(id => !items.some(it => String(it.id) === id));
+        }
+
+        async function persist() {
+            WatchStore.cacheSave(items);
+            if (!storeOnline) return;
+            if (saving) { savePending = true; return; }
+            saving = true;
+            try {
+                do { savePending = false; await flushToServer(); } while (savePending);
+            } finally { saving = false; }
+        }
+
+        async function flushToServer() {
+            let failed = false, renumbered = false;
+
+            for (const id of [...lastSaved.keys()]) {
+                if (items.some(it => String(it.id) === id)) continue;
+                if (await WatchStore.remove(id)) lastSaved.delete(id); else failed = true;
+            }
+
+            for (const it of [...items]) {
+                const json = wireJson(it);
+                if (!isTemp(it.id) && lastSaved.get(String(it.id)) === json) continue;
+
+                const wasTemp = isTemp(it.id);
+                let res = null;
+                try {
+                    res = wasTemp ? await WatchStore.create(WatchStore.toWire(it))
+                                  : await WatchStore.update(it.id, WatchStore.toWire(it));
+                } catch (e) { /* red caída: queda como pendiente */ }
+                if (!res) { failed = true; continue; }
+
+                // Un backend viejo ignora `data` y se perderían campos: no seguir.
+                if (!res.data) {
+                    if (wasTemp) { try { await WatchStore.remove(res.id); } catch (e) {} }
+                    storeOnline = false;
+                    setBanner('El servidor todavía no está actualizado para guardar la watchlist completa. Los cambios se guardan solo en este navegador.', 'warn');
+                    return;
+                }
+                if (wasTemp) {
+                    const old = it.id;
+                    it.id = res.id;
+                    if (editingId === old) editingId = res.id;
+                    if (pendingDeleteId === old) pendingDeleteId = res.id;
+                    renumbered = true;
+                }
+                lastSaved.set(String(it.id), wireJson(it));
+            }
+
+            setBanner(failed ? 'No se pudieron guardar algunos cambios. Se reintentará en el próximo cambio.' : '', failed ? 'warn' : '');
+            if (renumbered) render();
+        }
+
+        /* Trae lo que cambió el otro perfil. No pisa nada si hay cambios
+           sin guardar o un cuadro de edición abierto. */
+        async function refreshFromServer() {
+            if (!storeOnline || saving || hasUnsaved()) return;
+            if (document.querySelector('.modal-overlay.active')) return;
+            try {
+                const fresh = (await WatchStore.list()).map(w => WatchStore.fromWire(w));
+                if (JSON.stringify(fresh.map(wireJson)) === JSON.stringify(items.map(wireJson))) return;
+                items = fresh;
+                remember(items);
+                WatchStore.cacheSave(items);
+                syncReleases();
+                render();
+            } catch (e) { /* sin conexión: se reintenta en el próximo ciclo */ }
+        }
+
+        /* La primera vez, sube lo que este navegador tenía guardado de la
+           versión anterior (que era local) sin duplicar títulos que ya estén. */
+        function importLegacyLocal() {
+            const flag = 'wtdWatchlistMigrated:' + currentUserId;
+            if (localStorage.getItem(flag)) return 0;
+            let local = [];
+            try { local = JSON.parse(localStorage.getItem('wtdWatchlist:' + currentUserId)) || []; } catch (e) {}
+            const have = new Set(items.map(i => i.type + '|' + i.title.trim().toLowerCase()));
+            let n = 0;
+            local.forEach(it => {
+                const key = it.type + '|' + String(it.title || '').trim().toLowerCase();
+                if (!it.title || have.has(key)) return;
+                have.add(key);
+                items.push({ ...it, id: newId() });   // id temporal: se crea en el servidor
+                n++;
+            });
+            localStorage.setItem(flag, '1');
+            return n;
+        }
 
         /* Hook para metadatos externos (TMDB, Trakt, etc.). Todavía no hay
            ninguno conectado. Contrato esperado cuando se implemente:
@@ -753,6 +915,7 @@
         let filter = 'ALL';
         let qaType = 'MOVIE';
         let editingId = null;
+        let pendingDeleteId = null;
         let doneOpen = false;
 
         const $ = id => document.getElementById(id);
@@ -762,9 +925,8 @@
         function esc(s) {
             return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
         }
-        function persist() { WatchStore.save(items); }
         function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-        const find = id => items.find(i => i.id === id);
+        const find = id => items.find(i => String(i.id) === String(id));
 
         /* ── Fechas (siempre locales, nunca toISOString) ── */
         function parseDate(str) { return new Date(str + 'T00:00:00'); }
@@ -957,14 +1119,37 @@
                 fillSched(p, null);
             });
             ['efDate', 'efSSeason', 'efPer', 'efEvery', 'efTotal'].forEach(id => $(id).addEventListener('input', renderEps));
-            items = await WatchStore.load();
-            syncReleases();
-            render();
-            // Si la pestaña queda abierta de un día para otro, o vuelve a primer plano.
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden && syncReleases()) render();
+            try {
+                items = (await WatchStore.list()).map(w => WatchStore.fromWire(w));
+                remember(items);
+                storeOnline = true;
+                const imported = importLegacyLocal();
+                syncReleases();
+                render();
+                if (imported) setBanner(`Pasé ${imported} ${imported === 1 ? 'título' : 'títulos'} que tenías guardados en este navegador a la lista compartida.`, 'info');
+                persist();
+            } catch (e) {
+                items = WatchStore.cacheLoad();
+                storeOnline = false;
+                setBanner('No se pudo conectar con el servidor. Estás viendo la última copia de este navegador y los cambios no se comparten.', 'warn');
+                syncReleases();
+                render();
+            }
+
+            // Con quién se comparte
+            getUsers().then(users => {
+                const other = users.filter(u => u.id !== currentUserId).map(u => u.nombre);
+                if (other.length) $('pageSub').textContent += ' · Compartida con ' + other.join(' y ');
             });
-            setInterval(() => { if (syncReleases()) render(); }, 10 * 60 * 1000);
+
+            // Pestaña abierta de un día para otro, o que vuelve a primer plano:
+            // aplica estrenos vencidos y trae lo que cargó el otro perfil.
+            const tick = async () => {
+                await refreshFromServer();
+                if (syncReleases()) render();
+            };
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+            setInterval(tick, 45 * 1000);
         }
 
         /* ── Render ── */
@@ -1219,8 +1404,6 @@
             render();
         }
 
-        let pendingDeleteId = null;
-
         function removeItem(id) {
             const it = find(id);
             if (!it) return;
@@ -1235,7 +1418,7 @@
             $('deleteModal').classList.remove('active');
         }
         $('delConfirm').addEventListener('click', () => {
-            items = items.filter(i => i.id !== pendingDeleteId);
+            items = items.filter(i => String(i.id) !== String(pendingDeleteId));
             persist();
             closeDelete();
             render();
