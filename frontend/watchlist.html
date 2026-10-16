@@ -106,257 +106,416 @@
         }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
+        /* ───────── Página ───────── */
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 40px 24px 80px;
+            padding: 32px 24px 90px;
         }
 
-        .page-header { margin-bottom: 32px; text-align: center; }
-        .page-title {
-            font-size: 2em;
-            font-weight: 800;
-            background: #1c1b22;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-        }
-        .page-subtitle { color: #7a7389; font-size: 0.9em; font-style: italic; }
-
-        .columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        .section {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(28, 27, 34, 0.099);
-            border-radius: 14px;
-            padding: 22px;
-        }
-
-        .section-title {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: #1c1b22;
-            margin-bottom: 16px;
+        .page-top {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
         }
+        .page-title { font-size: 1.9em; font-weight: 800; line-height: 1.1; }
+        .page-subtitle { font-size: 0.9em; margin-top: 6px; }
 
-        .add-btn {
-            background: rgba(28, 27, 34, 0.083);
-            border: 1px solid rgba(166, 61, 99, 0.3);
-            color: #1c1b22;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.2s;
+        /* Filtro Todo / Películas / Series */
+        .seg {
+            display: inline-flex;
+            background: rgba(28, 27, 34, 0.055);
+            border-radius: 12px;
+            padding: 3px;
+            gap: 2px;
         }
-        .add-btn:hover { background: rgba(166, 61, 99, 0.3); }
-
-        .add-row {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-        .add-row.active { display: flex; }
-        .add-row-extra { display: flex; gap: 8px; }
-        .add-row input {
-            flex: 1;
-            background: rgba(246, 243, 252, 0.9);
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            border-radius: 8px;
-            color: #1c1b22;
-            padding: 8px 12px;
-            font-size: 0.88em;
-            font-family: inherit;
-            min-width: 0;
-        }
-        .add-row input[type=number] { flex: 0 0 140px; }
-        .add-row input[type=date] { flex: 0 0 115px; color-scheme: dark; padding: 8px 6px; }
-        .add-row input:focus { outline: none; border-color: #a63d63; }
-        .add-row button {
-            background: #a63d63;
+        .seg button {
             border: none;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85em;
+            background: none;
+            font: inherit;
+            font-size: 0.86em;
             font-weight: 600;
+            color: #6b6578;
+            padding: 8px 16px;
+            border-radius: 9px;
             cursor: pointer;
-            flex-shrink: 0;
-        }
-        .add-row button:hover { background: #1c1b22; }
-
-        /* ── Year groups ── */
-        .year-toggle {
-            background: none;
-            border: none;
-            border-top: 1px solid rgba(28, 27, 34, 0.066);
-            color: #7a7389;
-            font-size: 0.72em;
-            font-weight: 700;
-            letter-spacing: 2px;
-            cursor: pointer;
-            padding: 14px 0 10px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            width: 100%;
-            font-family: inherit;
-            transition: color 0.2s;
-            margin-top: 6px;
+            gap: 7px;
+            transition: background .15s, color .15s;
         }
-        .year-toggle:hover { color: #a63d63; }
-        .year-toggle .chevron { transition: transform 0.25s; display: inline-block; font-size: 0.85em; }
-        .year-toggle.open .chevron { transform: rotate(90deg); }
+        .seg button:hover { color: #1c1b22; }
+        .seg button.on { background: #fff; color: #1c1b22; box-shadow: 0 1px 3px rgba(28,27,34,.12); }
+        .seg .n { font-size: 0.82em; font-weight: 700; color: #a49dae; }
+        .seg button.on .n { color: #a63d63; }
 
-        /* ── Locked (future date) row ── */
-        .item-row.locked { opacity: 0.45; }
-        .status-select:disabled { cursor: default; opacity: 1; }
-
-        .item-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 4px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.044);
-        }
-        .item-row:last-child { border-bottom: none; }
-
-        .item-title { flex: 1; font-size: 0.92em; color: #1c1b22; }
-        .item-release-date {
-            font-size: 0.72em;
-            color: #7a7389;
-            background: rgba(28, 27, 34, 0.044);
-            border-radius: 10px;
-            padding: 2px 8px;
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-
-        .season-field {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.72em;
-            color: #7a7389;
-            background: rgba(28, 27, 34, 0.044);
-            border: 1px solid rgba(28, 27, 34, 0.083);
-            border-radius: 10px;
-            padding: 2px 6px 2px 10px;
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-        .season-label { letter-spacing: 0.3px; }
-        .season-input {
-            width: 26px;
-            background: none;
-            border: none;
-            color: #1c1b22;
-            font-weight: 700;
-            font-size: 1em;
-            text-align: center;
-            font-family: inherit;
-            padding: 2px 0;
-        }
-        .season-input:focus { outline: none; }
-        .season-input::-webkit-inner-spin-button { opacity: 1; }
-
-        .status-select {
-            appearance: none;
-            -webkit-appearance: none;
-            border: none;
-            border-radius: 14px;
-            padding: 5px 26px 5px 14px;
-            font-size: 0.78em;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 10px;
-        }
-        .status-select.YES  { background-color: rgba(16, 185, 129, 0.2); color: #0f9d6b; }
-        .status-select.NO   { background-color: rgba(244, 63, 94, 0.2); color: #f43f5e; }
-        .status-select.SOON { background-color: rgba(150, 144, 160, 0.2); color: #2e2c36; }
-        .status-select option { background: #f3f3f6; color: #1c1b22; }
-
-        .item-delete-btn {
-            background: none;
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            color: #9a93a8;
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.72em;
-            flex-shrink: 0;
-            opacity: 0;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .item-row:hover .item-delete-btn { opacity: 1; }
-        .item-delete-btn:hover { background: rgba(225, 29, 72, 0.2); color: #e11d48; border-color: rgba(225, 29, 72, 0.3); }
-
-        .empty-state { text-align: center; padding: 30px; color: #b8b2c4; font-style: italic; font-size: 0.88em; }
-
-        .wip-panel {
-            max-width: 420px;
-            margin: 40px auto 0;
-            padding: 48px 36px;
-            text-align: center;
+        /* Barra de alta rápida */
+        .quick-add {
             background: #fff;
             border: 1px solid rgba(28, 27, 34, 0.09);
             border-radius: 16px;
-            color: #45424f;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 26px;
+            box-shadow: 0 1px 2px rgba(28,27,34,.05);
         }
-        .wip-panel svg { color: #a63d63; margin-bottom: 18px; }
-        .wip-panel h2 { font-size: 1.15em; font-weight: 700; color: #1c1b22; margin-bottom: 10px; }
-        .wip-panel p { font-size: 0.9em; line-height: 1.6; color: #7a7389; }
+        .quick-add:focus-within { border-color: rgba(166, 61, 99, 0.45); box-shadow: 0 0 0 3px rgba(166, 61, 99, 0.09); }
+        .qa-title {
+            flex: 1 1 240px;
+            min-width: 0;
+            border: none;
+            background: none;
+            font: inherit;
+            font-size: 1em;
+            padding: 8px 6px;
+            color: #1c1b22;
+        }
+        .qa-title:focus { outline: none; }
+        .qa-title::placeholder { color: #a49dae; }
+        .qa-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .qa-controls .seg button { padding: 7px 12px; }
+        .field {
+            border: 1px solid rgba(28, 27, 34, 0.12);
+            background: #fff;
+            border-radius: 10px;
+            font: inherit;
+            font-size: 0.86em;
+            padding: 9px 10px;
+            color: #1c1b22;
+            min-width: 0;
+        }
+        .field:focus { outline: none; border-color: #a63d63; }
+        .sched {
+            flex-basis: 100%;
+            background: rgba(166, 61, 99, 0.05);
+            border: 1px solid rgba(166, 61, 99, 0.14);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            align-items: flex-end;
+        }
+        .sched-title { flex-basis: 100%; font-size: 0.74em; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #7d2c4a; }
+        .sched label { display: flex; flex-direction: column; gap: 4px; font-size: 0.72em; font-weight: 600; color: #7a7389; }
+        .sched .field { font-size: 0.9rem; }
+        .sched input[type=number] { width: 78px; }
+        .sched-more { display: contents; }
+        .eps-list {
+            border: 1px solid rgba(28, 27, 34, 0.1);
+            border-radius: 12px;
+            max-height: 230px;
+            overflow-y: auto;
+        }
+        .ep-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(28, 27, 34, 0.06);
+        }
+        .ep-row:last-child { border-bottom: none; }
+        .ep-num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 0.85em; width: 62px; flex-shrink: 0; }
+        .ep-row .field { padding: 6px 8px; font-size: 0.86rem; width: auto; margin-left: auto; }
+        .ep-moved { font-size: 0.68em; font-weight: 700; color: #a63d63; background: rgba(166, 61, 99, 0.1); border-radius: 20px; padding: 2px 8px; }
+        .form-row label.eps-follow { display: flex; align-items: center; gap: 8px; text-transform: none; letter-spacing: 0; font-size: 0.82em; font-weight: 500; color: #45424f; margin: 10px 0 0; cursor: pointer; }
+        .eps-hint { font-size: 0.75em; color: #9a93a8; margin-top: 6px; }
+        .avail { font-size: 0.78em; font-weight: 600; color: #0f9d6b; }
+        .qa-prog { display: inline-flex; gap: 6px; }
+        .qa-prog .field { width: 74px; }
+        .now-pos {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-weight: 700;
+            font-size: 0.8em;
+            color: #a63d63;
+            margin-top: 3px;
+        }
+        .btn-primary {
+            background: #1c1b22;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font: inherit;
+            font-size: 0.88em;
+            font-weight: 600;
+            padding: 10px 18px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .btn-primary:hover { background: #a63d63; }
+        .btn-primary:disabled { opacity: .35; cursor: default; background: #1c1b22; }
 
-        /* Delete modal */
+        /* ───────── Secciones ───────── */
+        .block { margin-bottom: 30px; }
+        .block-head {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 0 2px;
+        }
+        .block-title { font-size: 1.08em; font-weight: 700; }
+        .block-count {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #a63d63;
+        }
+        .block-hint { margin-left: auto; font-size: 0.78em; color: #9a93a8; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+
+        /* Viendo ahora: tarjetas */
+        .now-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+        .now-card {
+            background: #fff;
+            border: 1px solid rgba(28, 27, 34, 0.09);
+            border-radius: 16px;
+            padding: 16px 16px 14px;
+            box-shadow: 0 1px 2px rgba(28,27,34,.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .now-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: #a63d63;
+        }
+        .now-card.movie::before { background: #4a72a8; }
+        .card-top { display: flex; gap: 10px; align-items: flex-start; }
+        .card-title {
+            flex: 1;
+            font-weight: 700;
+            font-size: 1.02em;
+            line-height: 1.3;
+            cursor: pointer;
+            word-break: break-word;
+        }
+        .card-title:hover { color: #a63d63; }
+        .card-note { font-size: 0.82em; color: #7a7389; line-height: 1.4; }
+
+        .tag {
+            font-size: 0.68em;
+            font-weight: 700;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: rgba(166, 61, 99, 0.09);
+            color: #7d2c4a;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .tag.movie { background: rgba(74, 114, 168, 0.12); color: #38598a; }
+
+        /* Stepper de temporada / episodio */
+        .progress { display: flex; gap: 8px; flex-wrap: wrap; }
+        .stepper {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(28, 27, 34, 0.045);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .stepper .lbl { font-size: 0.74em; font-weight: 600; color: #7a7389; padding: 0 4px 0 11px; }
+        .stepper .val {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-weight: 700;
+            font-size: 0.95em;
+            min-width: 26px;
+            text-align: center;
+        }
+        .stepper button {
+            border: none;
+            background: none;
+            width: 34px;
+            height: 34px;
+            font-size: 1.1em;
+            color: #45424f;
+            cursor: pointer;
+        }
+        .stepper button:hover { background: rgba(28, 27, 34, 0.08); color: #a63d63; }
+        .stepper button:active { background: rgba(166, 61, 99, 0.16); }
+
+        .card-actions { display: flex; gap: 8px; align-items: center; margin-top: auto; }
+        .btn-soft {
+            border: 1px solid rgba(28, 27, 34, 0.12);
+            background: #fff;
+            border-radius: 10px;
+            font: inherit;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #45424f;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .btn-soft:hover { border-color: #a63d63; color: #a63d63; }
+        .btn-soft.done:hover { border-color: #0f9d6b; color: #0f9d6b; background: rgba(15,157,107,.06); }
+        .icon-btn {
+            border: none;
+            background: none;
+            color: #9a93a8;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all .15s;
+        }
+        .icon-btn:hover { background: rgba(28, 27, 34, 0.07); color: #1c1b22; }
+        .icon-btn.del:hover { background: rgba(225, 29, 72, 0.1); color: #e11d48; }
+        .spacer { flex: 1; }
+
+        /* Filas de lista (Quiero ver / Próximas) */
+        .panel {
+            background: #fff;
+            border: 1px solid rgba(28, 27, 34, 0.09);
+            border-radius: 16px;
+            padding: 6px 8px;
+            box-shadow: 0 1px 2px rgba(28,27,34,.05);
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(28, 27, 34, 0.055);
+            border-radius: 10px;
+        }
+        .row:last-child { border-bottom: none; }
+        .row:hover { background: rgba(28, 27, 34, 0.025); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #a63d63; flex-shrink: 0; }
+        .dot.movie { background: #4a72a8; }
+        .row-main { flex: 1; min-width: 0; cursor: pointer; }
+        .row-title { font-size: 0.95em; font-weight: 600; word-break: break-word; }
+        .row-main:hover .row-title { color: #a63d63; }
+        .row-sub { font-size: 0.76em; color: #8c859a; margin-top: 2px; }
+        .row-actions { display: flex; gap: 2px; align-items: center; flex-shrink: 0; }
+
+        /* Próximas fechas */
+        .date-badge {
+            width: 46px;
+            flex-shrink: 0;
+            text-align: center;
+            border-radius: 10px;
+            background: rgba(28, 27, 34, 0.045);
+            padding: 5px 0 4px;
+            line-height: 1.1;
+        }
+        .date-badge .d { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 1.1em; }
+        .date-badge .m { font-size: 0.64em; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7a7389; }
+        .date-badge.soon { background: rgba(166, 61, 99, 0.1); }
+        .date-badge.soon .d, .date-badge.soon .m { color: #a63d63; }
+        .date-badge.out { background: rgba(15, 157, 107, 0.12); }
+        .date-badge.out .d, .date-badge.out .m { color: #0f9d6b; }
+        .date-badge.none .d { color: #b8b2c4; }
+        .when { font-size: 0.76em; font-weight: 600; color: #8c859a; }
+        .when.soon { color: #a63d63; }
+        .when.out { color: #0f9d6b; }
+
+        .empty {
+            text-align: center;
+            padding: 26px 14px;
+            color: #a49dae;
+            font-size: 0.88em;
+            line-height: 1.5;
+        }
+        .empty b { display: block; color: #7a7389; font-weight: 600; margin-bottom: 2px; }
+
+        /* Vistas (colapsable) */
+        .done-toggle {
+            border: none;
+            background: none;
+            font: inherit;
+            font-size: 0.88em;
+            font-weight: 600;
+            color: #7a7389;
+            cursor: pointer;
+            padding: 6px 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .done-toggle:hover { color: #a63d63; }
+        .done-toggle .chev { display: inline-block; transition: transform .2s; font-size: 0.8em; }
+        .done-toggle.open .chev { transform: rotate(90deg); }
+        .done-list { margin-top: 10px; }
+        .done-list .row-title { color: #7a7389; font-weight: 500; }
+
+        /* ───────── Modal editar ───────── */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(46, 32, 60,0.65);
+            background: rgba(28, 27, 34, 0.4);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 300;
+            padding: 16px;
         }
         .modal-overlay.active { display: flex; }
         .modal {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(166, 61, 99, 0.4);
-            border-radius: 16px;
-            padding: 36px;
-            max-width: 360px;
-            width: 90%;
-            text-align: center;
+            background: #fff;
+            border-radius: 18px;
+            padding: 24px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 92vh;
+            overflow-y: auto;
         }
-        .modal-icon { font-size: 2.2em; margin-bottom: 14px; }
-        .modal-text { font-size: 1em; color: #1c1b22; margin-bottom: 24px; line-height: 1.6; }
-        .modal-btns { display: flex; gap: 10px; justify-content: center; }
-        .modal-btn { padding: 10px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 0.9em; cursor: pointer; transition: all 0.2s; }
-        .modal-btn.cancel { background: rgba(28, 27, 34, 0.066); color: #1c1b22; border: 1px solid rgba(166, 61, 99, 0.25); }
-        .modal-btn.cancel:hover { background: rgba(28, 27, 34, 0.11); }
-        .modal-btn.confirm { background: #a63d63; color: white; }
-        .modal-btn.confirm:hover { background: #1c1b22; }
+        .modal h3 { font-size: 1.1em; margin-bottom: 16px; }
+        .form-row { margin-bottom: 14px; }
+        .form-row label { display: block; font-size: 0.75em; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #7a7389; margin-bottom: 6px; }
+        .form-row .field { width: 100%; font-size: 0.95em; }
+        .form-row textarea.field { resize: vertical; min-height: 70px; font-family: inherit; }
+        .form-split { display: flex; gap: 10px; }
+        .form-split > * { flex: 1; }
+        .modal-actions { display: flex; gap: 10px; align-items: center; margin-top: 20px; }
+        .modal-actions .btn-primary { margin-left: auto; }
+        .btn-danger { border: none; background: none; color: #e11d48; font: inherit; font-size: 0.86em; font-weight: 600; cursor: pointer; padding: 8px 4px; }
+        .btn-danger:hover { text-decoration: underline; }
+        .btn-ghost { border: none; background: none; color: #6b6578; font: inherit; font-size: 0.88em; font-weight: 600; cursor: pointer; padding: 10px 12px; border-radius: 10px; }
+        .btn-ghost:hover { background: rgba(28,27,34,.06); }
 
-        @media (max-width: 720px) {
-            .columns { grid-template-columns: 1fr; }
+        .confirm-modal { max-width: 360px; text-align: center; padding: 30px 26px 22px; }
+        .confirm-icon { font-size: 2em; margin-bottom: 10px; }
+        .confirm-text { font-size: 1.02em; font-weight: 600; line-height: 1.45; word-break: break-word; }
+        .confirm-sub { font-size: 0.82em; color: #8c859a; margin-top: 6px; }
+        .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 22px; }
+        .confirm-btns .btn-ghost, .confirm-btns .btn-primary { flex: 1; }
+        .btn-primary.btn-del { background: #e11d48; }
+        .btn-primary.btn-del:hover { background: #be123c; }
+
+        [hidden] { display: none !important; }
+
+        @media (max-width: 860px) {
+            .two-col { grid-template-columns: 1fr; gap: 0; }
+        }
+        @media (max-width: 600px) {
             header { padding: 0 20px; }
+            .container { padding: 22px 14px 80px; }
+            .page-top { align-items: stretch; }
+            .page-top .seg { width: 100%; }
+            .page-top .seg button { flex: 1; justify-content: center; padding: 9px 6px; }
+            .qa-controls { width: 100%; }
+            .qa-controls .btn-primary { margin-left: auto; }
+            .now-grid { grid-template-columns: 1fr; }
         }
     </style>
     <link rel="stylesheet" href="css/theme.css?v=6">
@@ -364,7 +523,7 @@
 <body>
 
     <header>
-        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        <button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
         <a href="index.html" class="logo">WTD</a>
         <div></div>
     </header>
@@ -384,31 +543,146 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">Watchlist</h1>
-            <p class="page-subtitle">Todo lo que queremos ver, juntos.</p>
+        <div class="page-top">
+            <div>
+                <h1 class="page-title">Watchlist</h1>
+                <p class="page-subtitle">Lo que estás viendo, lo que querés ver y lo que viene.</p>
+            </div>
+            <div class="seg" id="filterSeg" role="tablist" aria-label="Filtrar por tipo">
+                <button data-f="ALL" class="on">Todo <span class="n" id="nALL">0</span></button>
+                <button data-f="MOVIE">Películas <span class="n" id="nMOVIE">0</span></button>
+                <button data-f="SERIES">Series <span class="n" id="nSERIES">0</span></button>
+            </div>
         </div>
 
-        <div class="wip-panel">
-            <svg viewBox="0 0 48 48" width="40" height="40" fill="none" aria-hidden="true">
-                <rect x="7" y="14" width="34" height="27" rx="4" stroke="currentColor" stroke-width="2"/>
-                <path d="M7 21h34" stroke="currentColor" stroke-width="2"/>
-                <path d="M16 8v10M32 8v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <path d="M17 29l4.5 4.5L31 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/>
-            </svg>
-            <h2>Todavía en desarrollo</h2>
-            <p>La estamos puliendo para que quede tan cómoda como el resto de la app. Vuelvo pronto por acá.</p>
+        <!-- Alta rápida -->
+        <form class="quick-add" id="quickAdd" autocomplete="off">
+            <input class="qa-title" id="qaTitle" type="text" maxlength="120" placeholder="Agregar película o serie…  (Enter para guardar)">
+            <div class="qa-controls">
+                <div class="seg" id="qaType">
+                    <button type="button" data-t="MOVIE" class="on">Película</button>
+                    <button type="button" data-t="SERIES">Serie</button>
+                </div>
+                <select class="field" id="qaList" aria-label="Dónde guardarlo">
+                    <option value="WANT">Quiero ver</option>
+                    <option value="WATCHING">Viendo ahora</option>
+                    <option value="UPCOMING">Próximamente</option>
+                </select>
+                <input class="field" type="date" id="qaDate" hidden aria-label="Fecha de estreno">
+                <span id="qaProg" class="qa-prog" hidden>
+                    <input class="field" type="number" id="qaSeason" min="1" max="99" placeholder="Temp." aria-label="Temporada">
+                    <input class="field" type="number" id="qaEpisode" min="0" max="999" placeholder="Cap." aria-label="Capítulo">
+                </span>
+                <button class="btn-primary" id="qaBtn" type="submit" disabled>Agregar</button>
+            </div>
+            <div class="sched" id="qaSched" hidden></div>
+        </form>
+
+        <!-- Viendo ahora -->
+        <section class="block" id="blockNow">
+            <div class="block-head">
+                <h2 class="block-title">Viendo ahora</h2>
+                <span class="block-count" id="cNow">0</span>
+            </div>
+            <div class="now-grid" id="listNow"></div>
+        </section>
+
+        <div class="two-col">
+            <!-- Quiero ver -->
+            <section class="block">
+                <div class="block-head">
+                    <h2 class="block-title">Quiero ver</h2>
+                    <span class="block-count" id="cWant">0</span>
+                </div>
+                <div class="panel" id="listWant"></div>
+            </section>
+
+            <!-- Próximas fechas -->
+            <section class="block">
+                <div class="block-head">
+                    <h2 class="block-title">Próximas fechas</h2>
+                    <span class="block-count" id="cUp">0</span>
+                    <span class="block-hint">por fecha de estreno</span>
+                </div>
+                <div class="panel" id="listUp"></div>
+            </section>
         </div>
+
+        <!-- Vistas -->
+        <section class="block" id="blockDone" hidden>
+            <button class="done-toggle" id="doneToggle"><span class="chev">▶</span> Ya vistas <span class="block-count" id="cDone">0</span></button>
+            <div class="panel done-list" id="listDone" hidden></div>
+        </section>
     </div>
 
-    <!-- Delete modal -->
+    <!-- Editar -->
+    <div class="modal-overlay" id="editModal">
+        <form class="modal" id="editForm" autocomplete="off">
+            <h3>Editar título</h3>
+            <div class="form-row">
+                <label for="efTitle">Título</label>
+                <input class="field" id="efTitle" type="text" maxlength="120" required>
+            </div>
+            <div class="form-split form-row">
+                <div>
+                    <label for="efType">Tipo</label>
+                    <select class="field" id="efType">
+                        <option value="MOVIE">Película</option>
+                        <option value="SERIES">Serie</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="efList">Estado</label>
+                    <select class="field" id="efList">
+                        <option value="WANT">Quiero ver</option>
+                        <option value="WATCHING">Viendo ahora</option>
+                        <option value="UPCOMING">Próximamente</option>
+                        <option value="DONE">Ya vista</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row" id="efDateRow">
+                <label for="efDate">Fecha de estreno</label>
+                <input class="field" id="efDate" type="date">
+            </div>
+            <div class="sched form-row" id="efSched" hidden></div>
+            <div class="form-row" id="efEps" hidden>
+                <label>Próximos episodios</label>
+                <div class="eps-list" id="efEpsList"></div>
+                <label class="eps-follow"><input type="checkbox" id="efFollow" checked> Al cambiar una fecha, mover también los siguientes</label>
+                <div class="eps-hint" id="efEpsHint"></div>
+            </div>
+            <div class="form-split form-row" id="efProgRow">
+                <div>
+                    <label for="efSeason">Temporada</label>
+                    <input class="field" id="efSeason" type="number" min="1" max="99">
+                </div>
+                <div>
+                    <label for="efEpisode">Episodio</label>
+                    <input class="field" id="efEpisode" type="number" min="0" max="999">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="efNote">Nota</label>
+                <textarea class="field" id="efNote" maxlength="400" placeholder="Dónde verla, quién la recomendó…"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-danger" id="efDelete">Eliminar</button>
+                <button type="button" class="btn-ghost" id="efCancel">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Confirmar eliminación -->
     <div class="modal-overlay" id="deleteModal">
-        <div class="modal">
-            <div class="modal-icon">🎬</div>
-            <p class="modal-text">¿Eliminar este título de la watchlist?</p>
-            <div class="modal-btns">
-                <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
-                <button class="modal-btn confirm" onclick="confirmDelete()">Eliminar</button>
+        <div class="modal confirm-modal" role="alertdialog" aria-labelledby="delText">
+            <div class="confirm-icon">🗑</div>
+            <p class="confirm-text" id="delText"></p>
+            <p class="confirm-sub">Esta acción no se puede deshacer.</p>
+            <div class="confirm-btns">
+                <button type="button" class="btn-ghost" id="delCancel">Cancelar</button>
+                <button type="button" class="btn-primary btn-del" id="delConfirm">Eliminar</button>
             </div>
         </div>
     </div>
@@ -437,160 +711,678 @@
             window.location.href = 'login.html';
         }
 
-        /* ── State ── */
-        let items = [];
-        let pendingDeleteId = null;
-        let openYears = {};
+        /* ════════════════════════════════════════════════════════════
+           Modelo de datos
+           item = {
+             id, title,
+             type:  'MOVIE' | 'SERIES',
+             list:  'WANT' | 'WATCHING' | 'UPCOMING' | 'DONE',
+             releaseDate: 'YYYY-MM-DD' | null,   // solo UPCOMING
+             season, episode,                    // solo SERIES (progreso)
+             note,
+             createdAt,
+             external: { provider, id, poster, ... } | null   // reservado para APIs
+           }
+           ════════════════════════════════════════════════════════════ */
 
-        async function init() {
-            if (!loadAuth()) {
-                window.location.href = 'login.html';
-                return;
+        /* Capa de almacenamiento. Hoy: localStorage por perfil. Para pasar
+           al backend / otra fuente, alcanza con reemplazar load() y save()
+           (pueden devolver promesas; ver init()). */
+        const WatchStore = {
+            key() { return 'wtdWatchlist:' + (currentUserId ?? 'anon'); },
+            load() {
+                try { return JSON.parse(localStorage.getItem(this.key())) || []; }
+                catch (e) { return []; }
+            },
+            save(items) {
+                try { localStorage.setItem(this.key(), JSON.stringify(items)); }
+                catch (e) { console.error('No se pudo guardar la watchlist', e); }
             }
-            // Página en desarrollo: por ahora no hace falta traer nada.
+        };
+
+        /* Hook para metadatos externos (TMDB, Trakt, etc.). Todavía no hay
+           ninguno conectado. Contrato esperado cuando se implemente:
+             search(query, type) -> [{ title, year, releaseDate, poster, provider, id }]
+             details(provider, id) -> { releaseDate, seasons, nextEpisodeDate, poster }
+           Con eso se podría autocompletar el título/estreno al agregar y
+           refrescar las fechas de "Próximas" sin tocar el resto de la UI. */
+        const metaProvider = null;
+
+        /* ── Estado ── */
+        let items = [];
+        let filter = 'ALL';
+        let qaType = 'MOVIE';
+        let editingId = null;
+        let doneOpen = false;
+
+        const $ = id => document.getElementById(id);
+        const GEAR = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+        const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+        function esc(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+        }
+        function persist() { WatchStore.save(items); }
+        function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+        const find = id => items.find(i => i.id === id);
+
+        /* ── Fechas (siempre locales, nunca toISOString) ── */
+        function parseDate(str) { return new Date(str + 'T00:00:00'); }
+        function todayStart() { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+        function daysUntil(str) { return Math.round((parseDate(str) - todayStart()) / 86400000); }
+
+        function whenText(days) {
+            if (days === 0) return 'Hoy';
+            if (days === 1) return 'Mañana';
+            if (days === -1) return 'Salió ayer';
+            if (days < 0) return `Salió hace ${-days} días`;
+            if (days < 14) return `En ${days} días`;
+            if (days < 60) return `En ${Math.round(days / 7)} semanas`;
+            return `En ${Math.round(days / 30)} meses`;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           Calendario de estrenos (solo series)
+           item.schedule = {
+             mode:     'WEEKLY' | 'FULL',
+             season,                       // temporada que se estrena
+             per,      every,              // WEEKLY: `per` caps. cada `every` días
+             total,                        // caps. de la temporada (opcional)
+             released                      // caps. ya estrenados (los lleva la app)
+           }
+           item.releaseDate = fecha del PRÓXIMO estreno.
+           item.avail = { season, count|null, full } = lo ya disponible.
+           syncReleases() aplica los estrenos vencidos: suma capítulos
+           disponibles, pasa la serie a "Quiero ver" y corre la fecha al
+           siguiente. Un futuro metaProvider podría reemplazar este cálculo
+           manual por fechas reales.
+           ════════════════════════════════════════════════════════════ */
+        const EVERY_OPTS = [[1, 'todos los días'], [7, 'cada semana'], [14, 'cada 2 semanas'], [30, 'cada mes']];
+
+        function schedHtml(p) {
+            return `
+            <div class="sched-title">Calendario de estrenos</div>
+            <label>Se estrena
+                <select class="field" id="${p}Mode">
+                    <option value="WEEKLY">Por episodios</option>
+                    <option value="FULL">Temporada completa</option>
+                    <option value="NONE">Solo una fecha</option>
+                </select>
+            </label>
+            <span class="sched-more" id="${p}SchedMore">
+                <label>Temporada <input class="field" type="number" id="${p}SSeason" min="1" max="99" value="1"></label>
+                <span class="sched-more" id="${p}SchedWeekly">
+                    <label>Episodios <input class="field" type="number" id="${p}Per" min="1" max="99" value="1"></label>
+                    <label>Frecuencia
+                        <select class="field" id="${p}Every">
+                            ${EVERY_OPTS.map(([v, t]) => `<option value="${v}" ${v === 7 ? 'selected' : ''}>${t}</option>`).join('')}
+                        </select>
+                    </label>
+                </span>
+                <label>Total de caps. <input class="field" type="number" id="${p}Total" min="1" max="999" placeholder="opcional"></label>
+            </span>`;
+        }
+
+        function syncSchedUi(p) {
+            const mode = $(p + 'Mode').value;
+            $(p + 'SchedMore').hidden = mode === 'NONE';
+            $(p + 'SchedWeekly').hidden = mode !== 'WEEKLY';
+        }
+
+        function readSched(p, releaseDate) {
+            const mode = $(p + 'Mode').value;
+            if (mode === 'NONE' || !releaseDate) return null;
+            const s = {
+                mode,
+                season: Math.max(1, parseInt($(p + 'SSeason').value) || 1),
+                total: parseInt($(p + 'Total').value) || null,
+                released: 0,
+                first: releaseDate,   // fecha del 1er estreno del patrón
+                overrides: {},        // { nroCap: 'YYYY-MM-DD' } fechas fijadas a mano
+                shifts: []            // [{ from: nroCap, days }] atrasos que arrastran a los siguientes
+            };
+            if (mode === 'WEEKLY') {
+                s.per = Math.max(1, parseInt($(p + 'Per').value) || 1);
+                s.every = parseInt($(p + 'Every').value) || 7;
+            }
+            return s;
+        }
+
+        function fillSched(p, s) {
+            $(p + 'Mode').value = s ? s.mode : (p === 'qa' ? 'WEEKLY' : 'NONE');
+            $(p + 'SSeason').value = s ? s.season : 1;
+            $(p + 'Per').value = s && s.per ? s.per : 1;
+            $(p + 'Every').value = s && s.every ? s.every : 7;
+            $(p + 'Total').value = s && s.total ? s.total : '';
+            syncSchedUi(p);
+        }
+
+        function addDaysStr(str, n) {
+            const d = parseDate(str);
+            d.setDate(d.getDate() + n);
+            return toLocalDateStr(d);
+        }
+
+        /* Fecha del capítulo n (solo WEEKLY). Orden de prioridad: fecha fijada
+           a mano > patrón + atrasos acumulados. `raw` ignora lo editado. */
+        function epDate(s, n, raw) {
+            if (!raw && s.overrides && s.overrides[n]) return s.overrides[n];
+            let days = Math.floor((n - 1) / s.per) * s.every;
+            if (!raw) (s.shifts || []).forEach(x => { if (x.from <= n) days += x.days; });
+            return addDaysStr(s.first, days);
+        }
+
+        /* Series guardadas antes de existir el calendario por capítulo. */
+        function migrateSched(it) {
+            const s = it.schedule;
+            if (!s || s.mode !== 'WEEKLY' || s.first) return;
+            const drops = Math.ceil(s.released / s.per);
+            s.first = addDaysStr(it.releaseDate || toLocalDateStr(new Date()), -drops * s.every);
+            s.overrides = {};
+            s.shifts = [];
+        }
+
+        /* Aplica todos los estrenos vencidos. Devuelve true si cambió algo. */
+        function syncReleases() {
+            let changed = false;
+            items.forEach(it => {
+                if (it.list === 'DONE') return;
+                migrateSched(it);
+                let s = it.schedule;
+
+                if (s && s.mode === 'WEEKLY') {
+                    // Un capítulo sale cuando llega su fecha y ya salieron los anteriores.
+                    let moved = false, guard = 0;
+                    while ((!s.total || s.released < s.total) && daysUntil(epDate(s, s.released + 1)) <= 0 && guard++ < 1000) {
+                        s.released++;
+                        moved = true;
+                    }
+                    if (moved) {
+                        it.avail = { season: s.season, count: s.released, total: s.total || null, full: false };
+                        if (it.list === 'UPCOMING') it.list = 'WANT';
+                        changed = true;
+                    }
+                    const next = s.total && s.released >= s.total ? null : epDate(s, s.released + 1);
+                    if (!next) { it.schedule = null; changed = true; }
+                    if (it.releaseDate !== next) { it.releaseDate = next; changed = true; }
+                    return;
+                }
+
+                let guard = 0;
+                while (it.releaseDate && daysUntil(it.releaseDate) <= 0 && guard++ < 500) {
+                    changed = true;
+                    if (s && s.mode === 'FULL') {
+                        it.avail = { season: s.season, count: s.total || null, total: s.total || null, full: true };
+                        it.schedule = null;
+                        s = null;
+                    }
+                    it.releaseDate = null;
+                    if (it.list === 'UPCOMING') it.list = 'WANT';
+                }
+            });
+            if (changed) persist();
+            return changed;
+        }
+
+        function availText(a) {
+            if (!a) return '';
+            if (a.full) return `Temporada ${a.season} completa disponible`;
+            const of = a.total ? ` de ${a.total}` : '';
+            return `Disponible: T${a.season} · ${a.count}${of} ${a.count === 1 && !a.total ? 'cap.' : 'caps.'}`;
+        }
+
+        function nextDropText(s) {
+            if (s.mode === 'FULL') return `Temporada ${s.season} completa`;
+            // Agrupa los capítulos que caen el mismo día ("Caps. 4–5").
+            const a = s.released + 1;
+            const d = epDate(s, a);
+            let b = a;
+            while ((!s.total || b < s.total) && epDate(s, b + 1) === d && b - a < 99) b++;
+            const caps = b > a ? `Caps. ${a}–${b}` : `Cap. ${a}`;
+            return `T${s.season} · ${caps}${s.total ? ` de ${s.total}` : ''}`;
+        }
+
+        function everyLabel(s) {
+            if (s.mode !== 'WEEKLY') return '';
+            const e = (EVERY_OPTS.find(o => o[0] === s.every) || [0, `cada ${s.every} días`])[1];
+            return `${s.per} ${s.per === 1 ? 'cap.' : 'caps.'} ${e}`;
+        }
+
+        /* ── Init ── */
+        async function init() {
+            if (!loadAuth()) { window.location.href = 'login.html'; return; }
+            ['qa', 'ef'].forEach(p => {
+                $(p + 'Sched').innerHTML = schedHtml(p);
+                $(p + 'Mode').addEventListener('change', () => { syncSchedUi(p); if (p === 'ef') syncEditFields(); });
+                fillSched(p, null);
+            });
+            ['efDate', 'efSSeason', 'efPer', 'efEvery', 'efTotal'].forEach(id => $(id).addEventListener('input', renderEps));
+            items = await WatchStore.load();
+            syncReleases();
+            render();
+            // Si la pestaña queda abierta de un día para otro, o vuelve a primer plano.
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && syncReleases()) render();
+            });
+            setInterval(() => { if (syncReleases()) render(); }, 10 * 60 * 1000);
+        }
+
+        /* ── Render ── */
+        function visible(list) {
+            return items.filter(i => {
+                if (filter !== 'ALL' && i.type !== filter) return false;
+                // Una serie con estrenos pendientes sigue en "Próximas fechas"
+                // aunque ya esté en Quiero ver / Viendo ahora.
+                if (list === 'UPCOMING') return i.list === 'UPCOMING' || (i.list !== 'DONE' && i.schedule && i.releaseDate);
+                return i.list === list;
+            });
+        }
+
+        function tagHtml(item) {
+            return item.type === 'SERIES'
+                ? '<span class="tag">Serie</span>'
+                : '<span class="tag movie">Película</span>';
+        }
+
+        function nowCardHtml(it) {
+            const isSeries = it.type === 'SERIES';
+            return `
+            <article class="now-card ${isSeries ? '' : 'movie'}">
+                <div class="card-top">
+                    <div style="flex:1;min-width:0">
+                        <div class="card-title" onclick="openEdit('${it.id}')">${esc(it.title)}</div>
+                        ${isSeries ? `<div class="now-pos">Temporada ${it.season || 1} · Capítulo ${it.episode || 0}</div>` : ''}
+                    </div>
+                    ${tagHtml(it)}
+                </div>
+                ${isSeries ? `
+                <div class="progress">
+                    <div class="stepper">
+                        <span class="lbl">Temp.</span>
+                        <button onclick="bump('${it.id}','season',-1)" aria-label="Temporada anterior">−</button>
+                        <span class="val">${it.season || 1}</span>
+                        <button onclick="bump('${it.id}','season',1)" aria-label="Temporada siguiente">+</button>
+                    </div>
+                    <div class="stepper">
+                        <span class="lbl">Ep.</span>
+                        <button onclick="bump('${it.id}','episode',-1)" aria-label="Episodio anterior">−</button>
+                        <span class="val">${it.episode || 0}</span>
+                        <button onclick="bump('${it.id}','episode',1)" aria-label="Episodio siguiente">+</button>
+                    </div>
+                </div>` : ''}
+                ${isSeries && it.avail ? `<div class="avail">${esc(availText(it.avail))}</div>` : ''}
+                ${it.note ? `<div class="card-note">${esc(it.note)}</div>` : ''}
+                <div class="card-actions">
+                    <button class="btn-soft done" onclick="moveTo('${it.id}','DONE')">✓ ${isSeries ? 'Terminada' : 'La vi'}</button>
+                    <button class="btn-soft" onclick="moveTo('${it.id}','WANT')" title="Volver a Quiero ver">Pausar</button>
+                    <span class="spacer"></span>
+                    <button class="icon-btn" onclick="openEdit('${it.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
+                </div>
+            </article>`;
+        }
+
+        function wantRowHtml(it) {
+            const paused = it.type === 'SERIES' && it.episode > 0;
+            const sub = paused ? `Pausada en T${it.season || 1} · Cap. ${it.episode}` : (it.note ? esc(it.note) : '');
+            const avail = it.type === 'SERIES' && it.avail ? `<div class="row-sub avail">${esc(availText(it.avail))}</div>` : '';
+            return `
+            <div class="row">
+                <span class="dot ${it.type === 'MOVIE' ? 'movie' : ''}"></span>
+                <div class="row-main" onclick="openEdit('${it.id}')">
+                    <div class="row-title">${esc(it.title)}</div>
+                    ${avail}
+                    ${sub ? `<div class="row-sub">${sub}</div>` : ''}
+                </div>
+                <div class="row-actions">
+                    <button class="btn-soft" onclick="moveTo('${it.id}','WATCHING')">▶ Empezar</button>
+                    <button class="icon-btn" onclick="openEdit('${it.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
+                </div>
+            </div>`;
+        }
+
+        function upRowHtml(it) {
+            let badge, when = '', cls = '';
+            if (it.releaseDate) {
+                const d = parseDate(it.releaseDate);
+                const days = daysUntil(it.releaseDate);
+                cls = days <= 0 ? 'out' : (days <= 7 ? 'soon' : '');
+                badge = `<div class="date-badge ${cls}"><div class="d">${d.getDate()}</div><div class="m">${MONTHS[d.getMonth()]}</div></div>`;
+                when = whenText(days);
+            } else {
+                badge = `<div class="date-badge none"><div class="d">?</div><div class="m">s/f</div></div>`;
+                when = 'Sin fecha todavía';
+            }
+            const s = it.schedule;
+            const detail = s
+                ? `${esc(nextDropText(s))}${everyLabel(s) ? ' · ' + esc(everyLabel(s)) : ''}`
+                : (it.type === 'SERIES' ? 'Serie' : 'Película');
+            return `
+            <div class="row">
+                ${badge}
+                <div class="row-main" onclick="openEdit('${it.id}')">
+                    <div class="row-title">${esc(it.title)}</div>
+                    <div class="row-sub"><span class="when ${cls}">${when}</span> · ${detail}</div>
+                </div>
+                <div class="row-actions">
+                    <button class="icon-btn" onclick="openEdit('${it.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
+                </div>
+            </div>`;
+        }
+
+        function doneRowHtml(it) {
+            return `
+            <div class="row">
+                <span class="dot ${it.type === 'MOVIE' ? 'movie' : ''}"></span>
+                <div class="row-main" onclick="openEdit('${it.id}')">
+                    <div class="row-title">${esc(it.title)}</div>
+                </div>
+                <div class="row-actions">
+                    <button class="btn-soft" onclick="moveTo('${it.id}','WANT')" title="Volver a Quiero ver">Rever</button>
+                    <button class="icon-btn del" onclick="removeItem('${it.id}')" aria-label="Eliminar" title="Eliminar">✕</button>
+                </div>
+            </div>`;
+        }
+
+        function emptyHtml(title, text) {
+            return `<div class="empty"><b>${title}</b>${text}</div>`;
         }
 
         function render() {
-            renderList('SERIES');
-            renderList('MOVIE');
-        }
-
-        const MONTHS_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-
-        function formatReleaseDate(dateStr) {
-            const d = new Date(dateStr + 'T12:00:00');
-            return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
-        }
-
-        function isLocked(item) {
-            if (!item.releaseDate) return false;
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            return new Date(item.releaseDate + 'T00:00:00') > today;
-        }
-
-        function itemRowHtml(item) {
-            const locked = isLocked(item);
-            const effectiveStatus = locked ? 'SOON' : item.status;
-            return `
-                <div class="item-row ${locked ? 'locked' : ''}">
-                    <span class="item-title">${item.title}</span>
-                    ${item.type === 'SERIES' ? `
-                    <span class="season-field">
-                        <span class="season-label">season:</span>
-                        <input type="number" class="season-input" value="${item.season || 1}" min="1" onchange="changeSeason(${item.id}, this.value)">
-                    </span>` : ''}
-                    ${locked ? `<span class="item-release-date">${formatReleaseDate(item.releaseDate)}</span>` : ''}
-                    <select class="status-select ${effectiveStatus}" ${locked ? 'disabled' : ''} onchange="changeStatus(${item.id}, this.value)">
-                        <option value="YES"  ${effectiveStatus === 'YES'  ? 'selected' : ''}>Yes</option>
-                        <option value="NO"   ${effectiveStatus === 'NO'   ? 'selected' : ''}>No</option>
-                        <option value="SOON" ${effectiveStatus === 'SOON' ? 'selected' : ''}>Soon</option>
-                    </select>
-                    <button class="item-delete-btn" onclick="askDelete(${item.id})">✕</button>
-                </div>`;
-        }
-
-        function renderList(type) {
-            const el = document.getElementById('list' + type);
-            const filtered = items.filter(i => i.type === type);
-            if (!filtered.length) {
-                el.innerHTML = '<div class="empty-state">Nada por aquí todavía</div>';
-                return;
-            }
-
-            const general = filtered.filter(i => !i.year);
-            const years   = [...new Set(filtered.filter(i => i.year).map(i => i.year))].sort();
-
-            let html = general.map(itemRowHtml).join('');
-
-            years.forEach(year => {
-                const key       = `${type}-${year}`;
-                const yearItems = filtered.filter(i => i.year === year);
-                const isOpen    = !!openYears[key];
-                html += `
-                    <button class="year-toggle ${isOpen ? 'open' : ''}" onclick="toggleYear('${key}')">
-                        <span class="chevron">▶</span> ${year} <span style="color:#a63d63">(${yearItems.length})</span>
-                    </button>
-                    ${isOpen ? yearItems.map(itemRowHtml).join('') : ''}`;
+            const now  = visible('WATCHING');
+            const want = visible('WANT');
+            const done = visible('DONE');
+            const up   = visible('UPCOMING').sort((a, b) => {
+                if (!a.releaseDate) return 1;
+                if (!b.releaseDate) return -1;
+                return a.releaseDate.localeCompare(b.releaseDate);
             });
 
-            el.innerHTML = html;
+            $('listNow').innerHTML = now.length
+                ? now.map(nowCardHtml).join('')
+                : `<div class="panel" style="grid-column:1/-1">${emptyHtml('Nada en curso', 'Empezá algo desde “Quiero ver” o agregalo directo arriba.')}</div>`;
+
+            $('listWant').innerHTML = want.length
+                ? want.map(wantRowHtml).join('')
+                : emptyHtml('Lista vacía', 'Anotá lo que quieras ver más adelante.');
+
+            $('listUp').innerHTML = up.length
+                ? up.map(upRowHtml).join('')
+                : emptyHtml('Sin estrenos anotados', 'Elegí “Próximamente” al agregar y ponele fecha.');
+
+            $('listDone').innerHTML = done.map(doneRowHtml).join('');
+            $('blockDone').hidden = items.filter(i => i.list === 'DONE').length === 0;
+            $('listDone').hidden = !doneOpen;
+            $('doneToggle').classList.toggle('open', doneOpen);
+
+            $('cNow').textContent = now.length;
+            $('cWant').textContent = want.length;
+            $('cUp').textContent = up.length;
+            $('cDone').textContent = done.length;
+
+            $('nALL').textContent = items.length;
+            $('nMOVIE').textContent = items.filter(i => i.type === 'MOVIE').length;
+            $('nSERIES').textContent = items.filter(i => i.type === 'SERIES').length;
         }
 
-        function toggleYear(key) {
-            openYears[key] = !openYears[key];
+        /* ── Filtro ── */
+        $('filterSeg').addEventListener('click', e => {
+            const b = e.target.closest('button[data-f]');
+            if (!b) return;
+            filter = b.dataset.f;
+            document.querySelectorAll('#filterSeg button').forEach(x => x.classList.toggle('on', x === b));
+            // Si filtrás por tipo, el alta rápida hereda ese tipo.
+            if (filter !== 'ALL') setQaType(filter);
             render();
-        }
-
-        function toggleAddRow(type) {
-            const row = document.getElementById('addRow' + type);
-            row.classList.toggle('active');
-            if (row.classList.contains('active')) {
-                document.getElementById('addInput' + type).focus();
-            }
-        }
-
-        async function addItem(type) {
-            const input = document.getElementById('addInput' + type);
-            const title = input.value.trim();
-            if (!title) return;
-
-            const dateInput   = document.getElementById('addDate' + type);
-            const releaseDate = dateInput.value || null;
-            const year        = releaseDate ? parseInt(releaseDate.substring(0, 4)) : null;
-
-            let season = null;
-            if (type === 'SERIES') {
-                const seasonInput = document.getElementById('addSeasonSERIES');
-                season = seasonInput.value ? parseInt(seasonInput.value) : null;
-            }
-
-            const created = await createWatchlistItem({ title, type, status: 'SOON', releaseDate, season, year });
-            if (created) {
-                items.push(created);
-                input.value = '';
-                dateInput.value = '';
-                if (type === 'SERIES') document.getElementById('addSeasonSERIES').value = '';
-                document.getElementById('addRow' + type).classList.remove('active');
-                render();
-            }
-        }
-
-        async function changeStatus(id, status) {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
-            item.status = status;
-            render();
-            await updateWatchlistItem(id, item);
-        }
-
-        async function changeSeason(id, value) {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
-            item.season = parseInt(value) || 1;
-            await updateWatchlistItem(id, item);
-        }
-
-        function askDelete(id) {
-            pendingDeleteId = id;
-            document.getElementById('deleteModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('deleteModal').classList.remove('active');
-            pendingDeleteId = null;
-        }
-
-        async function confirmDelete() {
-            if (!pendingDeleteId) return;
-            await deleteWatchlistItem(pendingDeleteId);
-            items = items.filter(i => i.id !== pendingDeleteId);
-            closeModal();
-            render();
-        }
-
-        document.getElementById('deleteModal').addEventListener('click', e => {
-            if (e.target === document.getElementById('deleteModal')) closeModal();
         });
+
+        /* ── Alta rápida ── */
+        function syncQa() {
+            const up = $('qaList').value === 'UPCOMING';
+            $('qaDate').hidden = !up;
+            if (!up) $('qaDate').value = '';
+            // Temporada/capítulo: solo al agregar una serie que ya estás viendo.
+            const prog = qaType === 'SERIES' && $('qaList').value === 'WATCHING';
+            $('qaProg').hidden = !prog;
+            if (!prog) { $('qaSeason').value = ''; $('qaEpisode').value = ''; }
+            $('qaSched').hidden = !(qaType === 'SERIES' && up);
+        }
+        function setQaType(t) {
+            qaType = t;
+            document.querySelectorAll('#qaType button').forEach(x => x.classList.toggle('on', x.dataset.t === t));
+            syncQa();
+        }
+        $('qaType').addEventListener('click', e => {
+            const b = e.target.closest('button[data-t]');
+            if (b) setQaType(b.dataset.t);
+        });
+        $('qaList').addEventListener('change', syncQa);
+        $('qaTitle').addEventListener('input', () => {
+            $('qaBtn').disabled = !$('qaTitle').value.trim();
+        });
+        $('quickAdd').addEventListener('submit', e => {
+            e.preventDefault();
+            const title = $('qaTitle').value.trim();
+            if (!title) return;
+            const list = $('qaList').value;
+            const releaseDate = list === 'UPCOMING' ? ($('qaDate').value || null) : null;
+            const schedule = qaType === 'SERIES' && list === 'UPCOMING' ? readSched('qa', releaseDate) : null;
+            items.unshift({
+                id: newId(),
+                title,
+                type: qaType,
+                list,
+                releaseDate,
+                schedule,
+                avail: null,
+                season: qaType === 'SERIES' ? (schedule ? schedule.season : (parseInt($('qaSeason').value) || 1)) : null,
+                episode: qaType === 'SERIES' && list === 'WATCHING'
+                    ? ($('qaEpisode').value === '' ? 1 : Math.max(0, parseInt($('qaEpisode').value) || 0))
+                    : null,
+                note: '',
+                createdAt: new Date().toISOString(),
+                external: null
+            });
+            syncReleases();
+            persist();
+            $('qaTitle').value = '';
+            $('qaDate').value = '';
+            $('qaSeason').value = '';
+            $('qaEpisode').value = '';
+            $('qaBtn').disabled = true;
+            $('qaTitle').focus();
+            render();
+        });
+
+        /* ── Acciones ── */
+        function moveTo(id, list) {
+            const it = find(id);
+            if (!it) return;
+            it.list = list;
+            if (list === 'DONE') { it.schedule = null; it.releaseDate = null; }
+            else if (list !== 'UPCOMING' && !it.schedule) it.releaseDate = null;
+            if (list === 'WATCHING' && it.type === 'SERIES') {
+                it.season = it.season || 1;
+                it.episode = it.episode || 1;
+            }
+            persist();
+            render();
+        }
+
+        function bump(id, field, delta) {
+            const it = find(id);
+            if (!it) return;
+            const min = field === 'season' ? 1 : 0;
+            it[field] = Math.max(min, (it[field] || min) + delta);
+            // Pasar de temporada reinicia el episodio.
+            if (field === 'season' && delta !== 0) it.episode = 1;
+            persist();
+            render();
+        }
+
+        let pendingDeleteId = null;
+
+        function removeItem(id) {
+            const it = find(id);
+            if (!it) return;
+            pendingDeleteId = id;
+            closeEdit();
+            $('delText').textContent = `¿Eliminar "${it.title}" de la watchlist?`;
+            $('deleteModal').classList.add('active');
+            $('delCancel').focus();
+        }
+        function closeDelete() {
+            pendingDeleteId = null;
+            $('deleteModal').classList.remove('active');
+        }
+        $('delConfirm').addEventListener('click', () => {
+            items = items.filter(i => i.id !== pendingDeleteId);
+            persist();
+            closeDelete();
+            render();
+        });
+        $('delCancel').addEventListener('click', closeDelete);
+        $('deleteModal').addEventListener('click', e => { if (e.target === $('deleteModal')) closeDelete(); });
+
+        $('doneToggle').addEventListener('click', () => { doneOpen = !doneOpen; render(); });
+
+        /* ── Editar ── */
+        /* Trabajo en curso del calendario por capítulo mientras el modal está
+           abierto: recién se escribe en el item al Guardar. `key` identifica
+           el patrón (1er estreno | caps. | frecuencia); si cambia, las fechas
+           ajustadas a mano ya no tienen sentido y se descartan. */
+        let edWork = { overrides: {}, shifts: [], key: '' };
+        const patternKey = s => `${s.first}|${s.per}|${s.every}`;
+
+        function editHidesDate() {
+            const old = find(editingId) && find(editingId).schedule;
+            return !!(old && old.mode === 'WEEKLY' && old.released > 0 && $('efMode').value === 'WEEKLY');
+        }
+
+        /* Calendario según lo que muestra el formulario ahora mismo. */
+        function buildEditSched() {
+            const it = find(editingId);
+            const old = it && it.schedule;
+            const date = editHidesDate() ? old.first : ($('efDate').value || null);
+            const s = readSched('ef', date);
+            if (!s) return null;
+            if (old && old.season === s.season) s.released = old.released;
+            if (s.mode === 'WEEKLY') {
+                const key = patternKey(s);
+                if (edWork.key !== key) edWork = { overrides: {}, shifts: [], key };
+                s.overrides = edWork.overrides;
+                s.shifts = edWork.shifts;
+            }
+            return s;
+        }
+
+        function renderEps() {
+            const box = $('efEps');
+            const s = !$('efSched').hidden && $('efMode').value === 'WEEKLY' ? buildEditSched() : null;
+            box.hidden = !s;
+            if (!s) return;
+            const from = s.released + 1;
+            const to = Math.min(s.total || from + 11, from + 29);
+            let html = '';
+            for (let n = from; n <= to; n++) {
+                const d = epDate(s, n);
+                const moved = d !== epDate(s, n, true);
+                html += `<div class="ep-row">
+                    <span class="ep-num">Cap. ${n}</span>
+                    ${moved ? '<span class="ep-moved">movido</span>' : ''}
+                    <input class="field" type="date" value="${d}" onchange="editEp(${n}, this.value)" aria-label="Fecha del capítulo ${n}">
+                </div>`;
+            }
+            $('efEpsList').innerHTML = html || '<div class="empty">No quedan capítulos por estrenar.</div>';
+            $('efEpsHint').textContent = s.total
+                ? ''
+                : 'Fechas estimadas según el patrón. Poné el total de capítulos para ver la temporada completa.';
+        }
+
+        function editEp(n, val) {
+            const s = buildEditSched();
+            if (!s || !val) return renderEps();
+            if ($('efFollow').checked) {
+                // Atraso: corre este capítulo y todos los siguientes los mismos días.
+                delete edWork.overrides[n];
+                const delta = Math.round((parseDate(val) - parseDate(epDate(s, n))) / 86400000);
+                if (delta) edWork.shifts.push({ from: n, days: delta });
+            } else {
+                edWork.overrides[n] = val;
+            }
+            renderEps();
+        }
+
+        function syncEditFields() {
+            const list = $('efList').value;
+            const isSeries = $('efType').value === 'SERIES';
+            const had = !!(find(editingId) && find(editingId).schedule);
+            // El calendario aplica a series por estrenar (o que ya tienen uno en curso).
+            const schedShow = isSeries && list !== 'DONE' && (list === 'UPCOMING' || had);
+            $('efSched').hidden = !schedShow;
+            $('efDateRow').hidden = !(list === 'UPCOMING' || (schedShow && $('efMode').value !== 'NONE')) || editHidesDate();
+            $('efProgRow').hidden = !isSeries;
+            renderEps();
+        }
+        $('efList').addEventListener('change', syncEditFields);
+        $('efType').addEventListener('change', syncEditFields);
+
+        function openEdit(id) {
+            const it = find(id);
+            if (!it) return;
+            editingId = id;
+            $('efTitle').value = it.title;
+            $('efType').value = it.type;
+            $('efList').value = it.list;
+            $('efDate').value = it.releaseDate || '';
+            $('efSeason').value = it.season || '';
+            $('efEpisode').value = it.episode ?? '';
+            $('efNote').value = it.note || '';
+            fillSched('ef', it.schedule);
+            const sc = it.schedule;
+            edWork = sc && sc.mode === 'WEEKLY'
+                ? { overrides: { ...sc.overrides }, shifts: sc.shifts.map(x => ({ ...x })), key: patternKey(sc) }
+                : { overrides: {}, shifts: [], key: '' };
+            if (sc && sc.mode === 'WEEKLY') $('efDate').value = sc.first;
+            syncEditFields();
+            $('editModal').classList.add('active');
+            $('efTitle').focus();
+        }
+        function closeEdit() {
+            editingId = null;
+            $('editModal').classList.remove('active');
+        }
+
+        $('editForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const it = find(editingId);
+            if (!it) return closeEdit();
+            const title = $('efTitle').value.trim();
+            if (!title) return;
+            it.title = title;
+            it.type = $('efType').value;
+            it.list = $('efList').value;
+            const date = $('efDate').value || null;
+            const sched = it.type === 'SERIES' && !$('efSched').hidden && it.list !== 'DONE' ? buildEditSched() : null;
+            it.schedule = sched;
+            const nextDate = sched && sched.mode === 'WEEKLY' ? epDate(sched, sched.released + 1) : date;
+            it.releaseDate = it.list === 'DONE' ? null : (it.list === 'UPCOMING' || sched ? nextDate : null);
+            if (it.type === 'SERIES') {
+                it.season = parseInt($('efSeason').value) || 1;
+                it.episode = $('efEpisode').value === '' ? null : Math.max(0, parseInt($('efEpisode').value) || 0);
+            } else {
+                it.season = null;
+                it.episode = null;
+            }
+            it.note = $('efNote').value.trim();
+            syncReleases();
+            persist();
+            closeEdit();
+            render();
+        });
+        $('efCancel').addEventListener('click', closeEdit);
+        $('efDelete').addEventListener('click', () => removeItem(editingId));
+        $('editModal').addEventListener('click', e => { if (e.target === $('editModal')) closeEdit(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeEdit(); closeDelete(); } });
 
         init();
     </script>
