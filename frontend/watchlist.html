@@ -1122,6 +1122,11 @@
                         if (it.list === 'UPCOMING') it.list = 'WANT';
                         changed = true;
                     }
+                    // Series cuyos capítulos salieron antes de que se guardara la fecha: se reconstruye.
+                    if (s.released > 0 && !it.releasedOn) {
+                        it.releasedOn = epDate(s, s.released);
+                        changed = true;
+                    }
                     const next = s.total && s.released >= s.total ? null : epDate(s, s.released + 1);
                     if (!next) { it.schedule = null; changed = true; }
                     if (it.releaseDate !== next) { it.releaseDate = next; changed = true; }
