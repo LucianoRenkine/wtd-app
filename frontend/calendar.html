@@ -707,6 +707,103 @@
         .task-content { cursor: pointer; }
         .task-content:hover .task-title { color: #1c1b22; }
 
+        /* ── Vista de día (doble click en un día) ── */
+        .dayview-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(46, 32, 60, 0.5);
+            z-index: 250;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+        .dayview-overlay.active { opacity: 1; visibility: visible; }
+
+        .dayview {
+            width: min(860px, 100%);
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid rgba(28, 27, 34, 0.09);
+            box-shadow: 0 24px 60px rgba(28, 27, 34, 0.25);
+            overflow: hidden;
+            transform: translateY(8px);
+            transition: transform 0.2s;
+        }
+        .dayview-overlay.active .dayview { transform: none; }
+
+        .dayview-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 22px 28px 16px;
+            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+        }
+        .dayview-title { font-size: 1.5em; font-weight: 700; color: #1c1b22; }
+        .dayview-sub { font-size: 0.85em; color: #7a7389; margin-left: 10px; font-weight: 400; text-transform: none; }
+        .dayview-close {
+            border: none; background: none; cursor: pointer;
+            font-size: 1.4em; line-height: 1; color: #7a7389; padding: 4px 8px; border-radius: 8px;
+        }
+        .dayview-close:hover { background: rgba(28, 27, 34, 0.06); color: #1c1b22; }
+
+        /* Franja de todo el día / varios días: fuera del eje horario */
+        .dayview-allday {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 12px 28px;
+            background: rgba(28, 27, 34, 0.025);
+            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+        }
+        .dayview-allday-label {
+            font-size: 0.68em; font-weight: 700; letter-spacing: 0.12em;
+            text-transform: uppercase; color: #a49dae;
+        }
+        .dayview-allday-items { display: flex; flex-wrap: wrap; gap: 6px; }
+        .dayview-allday .event-pill { width: auto; max-width: 100%; margin: 0; }
+
+        .dayview-body { overflow-y: auto; padding: 8px 28px 24px; }
+        .dayview-empty { padding: 48px 0; text-align: center; color: #a49dae; }
+
+        .dv-axis { position: relative; margin-left: 52px; }
+        .dv-hour {
+            position: absolute; left: 0; right: 0;
+            border-top: 1px solid rgba(28, 27, 34, 0.07);
+        }
+        .dv-hour span {
+            position: absolute; left: -52px; top: -8px; width: 44px;
+            text-align: right; font-size: 0.72em; color: #a49dae;
+            font-variant-numeric: tabular-nums;
+        }
+        .dv-block {
+            position: absolute;
+            box-sizing: border-box;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border-left: 3px solid;
+            font-size: 0.82em;
+            line-height: 1.25;
+            overflow: hidden;
+            cursor: pointer;
+            transition: box-shadow 0.15s;
+        }
+        .dv-block:hover { box-shadow: 0 2px 10px rgba(28, 27, 34, 0.18); z-index: 2; }
+        .dv-block .dv-time { display: block; font-size: 0.85em; opacity: 0.8; font-variant-numeric: tabular-nums; }
+        .dv-block .dv-title { font-weight: 600; }
+        .dv-block.done .dv-title { text-decoration: line-through; opacity: 0.55; }
+
+        @media (max-width: 600px) {
+            .dayview-header, .dayview-allday, .dayview-body { padding-left: 16px; padding-right: 16px; }
+        }
+
         /* ── Detail Panel ── */
         .detail-overlay {
             position: fixed;
@@ -1152,6 +1249,17 @@
     <div class="toast" id="toast"></div>
 
     <!-- Detail Panel -->
+    <div class="dayview-overlay" id="dayViewOverlay" onclick="if (event.target === this) closeDayView()">
+        <div class="dayview" role="dialog" aria-modal="true" aria-labelledby="dayViewTitle">
+            <div class="dayview-header">
+                <div class="dayview-title" id="dayViewTitle"></div>
+                <button type="button" class="dayview-close" onclick="closeDayView()" aria-label="Cerrar">✕</button>
+            </div>
+            <div id="dayViewAllDay"></div>
+            <div class="dayview-body" id="dayViewBody"></div>
+        </div>
+    </div>
+
     <div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
     <div class="detail-panel" id="detailPanel">
         <div class="detail-header">
@@ -1383,6 +1491,9 @@
                     grid.appendChild(createDayCell(i, true, 1));
                 }
             }
+
+            // Si la vista de día está abierta, que refleje el cambio (completar, editar, borrar…)
+            if (dayViewDate) renderDayView();
         }
 
         function createDayCell(day, otherMonth, monthOffset) {
@@ -1393,6 +1504,7 @@
             const month = currentDate.getMonth();
             const date = new Date(year, month + monthOffset, day);
             const dayStr = toLocalDateStr(date);
+            cell.dataset.date = dayStr;
 
             // Day number bubble
             const dayNum = document.createElement('div');
@@ -1963,20 +2075,141 @@
             openComposerForEdit(task);
         }
 
+        /* ── Vista de día (doble click en un día) ──
+           Tareas sin hora o de varios días arriba ("Todo el día"); las que
+           tienen hora, como bloques sobre un eje horario. Las que se pisan
+           se reparten en columnas. */
+        let dayViewDate = null;
+        const DV_HOUR_PX = 56;
+
+        function openDayView(dayStr) {
+            dayViewDate = dayStr;
+            renderDayView();
+            document.getElementById('dayViewOverlay').classList.add('active');
+            // Que el primer bloque (o las 8) quede a la vista
+            const body = document.getElementById('dayViewBody');
+            const first = body.querySelector('.dv-block');
+            body.scrollTop = first ? Math.max(0, first.offsetTop - 60) : 0;
+        }
+
+        function closeDayView() {
+            dayViewDate = null;
+            document.getElementById('dayViewOverlay').classList.remove('active');
+        }
+
+        function timeToMin(t) {
+            const [h, m] = t.split(':');
+            return parseInt(h) * 60 + parseInt(m);
+        }
+
+        function renderDayView() {
+            const dayStr = dayViewDate;
+            const date = new Date(dayStr + 'T12:00:00');
+
+            const tasks = allTasks.filter(taskPassesCalFilters).filter(t => {
+                if (t.endDate && t.endDate !== t.startDate) return dayStr >= t.startDate && dayStr <= t.endDate;
+                return t.startDate === dayStr;
+            });
+            const isTimed = t => !t.allDay && t.startTime && !(t.endDate && t.endDate !== t.startDate);
+            const allDay = tasks.filter(t => !isTimed(t));
+            const timed = tasks.filter(isTimed);
+
+            const weekday = WEEKDAYS_DETAIL[date.getDay()];
+            document.getElementById('dayViewTitle').innerHTML =
+                `${weekday.charAt(0).toUpperCase() + weekday.slice(1)} ${date.getDate()} de ${MONTHS_DETAIL[date.getMonth()]}` +
+                `<span class="dayview-sub">${tasks.length} ${tasks.length === 1 ? 'tarea' : 'tareas'}</span>`;
+
+            // Franja "Todo el día"
+            const allDayBox = document.getElementById('dayViewAllDay');
+            allDayBox.innerHTML = '';
+            if (allDay.length) {
+                allDayBox.className = 'dayview-allday';
+                allDayBox.innerHTML = '<div class="dayview-allday-label">Todo el día</div><div class="dayview-allday-items"></div>';
+                const list = allDayBox.querySelector('.dayview-allday-items');
+                allDay.forEach(t => list.appendChild(buildPill(t, null, null)));
+            } else {
+                allDayBox.className = '';
+            }
+
+            const body = document.getElementById('dayViewBody');
+            if (!tasks.length) {
+                body.innerHTML = '<div class="dayview-empty">Sin tareas para este día</div>';
+                return;
+            }
+            if (!timed.length) { body.innerHTML = ''; return; }
+
+            // Posición de cada bloque (hora de fin = +1h si falta)
+            const blocks = timed.map(t => {
+                const start = timeToMin(t.startTime);
+                let end = t.endTime ? timeToMin(t.endTime) : start + 60;
+                if (end <= start) end = start + 60;
+                end = Math.min(Math.max(end, start + 30), 1440);
+                return { task: t, start, end, col: 0, cols: 1 };
+            }).sort((a, b) => a.start - b.start || b.end - a.end);
+
+            // Columnas para las que se superponen (por grupos de bloques encadenados)
+            let group = [], groupEnd = 0, colEnds = [];
+            const closeGroup = () => { group.forEach(b => b.cols = colEnds.length); group = []; colEnds = []; };
+            blocks.forEach(b => {
+                if (group.length && b.start >= groupEnd) closeGroup();
+                let col = colEnds.findIndex(e => e <= b.start);
+                if (col === -1) { col = colEnds.length; colEnds.push(0); }
+                colEnds[col] = b.end;
+                b.col = col;
+                group.push(b);
+                groupEnd = Math.max(groupEnd, b.end);
+            });
+            closeGroup();
+
+            const startH = Math.min(8, Math.floor(blocks[0].start / 60));
+            const endH   = Math.max(19, Math.ceil(Math.max(...blocks.map(b => b.end)) / 60));
+
+            let html = `<div class="dv-axis" style="height:${(endH - startH) * DV_HOUR_PX}px">`;
+            for (let h = startH; h <= endH; h++) {
+                html += `<div class="dv-hour" style="top:${(h - startH) * DV_HOUR_PX}px"><span>${String(h).padStart(2, '0')}:00</span></div>`;
+            }
+            blocks.forEach(b => {
+                const cat = catStyle(b.task.category);
+                const top = (b.start - startH * 60) * DV_HOUR_PX / 60;
+                const height = (b.end - b.start) * DV_HOUR_PX / 60;
+                const w = 100 / b.cols;
+                const range = b.task.endTime
+                    ? `${b.task.startTime.substring(0, 5)} – ${b.task.endTime.substring(0, 5)}`
+                    : b.task.startTime.substring(0, 5);
+                html += `<div class="dv-block${b.task.completed ? ' done' : ''}" data-id="${b.task.id}"
+                    style="top:${top}px;height:${height - 2}px;left:calc(${b.col * w}% + 2px);width:calc(${w}% - 4px);
+                           background:${cat.color}1f;color:${cat.color};border-left-color:${cat.color}">
+                    <span class="dv-time">${range}</span>
+                    <span class="dv-title">${escapeHtml(b.task.title)}</span>
+                </div>`;
+            });
+            body.innerHTML = html + '</div>';
+            body.querySelectorAll('.dv-block').forEach(el =>
+                el.addEventListener('click', () => openDetail(parseInt(el.dataset.id))));
+        }
+
+        document.getElementById('calendarGrid').addEventListener('dblclick', e => {
+            if (e.target.closest('.event-pill, .quick-add, .event-more')) return;
+            const cell = e.target.closest('.day-cell');
+            if (cell && cell.dataset.date) openDayView(cell.dataset.date);
+        });
+
         /* ── Atajos de teclado globales ── */
         document.addEventListener('keydown', e => {
             const composerOpen = document.getElementById('composerOverlay').classList.contains('active');
             const detailOpen   = document.getElementById('detailPanel').classList.contains('active');
             const modalOpen    = document.getElementById('deleteModal').classList.contains('active');
+            const dayOpen      = !!dayViewDate;
 
             if (e.key === 'Escape') {
                 if (modalOpen)         { closeModal();    return; }
                 if (composerOpen)      { closeComposer(); return; }
                 if (detailOpen)        { closeDetail();   return; }
+                if (dayOpen)           { closeDayView();  return; }
                 document.activeElement?.blur();
                 return;
             }
-            if (composerOpen || modalOpen) return;
+            if (composerOpen || modalOpen || dayOpen) return;
 
             const typing = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
 
