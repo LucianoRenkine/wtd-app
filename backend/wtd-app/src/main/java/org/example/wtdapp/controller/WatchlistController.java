@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/* Watchlist compartida: una sola lista para todos los perfiles. Cada item guarda
+   en `data` el JSON completo que arma el frontend. */
 @RestController
 @RequestMapping("/watchlist")
 @CrossOrigin(origins = "*")
