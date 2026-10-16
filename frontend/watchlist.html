@@ -579,6 +579,7 @@
                 <li><a href="calendar.html">Calendario</a></li>
                 <li><a href="proximas.html">Tareas</a></li>
                 <li><a href="watchlist.html" class="active">Watchlist</a></li>
+                <li><a href="cumpleanos.html">Cumpleaños</a></li>
                 <hr class="sidebar-divider">
                 <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
             </ul>
@@ -702,7 +703,7 @@
                 </div>
             </div>
             <div class="form-row" id="efDateRow">
-                <label for="efDate">Fecha de estreno</label>
+                <label for="efDate" id="efDateLabel">Fecha de estreno</label>
                 <input class="field" id="efDate" type="date">
             </div>
             <div class="form-row" id="efRelRow" hidden>
@@ -711,6 +712,7 @@
                 <div class="eps-hint">Ordena "Quiero ver" (primero los lanzamientos más recientes).</div>
             </div>
             <div class="sched form-row" id="efSched" hidden></div>
+            <div class="eps-hint" id="efSchedHint" hidden style="margin:-6px 0 14px">Si ya la estás viendo, los estrenos que cargues acá (otra temporada, capítulos por salir) aparecen también en Próximas fechas, sin sacarla de donde está.</div>
             <div class="form-row" id="efEps" hidden>
                 <label>Próximos episodios</label>
                 <div class="eps-list" id="efEpsList"></div>
@@ -1025,7 +1027,7 @@
                 <select class="field" id="${p}Mode">
                     <option value="WEEKLY">Por episodios</option>
                     <option value="FULL">Temporada completa</option>
-                    <option value="NONE">Solo una fecha</option>
+                    <option value="NONE">Sin calendario</option>
                 </select>
             </label>
             <span class="sched-more" id="${p}SchedMore">
@@ -1267,6 +1269,7 @@
                     </div>
                 </div>` : ''}
                 ${isSeries && it.avail ? `<div class="avail">${esc(availText(it.avail))}</div>` : ''}
+                ${isSeries && it.schedule && it.releaseDate ? `<div class="card-note">Próximo: ${esc(nextDropText(it.schedule))} · ${esc(whenText(daysUntil(it.releaseDate)).toLowerCase())}</div>` : ''}
                 ${it.note ? `<div class="card-note">${esc(it.note)}</div>` : ''}
                 <div class="card-actions">
                     <button class="btn-soft done" onclick="moveTo('${it.id}','DONE')">✓ ${isSeries ? 'Terminada' : 'La vi'}</button>
@@ -1662,13 +1665,16 @@
         function syncEditFields() {
             const list = $('efList').value;
             const isSeries = $('efType').value === 'SERIES';
-            const had = !!(find(editingId) && find(editingId).schedule);
-            // El calendario aplica a series por estrenar (o que ya tienen uno en curso).
-            const schedShow = isSeries && list !== 'DONE' && (list === 'UPCOMING' || had);
+            // El calendario aplica a cualquier serie no terminada: por estrenar, en la
+            // lista de espera o ya en curso (próxima temporada / capítulos por salir).
+            const schedShow = isSeries && list !== 'DONE';
+            const schedActive = schedShow && $('efMode').value !== 'NONE';
             $('efSched').hidden = !schedShow;
-            $('efDateRow').hidden = !(list === 'UPCOMING' || (schedShow && $('efMode').value !== 'NONE')) || editHidesDate();
+            $('efSchedHint').hidden = !(schedShow && list !== 'UPCOMING');
+            $('efDateLabel').textContent = list === 'UPCOMING' ? 'Fecha de estreno' : 'Fecha del próximo estreno';
+            $('efDateRow').hidden = !(list === 'UPCOMING' || schedActive) || editHidesDate();
             $('efProgRow').hidden = !isSeries;
-            $('efRelRow').hidden = !(list !== 'UPCOMING' && !schedShow);
+            $('efRelRow').hidden = !(list !== 'UPCOMING' && !schedActive);
             renderEps();
         }
         $('efList').addEventListener('change', syncEditFields);
@@ -1687,6 +1693,8 @@
             $('efEpisode').value = it.episode ?? '';
             $('efNote').value = it.note || '';
             fillSched('ef', it.schedule);
+            // Serie en curso sin calendario: lo más probable es que se cargue la temporada siguiente.
+            if (!it.schedule && it.type === 'SERIES' && it.list !== 'UPCOMING') $('efSSeason').value = (it.season || 1) + 1;
             const sc = it.schedule;
             edWork = sc && sc.mode === 'WEEKLY'
                 ? { overrides: { ...sc.overrides }, shifts: sc.shifts.map(x => ({ ...x })), key: patternKey(sc) }
