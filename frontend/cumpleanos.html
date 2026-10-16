@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Cumpleaños - WTD</title>
+    <script>if (!localStorage.getItem('wtdAuth')) location.replace('login.html');</script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fbfbfd;
+            color: #1c1b22;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(166, 61, 99, 0.3);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .hamburger { background: none; border: none; color: #a63d63; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 4px; }
+        .hamburger span { display: block; width: 25px; height: 2px; background: #a63d63; border-radius: 2px; transition: all 0.3s; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(10px, 10px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+        .logo { font-size: 1.3em; font-weight: 800; color: #a63d63; letter-spacing: 2px; text-decoration: none; }
+
+        .sidebar {
+            position: fixed; left: -300px; top: 0; width: 300px; height: 100vh;
+            background: #fbfbfd; border-right: 1px solid rgba(166, 61, 99, 0.3);
+            padding: 80px 20px 30px; transition: left 0.3s ease; z-index: 200; overflow-y: auto;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar nav ul { list-style: none; }
+        .sidebar nav li { margin-bottom: 20px; }
+        .sidebar nav a { text-decoration: none; color: #1c1b22; font-size: 1.05em; display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 5px; transition: all 0.3s; }
+        .sidebar nav a:hover { color: #a63d63; background: rgba(28, 27, 34, 0.055); padding-left: 15px; }
+        .sidebar nav a.active { color: #a63d63; font-weight: 600; background: rgba(28, 27, 34, 0.083); }
+        .sidebar-divider { border: none; border-top: 1px solid rgba(28, 27, 34, 0.11); margin: 20px 10px; }
+        .sidebar nav a.logout-link { color: #be123c; }
+        .sidebar nav a.logout-link:hover { color: #e11d48; background: rgba(225, 29, 72, 0.12); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(46, 32, 60,0.5); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 150; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        /* ───────── Página ───────── */
+        .container { max-width: 820px; margin: 0 auto; padding: 32px 24px 90px; }
+
+        .page-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+        .page-title { font-size: 1.9em; font-weight: 800; line-height: 1.1; }
+        .page-subtitle { font-size: 0.9em; margin-top: 6px; color: #837e90; }
+
+        .seg { display: inline-flex; background: rgba(28, 27, 34, 0.055); border-radius: 12px; padding: 3px; gap: 2px; }
+        .seg button { border: none; background: none; font: inherit; font-size: 0.86em; font-weight: 600; color: #6b6578; padding: 8px 16px; border-radius: 9px; cursor: pointer; transition: background .15s, color .15s; }
+        .seg button:hover { color: #1c1b22; }
+        .seg button.on { background: #fff; color: #1c1b22; box-shadow: 0 1px 3px rgba(28,27,34,.12); }
+
+        .field { border: 1px solid rgba(28, 27, 34, 0.12); background: #fff; border-radius: 10px; font: inherit; font-size: 0.92em; padding: 10px 12px; color: #1c1b22; min-width: 0; }
+        .field:focus { outline: none; border-color: #a63d63; }
+        .btn-primary { background: #1c1b22; color: #fff; border: none; border-radius: 10px; font: inherit; font-size: 0.88em; font-weight: 600; padding: 10px 18px; cursor: pointer; transition: background .15s; }
+        .btn-primary:hover { background: #a63d63; }
+        .btn-primary:disabled { opacity: .35; cursor: default; background: #1c1b22; }
+        .btn-ghost { border: none; background: none; color: #6b6578; font: inherit; font-size: 0.88em; font-weight: 600; cursor: pointer; padding: 10px 12px; border-radius: 10px; }
+        .btn-ghost:hover { background: rgba(28,27,34,.06); }
+        .btn-danger { border: none; background: none; color: #e11d48; font: inherit; font-size: 0.86em; font-weight: 600; cursor: pointer; padding: 8px 4px; }
+        .btn-danger:hover { text-decoration: underline; }
+
+        .banner { font-size: 0.85em; line-height: 1.4; padding: 10px 14px; border-radius: 12px; margin-bottom: 16px; background: rgba(194, 90, 52, 0.09); border: 1px solid rgba(194, 90, 52, 0.25); color: #8a3d1d; }
+
+        /* Hoy */
+        .today-box { background: linear-gradient(135deg, rgba(166, 61, 99, 0.12), rgba(166, 61, 99, 0.05)); border: 1px solid rgba(166, 61, 99, 0.25); border-radius: 16px; padding: 16px 18px; margin-bottom: 18px; }
+        .today-box .t-title { font-size: 0.72em; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a63d63; margin-bottom: 6px; }
+        .today-row { font-size: 1.05em; font-weight: 700; }
+        .today-row span { font-weight: 500; color: #7d2c4a; font-size: 0.85em; margin-left: 6px; }
+
+        /* Alta */
+        .quick-add { background: #fff; border: 1px solid rgba(28, 27, 34, 0.09); border-radius: 16px; padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(28,27,34,.05); }
+        .quick-add:focus-within { border-color: rgba(166, 61, 99, 0.45); box-shadow: 0 0 0 3px rgba(166, 61, 99, 0.09); }
+        .quick-add .qa-name { flex: 1 1 200px; border: none; }
+        .quick-add .qa-name:focus { border: none; }
+        .quick-add input[type=number].d { width: 70px; }
+        .quick-add input[type=number].y { width: 118px; }
+        .form-err { font-size: 0.8em; color: #e11d48; min-height: 1.2em; margin: 0 4px 14px; }
+
+        .search { position: relative; margin-bottom: 18px; }
+        .search input { width: 100%; padding-left: 38px; }
+        .search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #a49dae; }
+
+        /* Lista */
+        .panel { background: #fff; border: 1px solid rgba(28, 27, 34, 0.09); border-radius: 16px; padding: 6px 8px; box-shadow: 0 1px 2px rgba(28,27,34,.05); }
+        .month-head { display: flex; align-items: baseline; gap: 8px; margin: 22px 2px 8px; font-weight: 700; }
+        .month-head:first-child { margin-top: 0; }
+        .month-head .n { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8em; color: #a63d63; }
+        .row { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-bottom: 1px solid rgba(28, 27, 34, 0.055); border-radius: 10px; }
+        .row:last-child { border-bottom: none; }
+        .row:hover { background: rgba(28, 27, 34, 0.025); }
+        .badge { width: 48px; flex-shrink: 0; text-align: center; border-radius: 11px; background: rgba(28, 27, 34, 0.045); padding: 6px 0 5px; line-height: 1.1; }
+        .badge .d { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 1.15em; }
+        .badge .m { font-size: 0.64em; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7a7389; }
+        .row.soon .badge { background: rgba(166, 61, 99, 0.1); }
+        .row.soon .badge .d, .row.soon .badge .m { color: #a63d63; }
+        .row.today .badge { background: #a63d63; }
+        .row.today .badge .d, .row.today .badge .m { color: #fff; }
+        .row-main { flex: 1; min-width: 0; cursor: pointer; }
+        .row-title { font-size: 1em; font-weight: 600; word-break: break-word; }
+        .row-main:hover .row-title { color: #a63d63; }
+        .row-sub { font-size: 0.78em; color: #8c859a; margin-top: 2px; }
+        .when { font-size: 0.8em; font-weight: 600; color: #8c859a; white-space: nowrap; flex-shrink: 0; }
+        .row.soon .when { color: #a63d63; }
+        .row.today .when { color: #a63d63; font-weight: 800; }
+        .icon-btn { border: none; background: none; color: #9a93a8; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; }
+        .icon-btn:hover { background: rgba(28, 27, 34, 0.07); color: #1c1b22; }
+
+        .empty { text-align: center; padding: 34px 14px; color: #a49dae; font-size: 0.9em; line-height: 1.5; }
+        .empty b { display: block; color: #7a7389; font-weight: 600; margin-bottom: 2px; }
+
+        /* Modales */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(28, 27, 34, 0.4); display: none; justify-content: center; align-items: center; z-index: 300; padding: 16px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 18px; padding: 24px; width: 100%; max-width: 420px; max-height: 92vh; overflow-y: auto; }
+        .modal h3 { font-size: 1.1em; margin-bottom: 16px; }
+        .form-row { margin-bottom: 14px; }
+        .form-row label { display: block; font-size: 0.75em; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #7a7389; margin-bottom: 6px; }
+        .form-row .field { width: 100%; }
+        .form-row textarea.field { resize: vertical; min-height: 70px; font-family: inherit; }
+        .form-split { display: flex; gap: 10px; }
+        .form-split > * { flex: 1; }
+        .modal-actions { display: flex; gap: 10px; align-items: center; margin-top: 20px; }
+        .modal-actions .btn-primary { margin-left: auto; }
+        .confirm-modal { max-width: 360px; text-align: center; padding: 30px 26px 22px; }
+        .confirm-icon { font-size: 2em; margin-bottom: 10px; }
+        .confirm-text { font-size: 1.02em; font-weight: 600; line-height: 1.45; word-break: break-word; }
+        .confirm-sub { font-size: 0.82em; color: #8c859a; margin-top: 6px; }
+        .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 22px; }
+        .confirm-btns .btn-ghost, .confirm-btns .btn-primary { flex: 1; }
+        .btn-primary.btn-del { background: #e11d48; }
+        .btn-primary.btn-del:hover { background: #be123c; }
+
+        [hidden] { display: none !important; }
+
+        @media (max-width: 600px) {
+            header { padding: 0 20px; }
+            .container { padding: 22px 14px 80px; }
+            .page-top .seg { width: 100%; }
+            .page-top .seg button { flex: 1; }
+            .quick-add .qa-name { flex-basis: 100%; }
+            .when { font-size: 0.74em; }
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme.css?v=6">
+</head>
+<body>
+
+    <header>
+        <button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+        <a href="index.html" class="logo">WTD</a>
+        <div></div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calendar.html">Calendario</a></li>
+                <li><a href="proximas.html">Tareas</a></li>
+                <li><a href="watchlist.html">Watchlist</a></li>
+                <li><a href="cumpleanos.html" class="active">Cumpleaños</a></li>
+                <hr class="sidebar-divider">
+                <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="container">
+        <div class="page-top">
+            <div>
+                <h1 class="page-title">Cumpleaños</h1>
+                <p class="page-subtitle" id="pageSub">Se repiten solos todos los años.</p>
+            </div>
+            <div class="seg" id="viewSeg" role="tablist" aria-label="Vista">
+                <button data-v="NEXT" class="on">Próximos</button>
+                <button data-v="MONTH">Por mes</button>
+            </div>
+        </div>
+
+        <div class="banner" id="banner" hidden></div>
+        <div class="today-box" id="todayBox" hidden></div>
+
+        <form class="quick-add" id="quickAdd" autocomplete="off">
+            <input class="field qa-name" id="qaName" name="bday-who" type="text" maxlength="80" placeholder="Agregar cumpleaños de…" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other">
+            <input class="field d" id="qaDay" type="number" min="1" max="31" placeholder="Día" aria-label="Día">
+            <select class="field" id="qaMonth" aria-label="Mes"></select>
+            <input class="field y" id="qaYear" type="number" min="1900" max="2100" placeholder="Año (opc.)" aria-label="Año de nacimiento (opcional)">
+            <button class="btn-primary" id="qaBtn" type="submit">Agregar</button>
+        </form>
+        <div class="form-err" id="qaErr"></div>
+
+        <div class="search">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input class="field" id="search" type="search" placeholder="Buscar por nombre, mes o nota…" aria-label="Buscar">
+        </div>
+
+        <div id="list"></div>
+    </div>
+
+    <!-- Editar -->
+    <div class="modal-overlay" id="editModal">
+        <form class="modal" id="editForm" autocomplete="off">
+            <h3>Editar cumpleaños</h3>
+            <div class="form-row">
+                <label for="efName">Nombre</label>
+                <input class="field" id="efName" name="bday-who-edit" type="text" maxlength="80" required autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other">
+            </div>
+            <div class="form-split form-row">
+                <div><label for="efDay">Día</label><input class="field" id="efDay" type="number" min="1" max="31" required></div>
+                <div><label for="efMonth">Mes</label><select class="field" id="efMonth"></select></div>
+                <div><label for="efYear">Año</label><input class="field" id="efYear" type="number" min="1900" max="2100" placeholder="opcional"></div>
+            </div>
+            <div class="form-row">
+                <label for="efNote">Nota</label>
+                <textarea class="field" id="efNote" maxlength="400" placeholder="Ideas de regalo, a qué hora llamar…"></textarea>
+            </div>
+            <div class="form-err" id="efErr"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-danger" id="efDelete">Eliminar</button>
+                <button type="button" class="btn-ghost" id="efCancel">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Confirmar eliminación -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal confirm-modal" role="alertdialog" aria-labelledby="delText">
+            <div class="confirm-icon">🗑</div>
+            <p class="confirm-text" id="delText"></p>
+            <p class="confirm-sub">Esta acción no se puede deshacer.</p>
+            <div class="confirm-btns">
+                <button type="button" class="btn-ghost" id="delCancel">Cancelar</button>
+                <button type="button" class="btn-primary btn-del" id="delConfirm">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js?v=5"></script>
+    <script src="js/birthdays.js?v=1"></script>
+    <script>
+        /* ── Hamburger ── */
+        const hamburger      = document.getElementById('hamburger');
+        const sidebar        = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+        sidebarOverlay.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+        function doLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('wtdAuth');
+            window.location.href = 'login.html';
+        }
+
+        /* ── Estado ── */
+        let birthdays = [];
+        let loaded = false;
+        let view = 'NEXT';
+        let editingId = null;
+        let pendingDeleteId = null;
+
+        const $ = id => document.getElementById(id);
+        const find = id => birthdays.find(b => String(b.id) === String(id));
+        const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+        function esc(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+        }
+        const GEAR = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+
+        function setBanner(msg) { $('banner').hidden = !msg; $('banner').textContent = msg || ''; }
+
+        /* ── Datos ── */
+        async function load() {
+            const list = await BirthdayApi.list();
+            if (list === null) {
+                setBanner(BirthdayApi.notDeployed ? BIRTHDAY_NOT_DEPLOYED : 'No se pudo conectar con el servidor. Probá de nuevo en un rato.');
+                return;
+            }
+            setBanner('');
+            birthdays = list;
+            loaded = true;
+            render();
+        }
+
+        /* ── Render ── */
+        function matches(b, q) {
+            if (!q) return true;
+            const hay = bdayNorm(`${b.name} ${b.note || ''} ${BDAY_MONTHS[b.month - 1]} ${b.day}`);
+            return q.split(/\s+/).every(w => hay.includes(w));
+        }
+
+        function rowHtml(b) {
+            const n = bdayNext(b);
+            const cls = n.days === 0 ? 'today' : (n.days <= 7 ? 'soon' : '');
+            const sub = `${esc(bdayAgeText(b, n.date))} · ${b.day} de ${BDAY_MONTHS[b.month - 1]}`;
+            return `
+            <div class="row ${cls}">
+                <div class="badge"><div class="d">${b.day}</div><div class="m">${BDAY_MONTHS[b.month - 1].slice(0, 3)}</div></div>
+                <div class="row-main" onclick="openEdit('${b.id}')">
+                    <div class="row-title">${n.days === 0 ? '🎂 ' : ''}${esc(b.name)}</div>
+                    <div class="row-sub">${sub}${b.note ? ' · ' + esc(b.note) : ''}</div>
+                </div>
+                <span class="when">${bdayDaysText(n.days)}</span>
+                <button class="icon-btn" onclick="openEdit('${b.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
+            </div>`;
+        }
+
+        function render() {
+            const q = bdayNorm($('search').value).trim();
+            const list = birthdays.filter(b => matches(b, q));
+
+            // Quién cumple hoy (sin importar el buscador)
+            const hoy = birthdays.filter(b => bdayNext(b).days === 0);
+            $('todayBox').hidden = !hoy.length;
+            $('todayBox').innerHTML = hoy.length
+                ? `<div class="t-title">🎂 Hoy cumple</div>` + hoy.map(b =>
+                    `<div class="today-row">${esc(b.name)}<span>${esc(bdayAgeText(b, bdayNext(b).date))}</span></div>`).join('')
+                : '';
+
+            $('pageSub').textContent = birthdays.length
+                ? `${birthdays.length} ${birthdays.length === 1 ? 'cumpleaños' : 'cumpleaños'} · se repiten solos todos los años`
+                : 'Se repiten solos todos los años.';
+
+            if (!loaded) { $('list').innerHTML = ''; return; }
+            if (!birthdays.length) {
+                $('list').innerHTML = `<div class="panel"><div class="empty"><b>Todavía no hay cumpleaños</b>Agregá el primero arriba: nombre, día y mes.</div></div>`;
+                return;
+            }
+            if (!list.length) {
+                $('list').innerHTML = `<div class="panel"><div class="empty"><b>Sin resultados</b>Nada coincide con “${esc($('search').value.trim())}”.</div></div>`;
+                return;
+            }
+
+            if (view === 'NEXT') {
+                const sorted = list.map(b => ({ b, n: bdayNext(b) }))
+                    .sort((x, y) => x.n.days - y.n.days || x.b.name.localeCompare(y.b.name));
+                $('list').innerHTML = `<div class="panel">${sorted.map(x => rowHtml(x.b)).join('')}</div>`;
+            } else {
+                let html = '';
+                for (let m = 1; m <= 12; m++) {
+                    const inMonth = list.filter(b => b.month === m).sort((a, c) => a.day - c.day || a.name.localeCompare(c.name));
+                    if (!inMonth.length) continue;
+                    html += `<div class="month-head">${cap(BDAY_MONTHS[m - 1])} <span class="n">${inMonth.length}</span></div>
+                             <div class="panel">${inMonth.map(rowHtml).join('')}</div>`;
+                }
+                $('list').innerHTML = html;
+            }
+        }
+
+        $('viewSeg').addEventListener('click', e => {
+            const b = e.target.closest('button[data-v]');
+            if (!b) return;
+            view = b.dataset.v;
+            document.querySelectorAll('#viewSeg button').forEach(x => x.classList.toggle('on', x === b));
+            render();
+        });
+        $('search').addEventListener('input', render);
+
+        /* ── Alta ── */
+        const monthOptions = BDAY_MONTHS.map((m, i) => `<option value="${i + 1}">${cap(m)}</option>`).join('');
+        $('qaMonth').innerHTML = '<option value="">Mes</option>' + monthOptions;
+        $('efMonth').innerHTML = monthOptions;
+
+        function readFields(p) {
+            return {
+                name: $(p + 'Name').value.trim(),
+                month: parseInt($(p + 'Month').value) || null,
+                day: parseInt($(p + 'Day').value) || null,
+                birthYear: $(p + 'Year').value === '' ? null : parseInt($(p + 'Year').value),
+                note: p === 'ef' ? $('efNote').value.trim() : null
+            };
+        }
+
+        /* Mismas reglas que el servidor, para avisar antes de enviar. */
+        function validate(b) {
+            if (!b.name) return 'Falta el nombre.';
+            if (!b.month) return 'Elegí el mes.';
+            if (!b.day || b.day < 1 || b.day > new Date(2024, b.month, 0).getDate()) return 'Ese día no existe en ese mes.';
+            if (b.birthYear != null && (b.birthYear < 1900 || b.birthYear > new Date().getFullYear())) return 'Revisá el año de nacimiento.';
+            return null;
+        }
+
+        $('quickAdd').addEventListener('submit', async e => {
+            e.preventDefault();
+            const b = readFields('qa');
+            const err = validate(b);
+            $('qaErr').textContent = err || '';
+            if (err) return;
+            $('qaBtn').disabled = true;
+            const res = await BirthdayApi.save(b);
+            $('qaBtn').disabled = false;
+            if (!res.ok) { $('qaErr').textContent = res.error; return; }
+            birthdays.push(res.data);
+            $('qaName').value = ''; $('qaDay').value = ''; $('qaMonth').value = ''; $('qaYear').value = '';
+            $('qaName').focus();
+            render();
+        });
+
+        /* ── Editar ── */
+        function openEdit(id) {
+            const b = find(id);
+            if (!b) return;
+            editingId = b.id;
+            $('efName').value = b.name;
+            $('efDay').value = b.day;
+            $('efMonth').value = b.month;
+            $('efYear').value = b.birthYear ?? '';
+            $('efNote').value = b.note || '';
+            $('efErr').textContent = '';
+            $('editModal').classList.add('active');
+            $('efName').focus();
+        }
+        function closeEdit() { editingId = null; $('editModal').classList.remove('active'); }
+
+        $('editForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const b = readFields('ef');
+            const err = validate(b);
+            $('efErr').textContent = err || '';
+            if (err) return;
+            const res = await BirthdayApi.save(b, editingId);
+            if (!res.ok) { $('efErr').textContent = res.error; return; }
+            const i = birthdays.findIndex(x => String(x.id) === String(editingId));
+            if (i >= 0) birthdays[i] = res.data;
+            closeEdit();
+            render();
+        });
+        $('efCancel').addEventListener('click', closeEdit);
+        $('editModal').addEventListener('click', e => { if (e.target === $('editModal')) closeEdit(); });
+
+        /* ── Eliminar (con el modal de la página) ── */
+        $('efDelete').addEventListener('click', () => {
+            const b = find(editingId);
+            if (!b) return;
+            pendingDeleteId = b.id;
+            closeEdit();
+            $('delText').textContent = `¿Eliminar el cumpleaños de "${b.name}"?`;
+            $('deleteModal').classList.add('active');
+            $('delCancel').focus();
+        });
+        function closeDelete() { pendingDeleteId = null; $('deleteModal').classList.remove('active'); }
+        $('delCancel').addEventListener('click', closeDelete);
+        $('deleteModal').addEventListener('click', e => { if (e.target === $('deleteModal')) closeDelete(); });
+        $('delConfirm').addEventListener('click', async () => {
+            const id = pendingDeleteId;
+            closeDelete();
+            if (id == null) return;
+            if (await BirthdayApi.remove(id)) {
+                birthdays = birthdays.filter(b => String(b.id) !== String(id));
+                render();
+            } else {
+                setBanner('No se pudo eliminar. Probá de nuevo.');
+            }
+        });
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeEdit(); closeDelete(); } });
+
+        /* ── Inicio ── */
+        (function init() {
+            if (!loadAuth()) { window.location.href = 'login.html'; return; }
+            // Desde el calendario o el Home: cumpleanos.html?q=Nombre
+            const q = new URLSearchParams(location.search).get('q');
+            if (q) $('search').value = q;
+            load();
+            // Al volver a la pestaña: trae lo que cargó el otro perfil y refresca "hoy".
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+        })();
+    </script>
+</body>
+</html>

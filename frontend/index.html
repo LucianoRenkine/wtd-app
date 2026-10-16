@@ -863,6 +863,7 @@
                 <a href="calendar.html">Calendario</a>
                 <a href="proximas.html">Tareas</a>
                 <a href="watchlist.html">Watchlist</a>
+                <a href="cumpleanos.html">Cumpleaños</a>
             </nav>
             <a href="#" class="side-nav-logout" onclick="doLogout(event)">⏻ Cerrar sesión</a>
         </aside>
@@ -899,6 +900,7 @@
                         <li><a href="calendar.html">Calendario</a></li>
                         <li><a href="proximas.html">Tareas</a></li>
                         <li><a href="watchlist.html">Watchlist</a></li>
+                        <li><a href="cumpleanos.html">Cumpleaños</a></li>
                         <hr class="sidebar-divider">
                         <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
                     </ul>
@@ -1095,6 +1097,7 @@
 
     <script src="js/catalog.js?v=2"></script>
     <script src="js/api.js?v=5"></script>
+    <script src="js/birthdays.js?v=1"></script>
     <script>
         /* ── Auth guard ── */
         if (!localStorage.getItem('wtdAuth')) {
@@ -1212,6 +1215,7 @@
 
         /* ── Upcoming tasks (API) ── */
         let upcomingTasks = [];
+        let upcomingBdays = [];   // cumpleaños de los próximos días, ya con su fecha calculada
 
         async function loadUpcomingTasks() {
             // Desde hoy hasta dentro de dos semanas: lo que realmente "viene"
@@ -1220,7 +1224,10 @@
             const from = toLocalDateStr(today);
             const to   = toLocalDateStr(horizon);
 
+            const bdayPromise = BirthdayApi.list();
             const tasks = await getTasksByDateRange(from, to);
+            const bdayList = await bdayPromise;
+            upcomingBdays = bdayList ? bdaysBetween(bdayList, today, horizon) : [];
             upcomingTasks = tasks
                 // Prioridad Nula es calendario-only: no aparece acá.
                 .filter(t => !t.completed && t.priority !== 'NONE')
@@ -1243,14 +1250,20 @@
 
         function renderAgenda() {
             const list = document.getElementById('agendaList');
-            if (!upcomingTasks.length) {
+            if (!upcomingTasks.length && !upcomingBdays.length) {
                 list.innerHTML = '<p class="agenda-empty">Nada agendado por ahora ✨</p>';
                 return;
             }
 
+            // Cumpleaños y tareas juntos; en un mismo día, los cumpleaños primero.
+            const entries = [
+                ...upcomingBdays.map(x => ({ __bday: x, startDate: x.dateStr })),
+                ...upcomingTasks
+            ].sort((a, b) => a.startDate.localeCompare(b.startDate) || (b.__bday ? 1 : 0) - (a.__bday ? 1 : 0));
+
             // Agrupadas por día para escanearlas de un vistazo
             const groups = [];
-            upcomingTasks.forEach(task => {
+            entries.forEach(task => {
                 const last = groups[groups.length - 1];
                 if (last && last.date === task.startDate) last.tasks.push(task);
                 else groups.push({ date: task.startDate, tasks: [task] });
@@ -1260,6 +1273,19 @@
                 <div class="agenda-group">
                     <div class="agenda-day">${dayLabel(g.date)}</div>
                     ${g.tasks.map(task => {
+                        if (task.__bday) {
+                            const { b, date } = task.__bday;
+                            const name = String(b.name).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+                            return `
+                        <div class="agenda-item" onclick="window.location.href='cumpleanos.html?q=${encodeURIComponent(b.name)}'"
+                             style="border-left:3px solid #a63d63">
+                            <span class="agenda-dot" style="background:#a63d63"></span>
+                            <div class="agenda-text">
+                                <div class="agenda-title" style="font-weight:700;color:#a63d63">🎂 ${name}</div>
+                                <div class="agenda-meta">${bdayAgeText(b, date)}</div>
+                            </div>
+                        </div>`;
+                        }
                         const cat  = catStyle(task.category);
                         const prio = prioStyle(task.priority);
                         return `

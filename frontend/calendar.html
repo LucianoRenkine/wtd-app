@@ -409,6 +409,12 @@
             letter-spacing: -1px;
         }
         .event-pill.done .pill-text { text-decoration: line-through; opacity: 0.55; }
+        .event-pill.bday-pill {
+            background: rgba(166, 61, 99, 0.12);
+            color: #a63d63;
+            border-left: 3px solid #a63d63;
+            font-weight: 600;
+        }
 
         /* Tramos de una tarea de varios días: se pegan al borde de la celda
            para que el color se vea continuo entre columnas vecinas. */
@@ -1089,6 +1095,7 @@
                 <a href="calendar.html" class="active">Calendario</a>
                 <a href="proximas.html">Tareas</a>
                 <a href="watchlist.html">Watchlist</a>
+                <a href="cumpleanos.html">Cumpleaños</a>
             </nav>
             <a href="#" class="side-nav-logout" onclick="doLogout(event)">⏻ Cerrar sesión</a>
         </aside>
@@ -1123,6 +1130,7 @@
                         <li><a href="calendar.html" class="active">Calendario</a></li>
                         <li><a href="proximas.html">Tareas</a></li>
                         <li><a href="watchlist.html">Watchlist</a></li>
+                        <li><a href="cumpleanos.html">Cumpleaños</a></li>
                         <hr class="sidebar-divider">
                         <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
                     </ul>
@@ -1281,6 +1289,7 @@
 
     <script src="js/catalog.js?v=2"></script>
     <script src="js/api.js?v=5"></script>
+    <script src="js/birthdays.js?v=1"></script>
     <script>
         /* ── Hamburger ── */
         const hamburger      = document.getElementById('hamburger');
@@ -1309,6 +1318,7 @@
         let currentDate = new Date();
         let selectedDate = new Date();
         let allTasks = [];
+        let allBirthdays = [];
         let categories = [];
         let partnerId = null;
 
@@ -1400,8 +1410,10 @@
                 history.replaceState(null, '', 'calendar.html');
             }
 
-            // Load tasks
+            // Load tasks (+ cumpleaños, que se piden en paralelo)
+            const bdayPromise = BirthdayApi.list();
             await loadTasks();
+            allBirthdays = (await bdayPromise) || [];
 
             // Render calendar
             renderCalendar();
@@ -1543,13 +1555,18 @@
             const isSelected = cell.classList.contains('selected');
             const MAX_PILLS = isSelected ? 3 : 4;
 
-            dayTasks.slice(0, MAX_PILLS).forEach(task => {
+            // Los cumpleaños van primero; cuentan para el tope de píldoras.
+            const dayBdays = allBirthdays.filter(b => bdayOnDay(b, dayStr));
+            const shownB = dayBdays.slice(0, MAX_PILLS);
+            shownB.forEach(b => cell.appendChild(buildBirthdayPill(b, date)));
+            dayTasks.slice(0, MAX_PILLS - shownB.length).forEach(task => {
                 cell.appendChild(buildPill(task, dayStr, date));
             });
-            if (dayTasks.length > MAX_PILLS) {
+            const totalItems = dayBdays.length + dayTasks.length;
+            if (totalItems > MAX_PILLS) {
                 const more = document.createElement('div');
                 more.className = 'event-more';
-                more.textContent = `+${dayTasks.length - MAX_PILLS} más`;
+                more.textContent = `+${totalItems - MAX_PILLS} más`;
                 cell.appendChild(more);
             }
 
@@ -1594,6 +1611,19 @@
             });
 
             return cell;
+        }
+
+        /* Cumpleaños: 🎂 + nombre. Al tocarlo abre la página de Cumpleaños con ese nombre buscado. */
+        function buildBirthdayPill(b, date) {
+            const pill = document.createElement('div');
+            pill.className = 'event-pill bday-pill';
+            pill.innerHTML = `<span class="pill-text">🎂 ${escapeHtml(b.name)}</span>`;
+            pill.title = `${b.name} · ${bdayAgeText(b, date || bdayToday())}`;
+            pill.addEventListener('click', e => {
+                e.stopPropagation();
+                window.location.href = 'cumpleanos.html?q=' + encodeURIComponent(b.name);
+            });
+            return pill;
         }
 
         /* Una píldora = color de categoría + ícono + barra de prioridad */
@@ -2112,27 +2142,30 @@
             });
             const isTimed = t => !t.allDay && t.startTime && !(t.endDate && t.endDate !== t.startDate);
             const allDay = tasks.filter(t => !isTimed(t));
+            const bdays = allBirthdays.filter(b => bdayOnDay(b, dayStr));
             const timed = tasks.filter(isTimed);
 
             const weekday = WEEKDAYS_DETAIL[date.getDay()];
             document.getElementById('dayViewTitle').innerHTML =
                 `${weekday.charAt(0).toUpperCase() + weekday.slice(1)} ${date.getDate()} de ${MONTHS_DETAIL[date.getMonth()]}` +
-                `<span class="dayview-sub">${tasks.length} ${tasks.length === 1 ? 'tarea' : 'tareas'}</span>`;
+                `<span class="dayview-sub">${tasks.length} ${tasks.length === 1 ? 'tarea' : 'tareas'}` +
+                `${bdays.length ? ` · ${bdays.length} ${bdays.length === 1 ? 'cumpleaños' : 'cumpleaños'}` : ''}</span>`;
 
             // Franja "Todo el día"
             const allDayBox = document.getElementById('dayViewAllDay');
             allDayBox.innerHTML = '';
-            if (allDay.length) {
+            if (allDay.length || bdays.length) {
                 allDayBox.className = 'dayview-allday';
                 allDayBox.innerHTML = '<div class="dayview-allday-label">Todo el día</div><div class="dayview-allday-items"></div>';
                 const list = allDayBox.querySelector('.dayview-allday-items');
+                bdays.forEach(b => list.appendChild(buildBirthdayPill(b, date)));
                 allDay.forEach(t => list.appendChild(buildPill(t, null, null)));
             } else {
                 allDayBox.className = '';
             }
 
             const body = document.getElementById('dayViewBody');
-            if (!tasks.length) {
+            if (!tasks.length && !bdays.length) {
                 body.innerHTML = '<div class="dayview-empty">Sin tareas para este día</div>';
                 return;
             }
