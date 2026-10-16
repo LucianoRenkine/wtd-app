@@ -27,6 +27,9 @@ public class WatchlistController {
     @PostMapping
     public WatchlistItem create(@RequestBody WatchlistItem item) {
         item.setId(null);
+        // El frontend actual no manda status ni type siempre: sin esto llegan en null y la base los rechaza.
+        if (item.getStatus() == null) item.setStatus(WatchlistItem.WatchStatus.SOON);
+        if (item.getType() == null) item.setType(WatchlistItem.MediaType.MOVIE);
         if (item.getType() == WatchlistItem.MediaType.SERIES && item.getSeason() == null) {
             item.setSeason(1);
         }
@@ -41,8 +44,9 @@ public class WatchlistController {
         }
         WatchlistItem item = existing.get();
         item.setTitle(details.getTitle());
-        item.setType(details.getType());
-        item.setStatus(details.getStatus());
+        // Un campo ausente no pisa el valor guardado (status/type son NOT NULL).
+        if (details.getType() != null) item.setType(details.getType());
+        if (details.getStatus() != null) item.setStatus(details.getStatus());
         item.setReleaseDate(details.getReleaseDate());
         item.setSeason(details.getSeason());
         item.setYear(details.getYear());
