@@ -1220,6 +1220,12 @@
                     <div class="chip-row" id="cCategories"></div>
                 </div>
 
+                <label class="share-label" id="cConfirmedField" style="display:none">
+                    <input type="checkbox" id="cConfirmed">
+                    <span class="share-box">✓</span>
+                    <span>Confirmado</span>
+                </label>
+
                 <div>
                     <label class="field-label">Prioridad</label>
                     <div class="chip-row" id="cPriorities"></div>
@@ -1633,7 +1639,7 @@
            solo se repite al principio de la tarea o al empezar cada fila
            que atraviesa (igual que en Google Calendar). */
         function buildPill(task, dayStr, date) {
-            const cat  = catStyle(task.category);
+            const cat  = catStyle(task.category, task.confirmed);
             const prio = prioStyle(task.priority);
             const isMultiDay = task.endDate && task.endDate !== task.startDate;
 
@@ -1818,6 +1824,9 @@
             if (id) localStorage.setItem('wtdLastCategory', id);
             document.querySelectorAll('#cCategories .chip').forEach(c =>
                 c.classList.toggle('selected', Number(c.dataset.cat) === id));
+            const isFinal = categories.find(c => c.id === id)?.name === 'Final';
+            document.getElementById('cConfirmedField').style.display = isFinal ? '' : 'none';
+            if (!isFinal) document.getElementById('cConfirmed').checked = false;
         }
 
         function renderPriorityChips() {
@@ -1893,6 +1902,7 @@
 
             selectItemType(task.itemType === 'EVENT' ? 'EVENT' : 'TASK');
             selectCategory(task.category?.id ?? null);
+            document.getElementById('cConfirmed').checked = !!task.confirmed;
             selectPriority(task.priority || 'NONE');
 
             document.getElementById('cSubmit').textContent = 'Guardar cambios';
@@ -1951,6 +1961,7 @@
                 priority:  composerPrio,
                 itemType:  composerItemType,
                 completed: existing ? existing.completed : false,
+                confirmed: document.getElementById('cConfirmed').checked,
                 createdBy: { id: currentUserId }
             };
 
@@ -2017,7 +2028,7 @@
 
             document.getElementById('detailTaskTitle').textContent = task.title;
 
-            const cat  = catStyle(task.category);
+            const cat  = catStyle(task.category, task.confirmed);
             const prio = prioStyle(task.priority);
 
             let metaHTML = `<span class="detail-badge" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>`;
@@ -2202,7 +2213,7 @@
                 html += `<div class="dv-hour" style="top:${(h - startH) * DV_HOUR_PX}px"><span>${String(h).padStart(2, '0')}:00</span></div>`;
             }
             blocks.forEach(b => {
-                const cat = catStyle(b.task.category);
+                const cat = catStyle(b.task.category, b.task.confirmed);
                 const top = (b.start - startH * 60) * DV_HOUR_PX / 60;
                 const height = (b.end - b.start) * DV_HOUR_PX / 60;
                 const w = 100 / b.cols;

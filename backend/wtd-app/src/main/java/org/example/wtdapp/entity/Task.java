@@ -57,6 +57,9 @@ public class Task {
     @Column(nullable = false)
     private Boolean completed = false;
 
+    @Column(nullable = false, columnDefinition = "boolean not null default false")
+    private Boolean confirmed = false;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Priority priority = Priority.NONE;
@@ -103,6 +106,7 @@ public class Task {
         if (priority == null) priority = Priority.NONE;
         if (itemType == null) itemType = ItemType.TASK;
         if (allDay == null) allDay = false;
+        if (confirmed == null) confirmed = false;
     }
 
     public enum Priority {

@@ -6,13 +6,17 @@
 const CATEGORY_STYLE = {
     'Estudio':  { color: '#4a72a8' },
     'Trabajo':  { color: '#2e7d5b' },
-    'Personal': { color: '#a63d63' }
+    'Personal': { color: '#a63d63' },
+    'Final':    { color: '#a78bda', confirmedColor: '#6d28d9' }
 };
 const CATEGORY_FALLBACK = { color: '#7a7389' };
 
-function catStyle(category) {
+/* "Final" tiene dos tonos: violeta suave y, si la tarea está confirmada,
+   violeta fuerte. Las demás categorías ignoran `confirmed`. */
+function catStyle(category, confirmed) {
     const name = typeof category === 'string' ? category : (category && category.name);
-    return CATEGORY_STYLE[name] || CATEGORY_FALLBACK;
+    const st = CATEGORY_STYLE[name] || CATEGORY_FALLBACK;
+    return confirmed && st.confirmedColor ? { color: st.confirmedColor } : st;
 }
 
 /* Prioridad: las claves son el enum del backend (Task.Priority).

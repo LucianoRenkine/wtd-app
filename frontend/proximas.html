@@ -1339,7 +1339,7 @@
         }
 
         function taskCard(task) {
-            const cat  = catStyle(task.category);
+            const cat  = catStyle(task.category, task.confirmed);
             const prio = prioStyle(task.priority);
             const time = task.startTime ? task.startTime.substring(0, 5) : '——';
             const creator  = task.createdBy?.nombre || '';
@@ -1508,7 +1508,7 @@
 
             document.getElementById('detailTaskTitle').textContent = task.title;
 
-            const cat  = catStyle(task.category);
+            const cat  = catStyle(task.category, task.confirmed);
             const prio = prioStyle(task.priority);
 
             let metaHTML = `<span class="detail-badge" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>`;

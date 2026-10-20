@@ -35,6 +35,7 @@ public class TaskService {
             existingTask.setItemType(taskDetails.getItemType());
             existingTask.setCategory(taskDetails.getCategory());
             existingTask.setCompleted(taskDetails.getCompleted());
+            existingTask.setConfirmed(taskDetails.getConfirmed());
             existingTask.setPriority(taskDetails.getPriority());
             existingTask.setRecurrenceType(taskDetails.getRecurrenceType());
             return taskRepository.save(existingTask);

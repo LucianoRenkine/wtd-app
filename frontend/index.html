@@ -1286,7 +1286,7 @@
                             </div>
                         </div>`;
                         }
-                        const cat  = catStyle(task.category);
+                        const cat  = catStyle(task.category, task.confirmed);
                         const prio = prioStyle(task.priority);
                         return `
                         <div class="agenda-item" onclick="openTaskDetail(${task.id})"
@@ -1319,7 +1319,7 @@
 
             document.getElementById('tdpTitle').textContent = task.title;
 
-            const cat  = catStyle(task.category);
+            const cat  = catStyle(task.category, task.confirmed);
             const prio = prioStyle(task.priority);
             let meta = `<span class="tdp-badge" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>`;
             meta += `<span class="tdp-info">${task.itemType === 'EVENT' ? 'Evento' : 'Tarea'}</span>`;
