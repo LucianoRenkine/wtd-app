@@ -553,3 +553,14 @@ li.theme-setting { list-style: none; margin: 8px 0 !important; padding: 0 10px; 
 .push-setting .pn-btn:disabled { opacity: .5; cursor: default; }
 .push-setting .pn-hint { font-size: 0.74em; line-height: 1.4; color: var(--muted); margin-top: 6px; }
 .push-setting .pn-btn[hidden] { display: none; }
+
+/* Campanita de Novedades en el header */
+.bell-btn {
+    position: relative; width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    border: 1px solid rgba(var(--ink-rgb), 0.11); background: var(--surface); color: var(--ink-2);
+    display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+    transition: background .15s, color .15s;
+}
+.bell-btn:hover { background: rgba(var(--ink-rgb), 0.055); color: var(--ink); }
+.bell-btn.active { color: var(--accent); border-color: rgba(var(--accent-rgb), 0.45); }
+.bell-dot { position: absolute; top: 5px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--surface); }

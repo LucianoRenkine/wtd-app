@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script src="js/theme.js?v=2"></script>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="WTD">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#0c121c">
+    <script src="js/push.js?v=1" defer></script>
+    <script src="js/novedades.js?v=2" defer></script>
+    <title>Novedades - WTD</title>
+    <script>if (!localStorage.getItem('wtdAuth')) location.replace('login.html');</script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.3);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .hamburger { background: none; border: none; color: var(--accent); cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 4px; }
+        .hamburger span { display: block; width: 25px; height: 2px; background: var(--accent); border-radius: 2px; transition: all 0.3s; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(10px, 10px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+        .logo { font-size: 1.3em; font-weight: 800; color: var(--accent); letter-spacing: 2px; text-decoration: none; }
+
+        .sidebar {
+            position: fixed; left: -300px; top: 0; width: 300px; height: 100vh;
+            background: var(--bg); border-right: 1px solid rgba(var(--accent-rgb), 0.3);
+            padding: 80px 20px 30px; transition: left 0.3s ease; z-index: 200; overflow-y: auto;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar nav ul { list-style: none; }
+        .sidebar nav li { margin-bottom: 20px; }
+        .sidebar nav a { text-decoration: none; color: var(--ink); font-size: 1.05em; display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 5px; transition: all 0.3s; }
+        .sidebar nav a:hover { color: var(--accent); background: rgba(var(--ink-rgb), 0.055); padding-left: 15px; }
+        .sidebar nav a.active { color: var(--accent); font-weight: 600; background: rgba(var(--ink-rgb), 0.083); }
+        .sidebar-divider { border: none; border-top: 1px solid rgba(var(--ink-rgb), 0.11); margin: 20px 10px; }
+        .sidebar nav a.logout-link { color: var(--danger); }
+        .sidebar nav a.logout-link:hover { color: var(--danger); background: rgba(225, 29, 72, 0.12); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(46, 32, 60,0.5); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 150; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        /* ───────── Página ───────── */
+        .container { max-width: 760px; margin: 0 auto; padding: 32px 24px 90px; }
+        .page-title { font-size: 1.9em; font-weight: 800; line-height: 1.1; }
+        .page-subtitle { font-size: 0.9em; margin-top: 6px; color: var(--muted); }
+        .page-top { margin-bottom: 22px; }
+
+        .release {
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.09);
+            border-radius: 18px;
+            padding: 22px 24px 8px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        }
+        .release-head { margin-bottom: 14px; }
+        .release-date { font-size: 0.74em; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--accent); }
+        .release-new { margin-left: 8px; background: rgba(var(--accent-rgb), .14); color: var(--accent); border-radius: 20px; padding: 2px 8px; font-size: 0.95em; }
+        .release-title { font-size: 1.25em; font-weight: 800; margin-top: 4px; line-height: 1.25; }
+        .rel-section { padding: 14px 0; border-top: 1px solid rgba(var(--ink-rgb), 0.07); }
+        .rel-section h3 { font-size: 0.98em; font-weight: 700; margin-bottom: 8px; }
+        .rel-section ul { list-style: none; }
+        .rel-section li { position: relative; padding-left: 16px; font-size: 0.9em; line-height: 1.5; color: var(--ink-2); margin-bottom: 5px; }
+        .rel-section li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); opacity: .7; }
+        .empty { text-align: center; padding: 40px 14px; color: var(--faint); }
+        [hidden] { display: none !important; }
+        @media (max-width: 600px) {
+            header { padding: 0 20px; }
+            .container { padding: 22px 14px 80px; }
+            .release { padding: 18px 16px 6px; }
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme.css?v=9">
+</head>
+<body>
+
+    <header>
+        <button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+        <a href="index.html" class="logo">WTD</a>
+        <div></div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calendar.html">Calendario</a></li>
+                <li><a href="watchlist.html">Watchlist</a></li>
+                <li><a href="cumpleanos.html">Cumpleaños</a></li>
+                <hr class="sidebar-divider">
+                <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="container">
+        <div class="page-top">
+            <h1 class="page-title">Novedades</h1>
+            <p class="page-subtitle">Lo último que se sumó o cambió en la app.</p>
+        </div>
+        <div id="list"><div class="empty">Cargando…</div></div>
+    </div>
+
+    <script src="js/api.js?v=5"></script>
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+        sidebarOverlay.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+        function doLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('wtdAuth');
+            window.location.href = 'login.html';
+        }
+
+        const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+        const dateText = d => { const [y, m, day] = String(d).split('-').map(Number); return `${day} de ${MONTHS[m - 1]} de ${y}`; };
+
+        async function load() {
+            const box = document.getElementById('list');
+            let list;
+            try {
+                const r = await fetch(`${API_BASE_URL}/changelog`);
+                if (!r.ok) throw new Error(r.status);
+                list = await r.json();
+            } catch (e) {
+                box.innerHTML = '<div class="empty">No se pudieron cargar las novedades. Probá de nuevo en un rato.</div>';
+                return;
+            }
+            let seen = null;
+            try { seen = localStorage.getItem('wtdSeenChangelog'); } catch (e) {}
+            const seenIdx = list.findIndex(x => x.id === seen);   // lo que está arriba de lo último visto es nuevo
+            box.innerHTML = list.length ? list.map((r, i) => `
+                <article class="release">
+                    <div class="release-head">
+                        <div class="release-date">${esc(dateText(r.date))}${seen !== r.id && (seenIdx === -1 || i < seenIdx) ? '<span class="release-new">NUEVO</span>' : ''}</div>
+                        <div class="release-title">${esc(r.title)}</div>
+                    </div>
+                    ${(r.sections || []).map(s => `
+                        <section class="rel-section">
+                            <h3>${esc(s.icon || '')} ${esc(s.title)}</h3>
+                            <ul>${(s.items || []).map(it => `<li>${esc(it)}</li>`).join('')}</ul>
+                        </section>`).join('')}
+                </article>`).join('') : '<div class="empty">Todavía no hay novedades.</div>';
+            if (list.length) { try { localStorage.setItem('wtdSeenChangelog', list[0].id); } catch (e) {} }
+        }
+        load();
+    </script>
+</body>
+</html>

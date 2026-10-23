@@ -1,14 +1,17 @@
 package org.example.wtdapp.scheduler;
 
 import org.example.wtdapp.entity.Birthday;
+import org.example.wtdapp.entity.PushSubscription;
 import org.example.wtdapp.entity.SentNotification;
 import org.example.wtdapp.entity.Task;
 import org.example.wtdapp.entity.User;
 import org.example.wtdapp.entity.WatchlistItem;
 import org.example.wtdapp.repository.BirthdayRepository;
+import org.example.wtdapp.repository.PushSubscriptionRepository;
 import org.example.wtdapp.repository.SentNotificationRepository;
 import org.example.wtdapp.repository.TaskRepository;
 import org.example.wtdapp.repository.WatchlistItemRepository;
+import org.example.wtdapp.service.ChangelogService;
 import org.example.wtdapp.service.WtdPushService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,8 @@ import java.util.Set;
  *    Con hora: 15 min antes. Sin hora (todo el día): a las 9:00.
  *  - Cumpleaños: a las 9:00 del día. Va a todos los perfiles (lista compartida).
  *  - Estrenos: series/películas que salen hoy, a las 9:00. Todos los perfiles.
+ *  - Novedades: cada entrada nueva de changelog.json se avisa una vez por dispositivo,
+ *    apenas se publica (no depende de la hora ni de cuántos deploys haya).
  */
 @Component
 public class NotificationJob {
@@ -55,6 +60,8 @@ public class NotificationJob {
     @Autowired private BirthdayRepository birthdays;
     @Autowired private WatchlistItemRepository watchlist;
     @Autowired private SentNotificationRepository sent;
+    @Autowired private PushSubscriptionRepository subscriptions;
+    @Autowired private ChangelogService changelog;
 
     @Scheduled(cron = "0 * * * * *")
     @Transactional
@@ -62,6 +69,7 @@ public class NotificationJob {
         if (!push.enabled()) return;
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of(zoneId));
 
+        try { announceChangelog(now.toLocalDate()); } catch (Exception e) { log.warn("Novedades: {}", e.getMessage()); }
         try { reminders(now.toLocalDateTime()); } catch (Exception e) { log.warn("Recordatorios: {}", e.getMessage()); }
         LocalTime t = now.toLocalTime();
         if (!t.isBefore(MORNING) && t.isBefore(LAST_MORNING_CALL)) {
@@ -76,6 +84,32 @@ public class NotificationJob {
         if (sent.existsById(key)) return false;
         sent.save(new SentNotification(key));
         return true;
+    }
+
+    // ── Novedades de la app ────────────────────────────────────────────────
+    /** Una novedad deja de avisarse a dispositivos nuevos pasados estos días (se puede leer igual en la página). */
+    private static final int CHANGELOG_WINDOW_DAYS = 7;
+
+    private void announceChangelog(LocalDate today) {
+        List<PushSubscription> subs = null;
+        // De la más vieja a la más nueva, así llegan en orden si se publican varias juntas.
+        List<JsonNode> list = new java.util.ArrayList<>(changelog.all());
+        java.util.Collections.reverse(list);
+        for (JsonNode e : list) {
+            String id = text(e, "id"), date = text(e, "date");
+            if (id == null || date == null) continue;
+            LocalDate published;
+            try { published = LocalDate.parse(date); } catch (Exception ex) { continue; }
+            if (today.isBefore(published) || today.isAfter(published.plusDays(CHANGELOG_WINDOW_DAYS))) continue;
+
+            if (subs == null) subs = subscriptions.findAll();
+            String title = "📣 WTD se actualizó", body = text(e, "summary") != null ? text(e, "summary") : text(e, "title");
+            for (PushSubscription s : subs) {
+                // Una clave por dispositivo: cada uno la recibe una sola vez, también el que active los avisos después.
+                if (!firstTime("changelog:" + id + ":" + s.getId())) continue;
+                push.sendOne(s, title, body, "/novedades.html", "changelog-" + id);
+            }
+        }
     }
 
     // ── Recordatorios ──────────────────────────────────────────────────────

@@ -73,26 +73,32 @@ public class WtdPushService {
     }
 
     private int sendTo(List<PushSubscription> subs, String title, String body, String url, String tag) {
-        if (client == null) return 0;
-        String payload = json(Map.of("title", title, "body", body, "url", url == null ? "/index.html" : url, "tag", tag == null ? "wtd" : tag));
         int ok = 0;
         for (PushSubscription s : subs) {
-            try {
-                HttpResponse r = client.send(new Notification(s.getEndpoint(), s.getP256dh(), s.getAuth(), payload));
-                int code = r.getStatusLine().getStatusCode();
-                if (code == 404 || code == 410) {
-                    // El dispositivo ya no existe (app desinstalada / permiso revocado).
-                    subscriptions.deleteByEndpoint(s.getEndpoint());
-                } else if (code >= 200 && code < 300) {
-                    ok++;
-                } else {
-                    log.warn("Push rechazado ({}) para suscripción {}", code, s.getId());
-                }
-            } catch (Exception e) {
-                log.warn("Fallo enviando push a {}: {}", s.getId(), e.getMessage());
-            }
+            if (sendOne(s, title, body, url, tag)) ok++;
         }
         return ok;
+    }
+
+    /** Manda a un solo dispositivo. true si el servicio de push lo aceptó. */
+    public boolean sendOne(PushSubscription s, String title, String body, String url, String tag) {
+        if (client == null) return false;
+        String payload = json(Map.of("title", title, "body", body, "url", url == null ? "/index.html" : url, "tag", tag == null ? "wtd" : tag));
+        try {
+            HttpResponse r = client.send(new Notification(s.getEndpoint(), s.getP256dh(), s.getAuth(), payload));
+            int code = r.getStatusLine().getStatusCode();
+            if (code == 404 || code == 410) {
+                // El dispositivo ya no existe (app desinstalada / permiso revocado).
+                subscriptions.deleteByEndpoint(s.getEndpoint());
+            } else if (code >= 200 && code < 300) {
+                return true;
+            } else {
+                log.warn("Push rechazado ({}) para suscripción {}", code, s.getId());
+            }
+        } catch (Exception e) {
+            log.warn("Fallo enviando push a {}: {}", s.getId(), e.getMessage());
+        }
+        return false;
     }
 
     private static String json(Map<String, String> m) {

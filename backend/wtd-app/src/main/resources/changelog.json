@@ -1,0 +1,65 @@
+[
+  {
+    "id": "2026-10-23-avisos-oscuro-watchlist",
+    "date": "2026-10-23",
+    "title": "Avisos al iPhone, modo oscuro y nuevo Watchlist",
+    "summary": "Notificaciones de cumpleaños, estrenos y recordatorios, modo oscuro y un Watchlist nuevo con TMDB. Tocá para ver todo.",
+    "sections": [
+      {
+        "icon": "🔔",
+        "title": "Notificaciones al iPhone",
+        "items": [
+          "Ahora la app te avisa en el celular sin tener que abrirla.",
+          "Cumpleaños: a las 9:00 del día, con la edad si la cargaste.",
+          "Estrenos: a las 9:00, cuando sale un episodio nuevo o se estrena una película de tu Watchlist.",
+          "Recordatorios: en cualquier tarea o evento podés activar 🔔 Avisarme. Avisa 15 minutos antes, o a las 9:00 si es de todo el día. Viene apagado por defecto.",
+          "Para activarlas: instalá la app en tu pantalla de inicio y tocá Menú ▸ Notificaciones ▸ Activar avisos."
+        ]
+      },
+      {
+        "icon": "🌙",
+        "title": "Modo oscuro",
+        "items": [
+          "Nueva opción Apariencia en el menú: Claro, Oscuro o Auto (sigue al sistema).",
+          "Paleta azul marino con acento celeste, inspirada en Watch Next.",
+          "Calendario más calmo en oscuro: chips, botones y píldoras con menos contraste."
+        ]
+      },
+      {
+        "icon": "🎬",
+        "title": "Watchlist rediseñado",
+        "items": [
+          "Pestañas: Viendo, Quiero ver, Próximas y Vistas.",
+          "Tarjetas con póster, el capítulo en el color de acento y un círculo a la derecha: suma un capítulo, empieza o marca como vista, según la pestaña.",
+          "Integración con TMDB: autocompletar, pósters automáticos y, pegando el link de una serie o película, trae todo directo.",
+          "Próximos capítulos y fechas de estreno de las series en automático, con el ritmo calculado desde las fechas reales."
+        ]
+      },
+      {
+        "icon": "📅",
+        "title": "Calendario",
+        "items": [
+          "Los cumpleaños se muestran como 🎂 Nombre junto al número del día, sin ocupar un renglón como una tarea.",
+          "Lo nuevo que creás arranca como Evento en lugar de Tarea."
+        ]
+      },
+      {
+        "icon": "📣",
+        "title": "Novedades",
+        "items": [
+          "Nueva página Novedades con el historial de lo que se va sumando a la app.",
+          "Se abre con la campanita 🔔 de arriba a la derecha, al lado de tu perfil. Un punto te avisa cuando hay algo nuevo que todavía no viste.",
+          "Cada novedad que se publica te llega también como notificación, una sola vez, si tenés los avisos activados."
+        ]
+      },
+      {
+        "icon": "🧹",
+        "title": "Otros cambios",
+        "items": [
+          "Se eliminó la página Tareas y su link del menú.",
+          "Corregido el ritmo de estrenos que mostraba 1 cap. por semana cuando salían varios capítulos juntos."
+        ]
+      }
+    ]
+  }
+]
