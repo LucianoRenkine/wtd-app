@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme.js?v=2"></script>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="WTD">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#0c121c">
+    <script src="js/push.js?v=1" defer></script>
     <title>Calendario - WTD</title>
     <style>
         * {
@@ -1018,6 +1026,7 @@
             color: var(--muted);
             margin-bottom: 15px;
         }
+        .share-hint { font-weight: 500; color: var(--muted); margin-left: 4px; }
         .share-label:hover { border-color: var(--accent); background: rgba(var(--ink-rgb), 0.033); }
         .share-label input[type=checkbox] { display: none; }
         .share-box {
@@ -1249,6 +1258,12 @@
                     <label class="field-label">Prioridad</label>
                     <div class="chip-row" id="cPriorities"></div>
                 </div>
+
+                <label class="share-label" id="cReminderField">
+                    <input type="checkbox" id="cReminder">
+                    <span class="share-box">✓</span>
+                    <span>🔔 Avisarme <small class="share-hint" id="cReminderHint">15 min antes</small></span>
+                </label>
 
                 <label class="share-label" id="cShareField" style="display:none">
                     <input type="checkbox" id="cShared">
@@ -1833,6 +1848,11 @@
 
         /* Todo el día: sin horario tiene sentido, así que ocultamos los
            campos de hora en vez de dejarlos ahí sin usar. */
+        function syncReminderHint() {
+            document.getElementById('cReminderHint').textContent =
+                document.getElementById('cAllDay').checked ? 'a las 9:00' : '15 min antes';
+        }
+        document.getElementById('cAllDay').addEventListener('change', syncReminderHint);
         document.getElementById('cAllDay').addEventListener('change', e => {
             document.getElementById('cTimeRow').style.display = e.target.checked ? 'none' : '';
         });
@@ -1894,6 +1914,8 @@
             document.getElementById('cLink').value  = '';
             document.getElementById('cShared').checked = false;
             document.getElementById('cAllDay').checked = false;
+            document.getElementById('cReminder').checked = false;   // la campanita arranca apagada
+            syncReminderHint();
             document.getElementById('cTimeRow').style.display = '';
 
             selectItemType('EVENT');
@@ -1929,6 +1951,8 @@
             document.getElementById('cLink').value  = task.link || '';
             document.getElementById('cShared').checked = !!(task.sharedWith && task.sharedWith.length);
             document.getElementById('cAllDay').checked = !!task.allDay;
+            document.getElementById('cReminder').checked = !!task.reminder;
+            syncReminderHint();
             document.getElementById('cTimeRow').style.display = task.allDay ? 'none' : '';
 
             selectItemType(task.itemType === 'EVENT' ? 'EVENT' : 'TASK');
@@ -1993,6 +2017,7 @@
                 itemType:  composerItemType,
                 completed: existing ? existing.completed : false,
                 confirmed: document.getElementById('cConfirmed').checked,
+                reminder:  document.getElementById('cReminder').checked,
                 createdBy: { id: currentUserId }
             };
 
@@ -2064,6 +2089,7 @@
 
             let metaHTML = `<span class="detail-badge" style="background:${cat.color}">${task.category?.name || 'Sin categoría'}</span>`;
             metaHTML += `<span class="detail-info-item">${task.itemType === 'EVENT' ? 'Evento' : 'Tarea'}</span>`;
+            if (task.reminder) metaHTML += `<span class="detail-info-item">🔔 Con aviso</span>`;
 
             if (task.startDate) {
                 const d = new Date(task.startDate + 'T12:00:00');

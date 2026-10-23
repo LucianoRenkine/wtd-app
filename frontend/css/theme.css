@@ -541,3 +541,15 @@ li.theme-setting { list-style: none; margin: 8px 0 !important; padding: 0 10px; 
 :root[data-theme="dark"] .day-cell { border-right-color: rgba(var(--ink-rgb), 0.04); border-bottom-color: rgba(var(--ink-rgb), 0.04); }
 :root[data-theme="dark"] .day-header { color: var(--muted); border-bottom-color: rgba(var(--ink-rgb), 0.06); }
 :root[data-theme="dark"] .quick-add { border-color: rgba(var(--ink-rgb), 0.14); }
+
+/* ── Notificaciones (menú lateral) ── */
+.push-setting .pn-btn {
+    width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    font: inherit; font-size: 0.82em; font-weight: 600; padding: 8px 10px; border-radius: 10px; cursor: pointer;
+    transition: border-color .15s, color .15s;
+}
+.push-setting .pn-btn:hover { border-color: var(--accent); color: var(--accent); }
+.push-setting .pn-btn.on { color: var(--muted); }
+.push-setting .pn-btn:disabled { opacity: .5; cursor: default; }
+.push-setting .pn-hint { font-size: 0.74em; line-height: 1.4; color: var(--muted); margin-top: 6px; }
+.push-setting .pn-btn[hidden] { display: none; }

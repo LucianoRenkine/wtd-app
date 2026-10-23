@@ -45,4 +45,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // Eventos (no Tareas) todavía no completados: el job de auto-completado
     // los revisa a todos y decide en Java si ya venció su horario.
     List<Task> findByItemTypeAndCompletedFalse(Task.ItemType itemType);
+
+    // Tareas/eventos con la campanita activa que todavía no se completaron: las que
+    // arrancan hoy o mañana son las únicas que el job de avisos tiene que mirar.
+    List<Task> findByReminderTrueAndCompletedFalseAndStartDateBetween(LocalDate from, LocalDate to);
 }

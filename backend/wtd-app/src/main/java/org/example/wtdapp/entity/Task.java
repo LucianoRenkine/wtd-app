@@ -60,6 +60,10 @@ public class Task {
     @Column(nullable = false, columnDefinition = "boolean not null default false")
     private Boolean confirmed = false;
 
+    /** Campanita: si está activa, se manda una notificación push antes del horario. Apagada por defecto. */
+    @Column(nullable = false, columnDefinition = "boolean not null default false")
+    private Boolean reminder = false;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Priority priority = Priority.NONE;
@@ -107,6 +111,7 @@ public class Task {
         if (itemType == null) itemType = ItemType.TASK;
         if (allDay == null) allDay = false;
         if (confirmed == null) confirmed = false;
+        if (reminder == null) reminder = false;
     }
 
     public enum Priority {

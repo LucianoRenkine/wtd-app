@@ -8,7 +8,15 @@
 
     function pref() { try { return localStorage.getItem(KEY) || 'light'; } catch (e) { return 'light'; } }
     function resolve(p) { return p === 'dark' || (p === 'auto' && mq.matches) ? 'dark' : 'light'; }
-    function apply() { root.setAttribute('data-theme', resolve(pref())); }
+    function apply() {
+        var t = resolve(pref());
+        root.setAttribute('data-theme', t);
+        // Color de la barra del sistema (iPhone / PWA) acorde al tema.
+        document.addEventListener('DOMContentLoaded', function () {
+            var m = document.querySelector('meta[name="theme-color"]');
+            if (m) m.setAttribute('content', t === 'dark' ? '#0c121c' : '#fbfbfd');
+        });
+    }
     apply();
 
     window.WtdTheme = {
