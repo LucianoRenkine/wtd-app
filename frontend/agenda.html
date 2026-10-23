@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme.js?v=2"></script>
     <title>Agenda - WTD</title>
     <style>
         * {
@@ -13,16 +14,16 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #fbfbfd;
-            color: #1c1b22;
+            background: var(--bg);
+            color: var(--ink);
             line-height: 1.6;
         }
 
         /* Header */
         header {
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--glass);
             backdrop-filter: blur(10px);
-            border-bottom: 2px solid #a63d63;
+            border-bottom: 2px solid var(--accent);
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
@@ -36,14 +37,14 @@
         .logo {
             font-size: 1.6em;
             font-weight: 800;
-            color: #a63d63;
+            color: var(--accent);
             letter-spacing: 1px;
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: #a63d63;
+            color: var(--accent);
             font-size: 1.5em;
             cursor: pointer;
             transition: all 0.3s;
@@ -63,7 +64,7 @@
 
         .page-title {
             font-size: 2.5em;
-            color: #1c1b22;
+            color: var(--ink);
             margin-bottom: 40px;
             text-align: center;
             letter-spacing: 1px;
@@ -78,8 +79,8 @@
 
         /* Calendar */
         .calendar-section {
-            background: #ffffff;
-            border: 2px solid rgba(28, 27, 34, 0.11);
+            background: var(--surface);
+            border: 2px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 15px;
             padding: 30px;
             backdrop-filter: blur(5px);
@@ -95,7 +96,7 @@
         .calendar-nav button {
             background: none;
             border: none;
-            color: #a63d63;
+            color: var(--accent);
             font-size: 1.3em;
             cursor: pointer;
             transition: all 0.3s;
@@ -108,7 +109,7 @@
 
         .current-date {
             font-size: 1.3em;
-            color: #1c1b22;
+            color: var(--ink);
             font-weight: 600;
         }
 
@@ -121,7 +122,7 @@
 
         .day-header {
             text-align: center;
-            color: #8c8499;
+            color: var(--muted);
             font-size: 0.9em;
             font-weight: 600;
             padding: 10px 0;
@@ -133,53 +134,53 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(28, 27, 34, 0.11);
+            border: 2px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
-            color: #1c1b22;
+            color: var(--ink);
         }
 
         .day-cell:hover {
-            border-color: #a63d63;
-            background: rgba(28, 27, 34, 0.055);
+            border-color: var(--accent);
+            background: rgba(var(--ink-rgb), 0.055);
         }
 
         .day-cell.other-month {
-            color: #4a4458;
+            color: var(--ink-2);
             cursor: default;
         }
 
         .day-cell.today {
-            background: #a63d63;
-            border-color: #a63d63;
-            color: white;
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--on-accent);
         }
 
         .day-cell.selected {
-            background: rgba(166, 61, 99, 0.3);
-            border-color: #a63d63;
+            background: rgba(var(--accent-rgb), 0.3);
+            border-color: var(--accent);
         }
 
         .day-cell.special-date {
-            background: #a63d63;
-            border-color: #a63d63;
-            color: white;
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--on-accent);
             font-weight: bold;
         }
 
         .day-cell.anniversary {
-            background: #a63d63;
-            border-color: #a63d63;
-            color: white;
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--on-accent);
             font-weight: bold;
             font-size: 1.1em;
         }
 
         .day-cell.semi-anniversary {
-            background: #2e2c36;
-            border-color: #2e2c36;
+            background: var(--ink-2);
+            border-color: var(--ink-2);
             color: white;
             font-weight: bold;
         }
@@ -193,8 +194,8 @@
 
         /* Add Task Form */
         .add-task-form {
-            background: #ffffff;
-            border: 2px solid rgba(28, 27, 34, 0.11);
+            background: var(--surface);
+            border: 2px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 15px;
             padding: 30px;
             backdrop-filter: blur(5px);
@@ -207,7 +208,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #a63d63;
+            color: var(--accent);
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -217,10 +218,10 @@
         .form-group select {
             width: 100%;
             padding: 12px;
-            background: rgba(246, 243, 252, 0.9);
-            border: 2px solid rgba(28, 27, 34, 0.11);
+            background: var(--glass);
+            border: 2px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 8px;
-            color: #1c1b22;
+            color: var(--ink);
             font-family: inherit;
             transition: border-color 0.3s;
         }
@@ -229,7 +230,7 @@
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #a63d63;
+            border-color: var(--accent);
         }
 
         .form-group textarea {
@@ -244,8 +245,8 @@
         }
 
         .btn {
-            background: #a63d63;
-            color: white;
+            background: var(--accent);
+            color: var(--on-accent);
             border: none;
             padding: 12px 30px;
             border-radius: 8px;
@@ -257,7 +258,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(166, 61, 99, 0.3);
+            box-shadow: 0 10px 25px rgba(var(--accent-rgb), 0.3);
         }
 
         .btn:active {
@@ -266,24 +267,24 @@
 
         /* Tasks List */
         .tasks-list {
-            background: #ffffff;
-            border: 2px solid rgba(28, 27, 34, 0.11);
+            background: var(--surface);
+            border: 2px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 15px;
             padding: 30px;
             backdrop-filter: blur(5px);
         }
 
         .tasks-list h3 {
-            color: #1c1b22;
+            color: var(--ink);
             margin-bottom: 20px;
             font-size: 1.3em;
             letter-spacing: 0.5px;
         }
 
         .task-item {
-            background: rgba(246, 243, 252, 0.9);
+            background: var(--glass);
             padding: 20px;
-            border-left: 4px solid #a63d63;
+            border-left: 4px solid var(--accent);
             border-radius: 8px;
             margin-bottom: 15px;
             display: flex;
@@ -294,18 +295,18 @@
         }
 
         .task-item:hover {
-            background: rgba(28, 27, 34, 0.028);
+            background: rgba(var(--ink-rgb), 0.028);
             transform: translateX(5px);
         }
 
         .task-item.completed {
             opacity: 0.6;
-            border-left-color: #8c8499;
+            border-left-color: var(--muted);
         }
 
         .task-item.completed .task-title {
             text-decoration: line-through;
-            color: #8c8499;
+            color: var(--muted);
         }
 
         .task-content {
@@ -314,12 +315,12 @@
 
         .task-title {
             font-weight: 600;
-            color: #1c1b22;
+            color: var(--ink);
             margin-bottom: 5px;
         }
 
         .task-description {
-            color: #8c8499;
+            color: var(--muted);
             font-size: 0.9em;
             margin-bottom: 8px;
         }
@@ -328,28 +329,28 @@
             display: flex;
             gap: 15px;
             font-size: 0.85em;
-            color: #5b5468;
+            color: var(--ink-2);
         }
 
         .task-category {
-            background: rgba(28, 27, 34, 0.11);
-            color: #a63d63;
+            background: rgba(var(--ink-rgb), 0.11);
+            color: var(--accent);
             padding: 3px 10px;
             border-radius: 12px;
         }
 
         .task-category[data-category="Cumples"] {
             background: rgba(192, 38, 211, 0.3);
-            color: #a63d63;
+            color: var(--accent);
             font-weight: 700;
         }
 
         .task-item.cumples-task {
-            border-left-color: #a63d63;
+            border-left-color: var(--accent);
         }
 
         .task-item.cumples-task .task-title {
-            color: #a63d63;
+            color: var(--accent);
             font-weight: 700;
         }
 
@@ -361,7 +362,7 @@
         .task-btn {
             background: none;
             border: none;
-            color: #8c8499;
+            color: var(--muted);
             cursor: pointer;
             font-size: 1.2em;
             transition: all 0.3s;
@@ -369,12 +370,12 @@
         }
 
         .task-btn:hover {
-            color: #a63d63;
+            color: var(--accent);
         }
 
         .no-tasks {
             text-align: center;
-            color: #5b5468;
+            color: var(--ink-2);
             padding: 40px 20px;
             font-style: italic;
         }
@@ -401,8 +402,8 @@
         }
 
         .delete-modal-content {
-            background: #ffffff;
-            border: 2px solid #a63d63;
+            background: var(--surface);
+            border: 2px solid var(--accent);
             border-radius: 15px;
             padding: 40px;
             max-width: 400px;
@@ -412,8 +413,8 @@
         }
 
         .delete-modal-content.anniversary {
-            border-color: #a63d63;
-            background: #ffffff;
+            border-color: var(--accent);
+            background: var(--surface);
             box-shadow: 0 0 30px rgba(219, 39, 119, 0.3);
         }
 
@@ -435,13 +436,13 @@
 
         .delete-modal-text {
             font-size: 1.2em;
-            color: #1c1b22;
+            color: var(--ink);
             margin-bottom: 30px;
             line-height: 1.6;
         }
 
         .delete-modal-text.anniversary {
-            color: #a63d63;
+            color: var(--accent);
             font-size: 1.4em;
             font-weight: 700;
         }
@@ -463,32 +464,32 @@
         }
 
         .delete-modal-btn.cancel {
-            background: rgba(28, 27, 34, 0.11);
-            color: #1c1b22;
-            border: 2px solid rgba(166, 61, 99, 0.3);
+            background: rgba(var(--ink-rgb), 0.11);
+            color: var(--ink);
+            border: 2px solid rgba(var(--accent-rgb), 0.3);
         }
 
         .delete-modal-btn.cancel:hover {
-            background: rgba(28, 27, 34, 0.055);
-            border-color: rgba(166, 61, 99, 0.5);
+            background: rgba(var(--ink-rgb), 0.055);
+            border-color: rgba(var(--accent-rgb), 0.5);
         }
 
         .delete-modal-btn.confirm {
-            background: #a63d63;
-            color: white;
+            background: var(--accent);
+            color: var(--on-accent);
         }
 
         .delete-modal-btn.confirm:hover {
-            background: #1c1b22;
+            background: var(--btn);
             transform: scale(1.05);
         }
 
         .delete-modal-btn.anniversary {
-            background: #a63d63;
+            background: var(--accent);
         }
 
         .delete-modal-btn.anniversary:hover {
-            background: #a63d63;
+            background: var(--accent);
             transform: scale(1.05);
         }
 
@@ -521,7 +522,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="css/theme.css?v=6">
+    <link rel="stylesheet" href="css/theme.css?v=7">
 </head>
 <body>
     <!-- Header -->

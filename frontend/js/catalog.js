@@ -11,11 +11,22 @@ const CATEGORY_STYLE = {
 };
 const CATEGORY_FALLBACK = { color: '#7a7389' };
 
+/* En oscuro las mismas categorías se aclaran para sostener el contraste. */
+const CATEGORY_STYLE_DARK = {
+    'Estudio':  { color: '#7fa6dc' },
+    'Trabajo':  { color: '#4fbf8f' },
+    'Personal': { color: '#e0719a' },
+    'Final':    { color: '#b9a0ee', confirmedColor: '#9d7bf5' }
+};
+const CATEGORY_FALLBACK_DARK = { color: '#a09bad' };
+const isDarkTheme = () => document.documentElement.getAttribute('data-theme') === 'dark';
+
 /* "Final" tiene dos tonos: violeta suave y, si la tarea está confirmada,
    violeta fuerte. Las demás categorías ignoran `confirmed`. */
 function catStyle(category, confirmed) {
     const name = typeof category === 'string' ? category : (category && category.name);
-    const st = CATEGORY_STYLE[name] || CATEGORY_FALLBACK;
+    const dark = isDarkTheme();
+    const st = (dark ? CATEGORY_STYLE_DARK : CATEGORY_STYLE)[name] || (dark ? CATEGORY_FALLBACK_DARK : CATEGORY_FALLBACK);
     return confirmed && st.confirmedColor ? { color: st.confirmedColor } : st;
 }
 
@@ -32,6 +43,10 @@ const PRIORITY_STYLE = {
 };
 const PRIORITY_ORDER = ['NONE', 'LOW', 'MEDIUM', 'HIGH'];
 
+const PRIORITY_COLOR_DARK = { 'NONE': '#767187', 'LOW': '#9a95a8', 'MEDIUM': '#cfcbd9', 'HIGH': '#f08a5d' };
+
 function prioStyle(priority) {
-    return PRIORITY_STYLE[(priority || 'NONE').toUpperCase()] || PRIORITY_STYLE['NONE'];
+    const key = (priority || 'NONE').toUpperCase();
+    const st = PRIORITY_STYLE[key] || PRIORITY_STYLE['NONE'];
+    return isDarkTheme() ? { ...st, color: PRIORITY_COLOR_DARK[key] || st.color } : st;
 }

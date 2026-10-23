@@ -6,6 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <script src="js/theme.js?v=2"></script>
     <title>Watchlist - WTD</title>
     <script>if (!localStorage.getItem('wtdAuth')) location.replace('login.html');</script>
     <style>
@@ -13,15 +14,15 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #fbfbfd;
-            color: #1c1b22;
+            background: var(--bg);
+            color: var(--ink);
             min-height: 100vh;
         }
 
         header {
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--glass);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(166, 61, 99, 0.3);
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.3);
             padding: 0 40px;
             height: 60px;
             display: flex;
@@ -35,7 +36,7 @@
         .hamburger {
             background: none;
             border: none;
-            color: #a63d63;
+            color: var(--accent);
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -46,7 +47,7 @@
             display: block;
             width: 25px;
             height: 2px;
-            background: #a63d63;
+            background: var(--accent);
             border-radius: 2px;
             transition: all 0.3s;
         }
@@ -57,7 +58,7 @@
         .logo {
             font-size: 1.3em;
             font-weight: 800;
-            color: #a63d63;
+            color: var(--accent);
             letter-spacing: 2px;
             text-decoration: none;
         }
@@ -68,8 +69,8 @@
             top: 0;
             width: 300px;
             height: 100vh;
-            background: #fbfbfd;
-            border-right: 1px solid rgba(166, 61, 99, 0.3);
+            background: var(--bg);
+            border-right: 1px solid rgba(var(--accent-rgb), 0.3);
             padding: 80px 20px 30px;
             transition: left 0.3s ease;
             z-index: 200;
@@ -80,7 +81,7 @@
         .sidebar nav li { margin-bottom: 20px; }
         .sidebar nav a {
             text-decoration: none;
-            color: #1c1b22;
+            color: var(--ink);
             font-size: 1.05em;
             display: flex;
             align-items: center;
@@ -89,11 +90,11 @@
             border-radius: 5px;
             transition: all 0.3s;
         }
-        .sidebar nav a:hover { color: #a63d63; background: rgba(28, 27, 34, 0.055); padding-left: 15px; }
-        .sidebar nav a.active { color: #a63d63; font-weight: 600; background: rgba(28, 27, 34, 0.083); }
-        .sidebar-divider { border: none; border-top: 1px solid rgba(28, 27, 34, 0.11); margin: 20px 10px; }
-        .sidebar nav a.logout-link { color: #be123c; }
-        .sidebar nav a.logout-link:hover { color: #e11d48; background: rgba(225, 29, 72, 0.12); }
+        .sidebar nav a:hover { color: var(--accent); background: rgba(var(--ink-rgb), 0.055); padding-left: 15px; }
+        .sidebar nav a.active { color: var(--accent); font-weight: 600; background: rgba(var(--ink-rgb), 0.083); }
+        .sidebar-divider { border: none; border-top: 1px solid rgba(var(--ink-rgb), 0.11); margin: 20px 10px; }
+        .sidebar nav a.logout-link { color: var(--danger); }
+        .sidebar nav a.logout-link:hover { color: var(--danger); background: rgba(225, 29, 72, 0.12); }
 
         .sidebar-overlay {
             position: fixed;
@@ -108,7 +109,7 @@
 
         /* ───────── Página ───────── */
         .container {
-            max-width: 1100px;
+            max-width: 760px;
             margin: 0 auto;
             padding: 32px 24px 90px;
         }
@@ -127,7 +128,7 @@
         /* Filtro Todo / Películas / Series */
         .seg {
             display: inline-flex;
-            background: rgba(28, 27, 34, 0.055);
+            background: rgba(var(--ink-rgb), 0.055);
             border-radius: 12px;
             padding: 3px;
             gap: 2px;
@@ -138,7 +139,7 @@
             font: inherit;
             font-size: 0.86em;
             font-weight: 600;
-            color: #6b6578;
+            color: var(--muted);
             padding: 8px 16px;
             border-radius: 9px;
             cursor: pointer;
@@ -147,10 +148,10 @@
             gap: 7px;
             transition: background .15s, color .15s;
         }
-        .seg button:hover { color: #1c1b22; }
-        .seg button.on { background: #fff; color: #1c1b22; box-shadow: 0 1px 3px rgba(28,27,34,.12); }
-        .seg .n { font-size: 0.82em; font-weight: 700; color: #a49dae; }
-        .seg button.on .n { color: #a63d63; }
+        .seg button:hover { color: var(--ink); }
+        .seg button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(28,27,34,.12); }
+        .seg .n { font-size: 0.82em; font-weight: 700; color: var(--faint); }
+        .seg button.on .n { color: var(--accent); }
 
         .sync-banner {
             font-size: 0.85em;
@@ -167,12 +168,12 @@
 
         .top-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .top-right .btn-soft { padding: 9px 14px; }
-        #selBtn.on { background: #1c1b22; color: #fff; border-color: #1c1b22; }
+        #selBtn.on { background: var(--btn); color: var(--on-btn); border-color: var(--btn); }
 
         /* Selección múltiple */
-        .sel-box { width: 20px; height: 20px; accent-color: #a63d63; cursor: pointer; flex-shrink: 0; margin-top: 1px; }
-        .now-card.sel-on { box-shadow: 0 0 0 2px #a63d63, 0 1px 2px rgba(28,27,34,.05); }
-        .row.sel-on { background: rgba(166, 61, 99, 0.07); }
+        .sel-box { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; margin-top: 1px; }
+        .now-card.sel-on { box-shadow: 0 0 0 2px var(--accent), 0 1px 2px rgba(28,27,34,.05); }
+        .row.sel-on { background: rgba(var(--accent-rgb), 0.07); }
         body.selecting .row-actions, body.selecting .card-actions, body.selecting .progress { display: none; }
         body.selecting .now-card, body.selecting .row { cursor: pointer; }
         .sel-bar {
@@ -181,8 +182,8 @@
             bottom: 18px;
             transform: translateX(-50%);
             width: min(760px, calc(100% - 24px));
-            background: #fff;
-            border: 1px solid rgba(28, 27, 34, 0.12);
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.12);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(28, 27, 34, 0.18);
             padding: 10px 12px;
@@ -194,12 +195,12 @@
         }
         .sel-count { font-size: 0.88em; font-weight: 700; padding: 0 6px; }
         .sel-bar .btn-soft:disabled { opacity: .4; cursor: default; pointer-events: none; }
-        .btn-soft.sel-del:hover { border-color: #e11d48; color: #e11d48; background: rgba(225, 29, 72, 0.06); }
+        .btn-soft.sel-del:hover { border-color: var(--danger); color: var(--danger); background: rgba(225, 29, 72, 0.06); }
 
         /* Barra de alta rápida */
         .quick-add {
-            background: #fff;
-            border: 1px solid rgba(28, 27, 34, 0.09);
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.09);
             border-radius: 16px;
             padding: 12px;
             display: flex;
@@ -209,7 +210,7 @@
             margin-bottom: 26px;
             box-shadow: 0 1px 2px rgba(28,27,34,.05);
         }
-        .quick-add:focus-within { border-color: rgba(166, 61, 99, 0.45); box-shadow: 0 0 0 3px rgba(166, 61, 99, 0.09); }
+        .quick-add:focus-within { border-color: rgba(var(--accent-rgb), 0.45); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.09); }
         .qa-title {
             flex: 1 1 240px;
             min-width: 0;
@@ -218,27 +219,27 @@
             font: inherit;
             font-size: 1em;
             padding: 8px 6px;
-            color: #1c1b22;
+            color: var(--ink);
         }
         .qa-title:focus { outline: none; }
-        .qa-title::placeholder { color: #a49dae; }
+        .qa-title::placeholder { color: var(--faint); }
         .qa-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .qa-controls .seg button { padding: 7px 12px; }
         .field {
-            border: 1px solid rgba(28, 27, 34, 0.12);
-            background: #fff;
+            border: 1px solid rgba(var(--ink-rgb), 0.12);
+            background: var(--surface);
             border-radius: 10px;
             font: inherit;
             font-size: 0.86em;
             padding: 9px 10px;
-            color: #1c1b22;
+            color: var(--ink);
             min-width: 0;
         }
-        .field:focus { outline: none; border-color: #a63d63; }
+        .field:focus { outline: none; border-color: var(--accent); }
         .sched {
             flex-basis: 100%;
-            background: rgba(166, 61, 99, 0.05);
-            border: 1px solid rgba(166, 61, 99, 0.14);
+            background: rgba(var(--accent-rgb), 0.05);
+            border: 1px solid rgba(var(--accent-rgb), 0.14);
             border-radius: 12px;
             padding: 12px;
             display: flex;
@@ -246,13 +247,13 @@
             gap: 10px 12px;
             align-items: flex-end;
         }
-        .sched-title { flex-basis: 100%; font-size: 0.74em; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #7d2c4a; }
-        .sched label { display: flex; flex-direction: column; gap: 4px; font-size: 0.72em; font-weight: 600; color: #7a7389; }
+        .sched-title { flex-basis: 100%; font-size: 0.74em; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--accent-ink); }
+        .sched label { display: flex; flex-direction: column; gap: 4px; font-size: 0.72em; font-weight: 600; color: var(--muted); }
         .sched .field { font-size: 0.9rem; }
         .sched input[type=number] { width: 78px; }
         .sched-more { display: contents; }
         .eps-list {
-            border: 1px solid rgba(28, 27, 34, 0.1);
+            border: 1px solid rgba(var(--ink-rgb), 0.1);
             border-radius: 12px;
             max-height: 230px;
             overflow-y: auto;
@@ -262,27 +263,27 @@
             align-items: center;
             gap: 10px;
             padding: 6px 10px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.06);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.06);
         }
         .ep-row:last-child { border-bottom: none; }
         .ep-num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 0.85em; width: 62px; flex-shrink: 0; }
         .ep-row .field { padding: 6px 8px; font-size: 0.86rem; width: auto; margin-left: auto; }
-        .ep-moved { font-size: 0.68em; font-weight: 700; color: #a63d63; background: rgba(166, 61, 99, 0.1); border-radius: 20px; padding: 2px 8px; }
-        .form-row label.eps-follow { display: flex; align-items: center; gap: 8px; text-transform: none; letter-spacing: 0; font-size: 0.82em; font-weight: 500; color: #45424f; margin: 10px 0 0; cursor: pointer; }
-        .eps-hint { font-size: 0.75em; color: #9a93a8; margin-top: 6px; }
-        .avail { font-size: 0.78em; font-weight: 600; color: #0f9d6b; }
+        .ep-moved { font-size: 0.68em; font-weight: 700; color: var(--accent); background: rgba(var(--accent-rgb), 0.1); border-radius: 20px; padding: 2px 8px; }
+        .form-row label.eps-follow { display: flex; align-items: center; gap: 8px; text-transform: none; letter-spacing: 0; font-size: 0.82em; font-weight: 500; color: var(--ink-2); margin: 10px 0 0; cursor: pointer; }
+        .eps-hint { font-size: 0.75em; color: var(--faint); margin-top: 6px; }
+        .avail { font-size: 0.78em; font-weight: 600; color: var(--ok); }
         .qa-prog { display: inline-flex; gap: 6px; }
         .qa-prog .field { width: 74px; }
         .now-pos {
             font-family: 'JetBrains Mono', ui-monospace, monospace;
             font-weight: 700;
             font-size: 0.8em;
-            color: #a63d63;
+            color: var(--accent);
             margin-top: 3px;
         }
         .btn-primary {
-            background: #1c1b22;
-            color: #fff;
+            background: var(--btn);
+            color: var(--on-btn);
             border: none;
             border-radius: 10px;
             font: inherit;
@@ -292,8 +293,8 @@
             cursor: pointer;
             transition: background .15s;
         }
-        .btn-primary:hover { background: #a63d63; }
-        .btn-primary:disabled { opacity: .35; cursor: default; background: #1c1b22; }
+        .btn-primary:hover { background: var(--accent); }
+        .btn-primary:disabled { opacity: .35; cursor: default; background: var(--btn); }
 
         /* ───────── Secciones ───────── */
         .block { margin-bottom: 30px; }
@@ -309,17 +310,17 @@
             font-family: 'JetBrains Mono', ui-monospace, monospace;
             font-size: 0.8em;
             font-weight: 700;
-            color: #a63d63;
+            color: var(--accent);
         }
-        .block-hint { margin-left: auto; font-size: 0.78em; color: #9a93a8; }
+        .block-hint { margin-left: auto; font-size: 0.78em; color: var(--faint); }
 
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
 
         /* Viendo ahora: tarjetas */
         .now-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
         .now-card {
-            background: #fff;
-            border: 1px solid rgba(28, 27, 34, 0.09);
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.09);
             border-radius: 16px;
             padding: 16px 16px 14px;
             box-shadow: 0 1px 2px rgba(28,27,34,.05);
@@ -334,7 +335,7 @@
             position: absolute;
             left: 0; top: 0; bottom: 0;
             width: 4px;
-            background: #a63d63;
+            background: var(--accent);
         }
         .now-card.movie::before { background: #4a72a8; }
         .card-top { display: flex; gap: 10px; align-items: flex-start; }
@@ -346,8 +347,8 @@
             cursor: pointer;
             word-break: break-word;
         }
-        .card-title:hover { color: #a63d63; }
-        .card-note { font-size: 0.82em; color: #7a7389; line-height: 1.4; }
+        .card-title:hover { color: var(--accent); }
+        .card-note { font-size: 0.82em; color: var(--muted); line-height: 1.4; }
 
         .tag {
             font-size: 0.68em;
@@ -356,8 +357,8 @@
             text-transform: uppercase;
             padding: 3px 8px;
             border-radius: 20px;
-            background: rgba(166, 61, 99, 0.09);
-            color: #7d2c4a;
+            background: rgba(var(--accent-rgb), 0.09);
+            color: var(--accent-ink);
             flex-shrink: 0;
             white-space: nowrap;
         }
@@ -368,11 +369,11 @@
         .stepper {
             display: inline-flex;
             align-items: center;
-            background: rgba(28, 27, 34, 0.045);
+            background: rgba(var(--ink-rgb), 0.045);
             border-radius: 10px;
             overflow: hidden;
         }
-        .stepper .lbl { font-size: 0.74em; font-weight: 600; color: #7a7389; padding: 0 4px 0 11px; }
+        .stepper .lbl { font-size: 0.74em; font-weight: 600; color: var(--muted); padding: 0 4px 0 11px; }
         .stepper .val {
             font-family: 'JetBrains Mono', ui-monospace, monospace;
             font-weight: 700;
@@ -386,31 +387,31 @@
             width: 34px;
             height: 34px;
             font-size: 1.1em;
-            color: #45424f;
+            color: var(--ink-2);
             cursor: pointer;
         }
-        .stepper button:hover { background: rgba(28, 27, 34, 0.08); color: #a63d63; }
-        .stepper button:active { background: rgba(166, 61, 99, 0.16); }
+        .stepper button:hover { background: rgba(var(--ink-rgb), 0.08); color: var(--accent); }
+        .stepper button:active { background: rgba(var(--accent-rgb), 0.16); }
 
         .card-actions { display: flex; gap: 8px; align-items: center; margin-top: auto; }
         .btn-soft {
-            border: 1px solid rgba(28, 27, 34, 0.12);
-            background: #fff;
+            border: 1px solid rgba(var(--ink-rgb), 0.12);
+            background: var(--surface);
             border-radius: 10px;
             font: inherit;
             font-size: 0.8em;
             font-weight: 600;
-            color: #45424f;
+            color: var(--ink-2);
             padding: 8px 12px;
             cursor: pointer;
             transition: all .15s;
         }
-        .btn-soft:hover { border-color: #a63d63; color: #a63d63; }
-        .btn-soft.done:hover { border-color: #0f9d6b; color: #0f9d6b; background: rgba(15,157,107,.06); }
+        .btn-soft:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-soft.done:hover { border-color: var(--ok); color: var(--ok); background: rgba(15,157,107,.06); }
         .icon-btn {
             border: none;
             background: none;
-            color: #9a93a8;
+            color: var(--faint);
             width: 32px;
             height: 32px;
             border-radius: 8px;
@@ -422,14 +423,14 @@
             flex-shrink: 0;
             transition: all .15s;
         }
-        .icon-btn:hover { background: rgba(28, 27, 34, 0.07); color: #1c1b22; }
-        .icon-btn.del:hover { background: rgba(225, 29, 72, 0.1); color: #e11d48; }
+        .icon-btn:hover { background: rgba(var(--ink-rgb), 0.07); color: var(--ink); }
+        .icon-btn.del:hover { background: rgba(225, 29, 72, 0.1); color: var(--danger); }
         .spacer { flex: 1; }
 
         /* Filas de lista (Quiero ver / Próximas) */
         .panel {
-            background: #fff;
-            border: 1px solid rgba(28, 27, 34, 0.09);
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.09);
             border-radius: 16px;
             padding: 6px 8px;
             box-shadow: 0 1px 2px rgba(28,27,34,.05);
@@ -439,17 +440,17 @@
             align-items: center;
             gap: 10px;
             padding: 10px 8px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.055);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.055);
             border-radius: 10px;
         }
         .row:last-child { border-bottom: none; }
-        .row:hover { background: rgba(28, 27, 34, 0.025); }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #a63d63; flex-shrink: 0; }
+        .row:hover { background: rgba(var(--ink-rgb), 0.025); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
         .dot.movie { background: #4a72a8; }
         .row-main { flex: 1; min-width: 0; cursor: pointer; }
         .row-title { font-size: 0.95em; font-weight: 600; word-break: break-word; }
-        .row-main:hover .row-title { color: #a63d63; }
-        .row-sub { font-size: 0.76em; color: #8c859a; margin-top: 2px; }
+        .row-main:hover .row-title { color: var(--accent); }
+        .row-sub { font-size: 0.76em; color: var(--muted); margin-top: 2px; }
         .row-actions { display: flex; gap: 2px; align-items: center; flex-shrink: 0; }
 
         /* Próximas fechas */
@@ -458,29 +459,29 @@
             flex-shrink: 0;
             text-align: center;
             border-radius: 10px;
-            background: rgba(28, 27, 34, 0.045);
+            background: rgba(var(--ink-rgb), 0.045);
             padding: 5px 0 4px;
             line-height: 1.1;
         }
         .date-badge .d { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 1.1em; }
-        .date-badge .m { font-size: 0.64em; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7a7389; }
-        .date-badge.soon { background: rgba(166, 61, 99, 0.1); }
-        .date-badge.soon .d, .date-badge.soon .m { color: #a63d63; }
+        .date-badge .m { font-size: 0.64em; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+        .date-badge.soon { background: rgba(var(--accent-rgb), 0.1); }
+        .date-badge.soon .d, .date-badge.soon .m { color: var(--accent); }
         .date-badge.out { background: rgba(15, 157, 107, 0.12); }
-        .date-badge.out .d, .date-badge.out .m { color: #0f9d6b; }
-        .date-badge.none .d { color: #b8b2c4; }
-        .when { font-size: 0.76em; font-weight: 600; color: #8c859a; }
-        .when.soon { color: #a63d63; }
-        .when.out { color: #0f9d6b; }
+        .date-badge.out .d, .date-badge.out .m { color: var(--ok); }
+        .date-badge.none .d { color: var(--faint); }
+        .when { font-size: 0.76em; font-weight: 600; color: var(--muted); }
+        .when.soon { color: var(--accent); }
+        .when.out { color: var(--ok); }
 
         .empty {
             text-align: center;
             padding: 26px 14px;
-            color: #a49dae;
+            color: var(--faint);
             font-size: 0.88em;
             line-height: 1.5;
         }
-        .empty b { display: block; color: #7a7389; font-weight: 600; margin-bottom: 2px; }
+        .empty b { display: block; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
 
         /* Vistas (colapsable) */
         .done-toggle {
@@ -489,18 +490,18 @@
             font: inherit;
             font-size: 0.88em;
             font-weight: 600;
-            color: #7a7389;
+            color: var(--muted);
             cursor: pointer;
             padding: 6px 2px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
-        .done-toggle:hover { color: #a63d63; }
+        .done-toggle:hover { color: var(--accent); }
         .done-toggle .chev { display: inline-block; transition: transform .2s; font-size: 0.8em; }
         .done-toggle.open .chev { transform: rotate(90deg); }
         .done-list { margin-top: 10px; }
-        .done-list .row-title { color: #7a7389; font-weight: 500; }
+        .done-list .row-title { color: var(--muted); font-weight: 500; }
 
         /* ───────── Modal editar ───────── */
         .modal-overlay {
@@ -515,7 +516,7 @@
         }
         .modal-overlay.active { display: flex; }
         .modal {
-            background: #fff;
+            background: var(--surface);
             border-radius: 18px;
             padding: 24px;
             width: 100%;
@@ -525,26 +526,166 @@
         }
         .modal h3 { font-size: 1.1em; margin-bottom: 16px; }
         .form-row { margin-bottom: 14px; }
-        .form-row label { display: block; font-size: 0.75em; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #7a7389; margin-bottom: 6px; }
+        .form-row label { display: block; font-size: 0.75em; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
         .form-row .field { width: 100%; font-size: 0.95em; }
         .form-row textarea.field { resize: vertical; min-height: 70px; font-family: inherit; }
         .form-split { display: flex; gap: 10px; }
         .form-split > * { flex: 1; }
         .modal-actions { display: flex; gap: 10px; align-items: center; margin-top: 20px; }
         .modal-actions .btn-primary { margin-left: auto; }
-        .btn-danger { border: none; background: none; color: #e11d48; font: inherit; font-size: 0.86em; font-weight: 600; cursor: pointer; padding: 8px 4px; }
+        .btn-danger { border: none; background: none; color: var(--danger); font: inherit; font-size: 0.86em; font-weight: 600; cursor: pointer; padding: 8px 4px; }
         .btn-danger:hover { text-decoration: underline; }
-        .btn-ghost { border: none; background: none; color: #6b6578; font: inherit; font-size: 0.88em; font-weight: 600; cursor: pointer; padding: 10px 12px; border-radius: 10px; }
-        .btn-ghost:hover { background: rgba(28,27,34,.06); }
+        .btn-ghost { border: none; background: none; color: var(--muted); font: inherit; font-size: 0.88em; font-weight: 600; cursor: pointer; padding: 10px 12px; border-radius: 10px; }
+        .btn-ghost:hover { background: rgba(var(--ink-rgb), .06); }
 
         .confirm-modal { max-width: 360px; text-align: center; padding: 30px 26px 22px; }
         .confirm-icon { font-size: 2em; margin-bottom: 10px; }
         .confirm-text { font-size: 1.02em; font-weight: 600; line-height: 1.45; word-break: break-word; }
-        .confirm-sub { font-size: 0.82em; color: #8c859a; margin-top: 6px; }
+        .confirm-sub { font-size: 0.82em; color: var(--muted); margin-top: 6px; }
         .confirm-btns { display: flex; gap: 10px; justify-content: center; margin-top: 22px; }
         .confirm-btns .btn-ghost, .confirm-btns .btn-primary { flex: 1; }
-        .btn-primary.btn-del { background: #e11d48; }
-        .btn-primary.btn-del:hover { background: #be123c; }
+        .btn-primary.btn-del { background: var(--danger); }
+        .btn-primary.btn-del:hover { background: var(--danger); }
+
+        /* ───────── Pestañas + tarjetas con póster ───────── */
+        .tabs {
+            display: flex;
+            background: rgba(var(--ink-rgb), 0.055);
+            border-radius: 14px;
+            padding: 4px;
+            gap: 2px;
+            margin-bottom: 16px;
+        }
+        .tabs button {
+            flex: 1;
+            border: none;
+            background: none;
+            font: inherit;
+            font-size: 0.92em;
+            font-weight: 600;
+            color: var(--muted);
+            padding: 10px 8px;
+            border-radius: 11px;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+        .tabs button:hover { color: var(--ink); }
+        .tabs button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(28,27,34,.12); }
+        .tabs .n { font-size: 0.82em; font-weight: 700; color: var(--faint); margin-left: 4px; }
+        .tabs button.on .n { color: var(--accent); }
+        .wl-hint { font-size: 0.78em; color: var(--faint); margin: 0 4px 10px; }
+
+        .wl-list { display: flex; flex-direction: column; gap: 12px; }
+        .wcard {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.09);
+            border-radius: 20px;
+            padding: 12px 16px 12px 12px;
+            box-shadow: 0 1px 2px rgba(28,27,34,.05);
+            cursor: pointer;
+            transition: box-shadow .15s, transform .15s;
+        }
+        .wcard:hover { box-shadow: 0 4px 14px rgba(28,27,34,.1); }
+        .wcard.sel-on { box-shadow: 0 0 0 2px var(--accent); }
+        .wcard.is-done .wc-title { color: var(--muted); }
+        .poster {
+            width: 62px;
+            aspect-ratio: 2 / 3;
+            flex-shrink: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            background: var(--surface-2);
+            box-shadow: 0 2px 6px rgba(28,27,34,.18);
+        }
+        .poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .poster .ph { display: none; }
+        .poster.broken {
+            background: linear-gradient(155deg, hsl(var(--h, 330) 45% 52%), hsl(calc(var(--h, 330) + 40) 50% 30%));
+            display: flex; align-items: center; justify-content: center;
+        }
+        .poster.broken .ph {
+            display: block;
+            color: var(--glass);
+            font-weight: 800;
+            font-size: 1.15em;
+            letter-spacing: 1px;
+        }
+        .wc-main { flex: 1; min-width: 0; }
+        .wc-title { font-size: 1.08em; font-weight: 700; line-height: 1.25; word-break: break-word; }
+        .wc-pos {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-weight: 700;
+            font-size: 0.82em;
+            color: var(--accent);
+            margin-top: 4px;
+        }
+        .wc-sub { font-size: 0.82em; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+        .circle {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            background: none;
+            color: transparent;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .circle:hover { background: var(--accent); color: var(--on-accent); }
+        .circle.play { color: var(--accent); }
+        .circle.play:hover { color: #fff; }
+        .circle.on { background: var(--ok); border-color: var(--ok); color: #fff; }
+        .circle.on:hover { background: none; color: var(--ok); }
+        .when-chip {
+            min-width: 46px;
+            text-align: center;
+            border-radius: 12px;
+            background: rgba(var(--ink-rgb), 0.05);
+            padding: 6px 8px;
+            font-size: 0.66em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+            line-height: 1.15;
+            flex-shrink: 0;
+        }
+        .when-chip b { display: block; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 1.7em; letter-spacing: 0; }
+        .when-chip.soon { background: rgba(var(--accent-rgb), 0.1); color: var(--accent); }
+        .when-chip.out { background: rgba(15, 157, 107, 0.12); color: var(--ok); }
+        body.selecting .wcard { cursor: pointer; }
+        @media (max-width: 600px) {
+            .tabs button { font-size: 0.8em; padding: 9px 2px; }
+            .tabs .n { display: none; }
+            .poster { width: 56px; }
+        }
+
+        /* Autocompletar TMDB */
+        .quick-add { position: relative; }
+        .qa-suggest {
+            position: absolute;
+            left: 0; right: 0; top: calc(100% + 6px);
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.12);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(28, 27, 34, 0.16);
+            max-height: 340px;
+            overflow-y: auto;
+            z-index: 40;
+            padding: 4px;
+        }
+        .sg-item { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 10px; cursor: pointer; }
+        .sg-item:hover, .sg-item.act { background: rgba(var(--accent-rgb), 0.07); }
+        .sg-item .poster { width: 34px; border-radius: 6px; }
+        .sg-item .poster.broken .ph { font-size: 0.7em; }
+        .sg-t { font-weight: 600; font-size: 0.92em; }
+        .sg-s { font-size: 0.76em; color: var(--muted); margin-top: 1px; }
+        .sg-note { padding: 12px; font-size: 0.82em; color: var(--muted); text-align: center; }
+        #tmdbBtn.on { color: var(--ok); border-color: rgba(15,157,107,.45); }
 
         [hidden] { display: none !important; }
 
@@ -562,7 +703,7 @@
             .now-grid { grid-template-columns: 1fr; }
         }
     </style>
-    <link rel="stylesheet" href="css/theme.css?v=6">
+    <link rel="stylesheet" href="css/theme.css?v=7">
 </head>
 <body>
 
@@ -577,7 +718,6 @@
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="calendar.html">Calendario</a></li>
-                <li><a href="proximas.html">Tareas</a></li>
                 <li><a href="watchlist.html" class="active">Watchlist</a></li>
                 <li><a href="cumpleanos.html">Cumpleaños</a></li>
                 <hr class="sidebar-divider">
@@ -594,6 +734,7 @@
                 <p class="page-subtitle" id="pageSub">Lo que estás viendo, lo que querés ver y lo que viene.</p>
             </div>
             <div class="top-right">
+            <button type="button" class="btn-soft" id="tmdbBtn" title="Conectar TMDB para pósters y autocompletar">TMDB</button>
             <button type="button" class="btn-soft" id="selBtn">Seleccionar</button>
             <div class="seg" id="filterSeg" role="tablist" aria-label="Filtrar por tipo">
                 <button data-f="ALL" class="on">Todo <span class="n" id="nALL">0</span></button>
@@ -608,6 +749,7 @@
         <!-- Alta rápida -->
         <form class="quick-add" id="quickAdd" autocomplete="off">
             <input class="qa-title" id="qaTitle" type="text" maxlength="120" placeholder="Agregar película o serie…  (Enter para guardar)">
+            <div class="qa-suggest" id="qaSuggest" hidden></div>
             <div class="qa-controls">
                 <div class="seg" id="qaType">
                     <button type="button" data-t="MOVIE" class="on">Película</button>
@@ -628,42 +770,16 @@
             <div class="sched" id="qaSched" hidden></div>
         </form>
 
-        <!-- Viendo ahora -->
-        <section class="block" id="blockNow">
-            <div class="block-head">
-                <h2 class="block-title">Viendo ahora</h2>
-                <span class="block-count" id="cNow">0</span>
-            </div>
-            <div class="now-grid" id="listNow"></div>
-        </section>
-
-        <div class="two-col">
-            <!-- Quiero ver -->
-            <section class="block">
-                <div class="block-head">
-                    <h2 class="block-title">Quiero ver</h2>
-                    <span class="block-count" id="cWant">0</span>
-                    <span class="block-hint">últimos lanzamientos primero</span>
-                </div>
-                <div class="panel" id="listWant"></div>
-            </section>
-
-            <!-- Próximas fechas -->
-            <section class="block">
-                <div class="block-head">
-                    <h2 class="block-title">Próximas fechas</h2>
-                    <span class="block-count" id="cUp">0</span>
-                    <span class="block-hint">por fecha de estreno</span>
-                </div>
-                <div class="panel" id="listUp"></div>
-            </section>
+        <!-- Pestañas: una lista a la vez -->
+        <div class="tabs" id="tabSeg" role="tablist" aria-label="Lista">
+            <button data-tab="WATCHING" class="on">Viendo <span class="n" id="cNow">0</span></button>
+            <button data-tab="WANT">Quiero ver <span class="n" id="cWant">0</span></button>
+            <button data-tab="UPCOMING">Próximas <span class="n" id="cUp">0</span></button>
+            <button data-tab="DONE">Vistas <span class="n" id="cDone">0</span></button>
         </div>
 
-        <!-- Vistas -->
-        <section class="block" id="blockDone" hidden>
-            <button class="done-toggle" id="doneToggle"><span class="chev">▶</span> Ya vistas <span class="block-count" id="cDone">0</span></button>
-            <div class="panel done-list" id="listDone" hidden></div>
-        </section>
+        <div class="wl-hint" id="wlHint"></div>
+        <div class="wl-list" id="wlList"></div>
     </div>
 
     <!-- Barra de selección múltiple -->
@@ -719,6 +835,15 @@
                 <label class="eps-follow"><input type="checkbox" id="efFollow" checked> Al cambiar una fecha, mover también los siguientes</label>
                 <div class="eps-hint" id="efEpsHint"></div>
             </div>
+            <div class="form-row" id="efTmdbRow" hidden>
+                <label for="efTmdb">Link de TMDB</label>
+                <input class="field" id="efTmdb" type="text" placeholder="https://www.themoviedb.org/tv/…">
+                <div class="eps-hint">Pegá el link de la serie o película en themoviedb.org y saco de ahí el póster y las fechas, sin buscar por nombre.</div>
+            </div>
+            <div class="form-row" id="efAutoRow" hidden>
+                <label class="eps-follow"><input type="checkbox" id="efAuto"> Fechas de estreno automáticas (TMDB)</label>
+                <div class="eps-hint">Trae los próximos capítulos y la disponibilidad desde TMDB. Si lo desmarcás, las fechas las manejás vos.</div>
+            </div>
             <div class="form-split form-row" id="efProgRow">
                 <div>
                     <label for="efSeason">Temporada</label>
@@ -728,6 +853,10 @@
                     <label for="efEpisode">Episodio</label>
                     <input class="field" id="efEpisode" type="number" min="0" max="999">
                 </div>
+            </div>
+            <div class="form-row">
+                <label for="efPoster">Póster (URL de imagen)</label>
+                <input class="field" id="efPoster" type="url" placeholder="https://…">
             </div>
             <div class="form-row">
                 <label for="efNote">Nota</label>
@@ -975,7 +1104,8 @@
         let pendingDeleteIds = [];
         let selectMode = false;
         const selected = new Set();   // ids (como texto) de lo tildado
-        let doneOpen = false;
+        let tab = 'WATCHING';
+        try { tab = localStorage.getItem('wtdWatchTab') || 'WATCHING'; } catch (e) {}
 
         const $ = id => document.getElementById(id);
         const GEAR = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
@@ -1172,8 +1302,24 @@
 
         function everyLabel(s) {
             if (s.mode !== 'WEEKLY') return '';
-            const e = (EVERY_OPTS.find(o => o[0] === s.every) || [0, `cada ${s.every} días`])[1];
-            return `${s.per} ${s.per === 1 ? 'cap.' : 'caps.'} ${e}`;
+            const every = days => (EVERY_OPTS.find(o => o[0] === days) || [0, `cada ${days} días`])[1];
+            const caps = n => `${n} ${n === 1 ? 'cap.' : 'caps.'}`;
+            // Con total conocido, el ritmo sale de las fechas reales de lo que falta
+            // (las de TMDB o las editadas a mano), no del patrón de relleno.
+            if (s.total && s.released < s.total) {
+                const byDate = new Map();
+                for (let n = s.released + 1; n <= s.total; n++) {
+                    const d = epDate(s, n);
+                    byDate.set(d, (byDate.get(d) || 0) + 1);
+                }
+                const dates = [...byDate.keys()].sort();
+                if (dates.length < 2) return '';
+                const per = byDate.get(dates[0]);
+                const gap = Math.round((parseDate(dates[1]) - parseDate(dates[0])) / 86400000);
+                const regular = dates.slice(1).every((d, i) => Math.round((parseDate(d) - parseDate(dates[i])) / 86400000) === gap);
+                return regular ? `${caps(per)} ${every(gap)}` : '';
+            }
+            return `${caps(s.per)} ${every(s.every)}`;
         }
 
         /* ── Init ── */
@@ -1202,6 +1348,8 @@
                 render();
             }
 
+            runTmdbSync(false);
+
             // Con quién se comparte
             getUsers().then(users => {
                 const other = users.filter(u => u.id !== currentUserId).map(u => u.nombre);
@@ -1213,6 +1361,7 @@
             const tick = async () => {
                 await refreshFromServer();
                 if (syncReleases()) render();
+                runTmdbSync(false);
             };
             document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
             setInterval(tick, 45 * 1000);
@@ -1241,45 +1390,6 @@
                 : '';
         }
 
-        function nowCardHtml(it) {
-            const isSeries = it.type === 'SERIES';
-            return `
-            <article class="now-card ${isSeries ? '' : 'movie'} ${selected.has(String(it.id)) ? 'sel-on' : ''}" ${selectMode ? `onclick="toggleSel('${it.id}')"` : ''}>
-                <div class="card-top">
-                    ${selBoxHtml(it)}
-                    <div style="flex:1;min-width:0">
-                        <div class="card-title" ${selectMode ? '' : `onclick="openEdit('${it.id}')"`}>${esc(it.title)}</div>
-                        ${isSeries ? `<div class="now-pos">Temporada ${it.season || 1} · Capítulo ${it.episode || 0}</div>` : ''}
-                    </div>
-                    ${tagHtml(it)}
-                </div>
-                ${isSeries ? `
-                <div class="progress">
-                    <div class="stepper">
-                        <span class="lbl">Temp.</span>
-                        <button onclick="bump('${it.id}','season',-1)" aria-label="Temporada anterior">−</button>
-                        <span class="val">${it.season || 1}</span>
-                        <button onclick="bump('${it.id}','season',1)" aria-label="Temporada siguiente">+</button>
-                    </div>
-                    <div class="stepper">
-                        <span class="lbl">Ep.</span>
-                        <button onclick="bump('${it.id}','episode',-1)" aria-label="Episodio anterior">−</button>
-                        <span class="val">${it.episode || 0}</span>
-                        <button onclick="bump('${it.id}','episode',1)" aria-label="Episodio siguiente">+</button>
-                    </div>
-                </div>` : ''}
-                ${isSeries && it.avail ? `<div class="avail">${esc(availText(it.avail))}</div>` : ''}
-                ${isSeries && it.schedule && it.releaseDate ? `<div class="card-note">Próximo: ${esc(nextDropText(it.schedule))} · ${esc(whenText(daysUntil(it.releaseDate)).toLowerCase())}</div>` : ''}
-                ${it.note ? `<div class="card-note">${esc(it.note)}</div>` : ''}
-                <div class="card-actions">
-                    <button class="btn-soft done" onclick="moveTo('${it.id}','DONE')">✓ ${isSeries ? 'Terminada' : 'La vi'}</button>
-                    <button class="btn-soft" onclick="moveTo('${it.id}','WANT')" title="Volver a Quiero ver">Pausar</button>
-                    <span class="spacer"></span>
-                    <button class="icon-btn" onclick="openEdit('${it.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
-                </div>
-            </article>`;
-        }
-
         /* Clave de orden por lanzamiento: fecha exacta, o el año si es lo único que hay. */
         const releaseKey = it => it.releasedOn || (it.year ? `${it.year}-01-01` : '');
 
@@ -1298,71 +1408,79 @@
             return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
         }
 
-        function wantRowHtml(it) {
-            const paused = it.type === 'SERIES' && it.episode > 0;
-            const sub = [
-                releaseLabel(it),
-                paused ? `Pausada en T${it.season || 1} · Cap. ${it.episode}` : '',
-                it.note ? esc(it.note) : ''
-            ].filter(Boolean).join(' · ');
-            const avail = it.type === 'SERIES' && it.avail ? `<div class="row-sub avail">${esc(availText(it.avail))}</div>` : '';
-            return `
-            <div class="row ${selected.has(String(it.id)) ? 'sel-on' : ''}" ${selectMode ? `onclick="toggleSel('${it.id}')"` : ''}>
-                ${selBoxHtml(it) || `<span class="dot ${it.type === 'MOVIE' ? 'movie' : ''}"></span>`}
-                <div class="row-main" ${selectMode ? '' : `onclick="openEdit('${it.id}')"`}>
-                    <div class="row-title">${esc(it.title)}</div>
-                    ${avail}
-                    ${sub ? `<div class="row-sub">${sub}</div>` : ''}
-                </div>
-                <div class="row-actions">
-                    <button class="btn-soft" onclick="moveTo('${it.id}','WATCHING')">▶ Empezar</button>
-                    <button class="icon-btn" onclick="openEdit('${it.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
-                </div>
-            </div>`;
+        /* Póster: la imagen si hay URL; si no, un bloque de color (estable por
+           título) con las iniciales. */
+        function posterHtml(it) {
+            if (it.poster) return `<div class="poster"><img src="${esc(it.poster)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('broken');this.remove()"><span class="ph">${esc(initials(it.title))}</span></div>`;
+            return `<div class="poster broken" style="--h:${hueOf(it.title)}"><span class="ph">${esc(initials(it.title))}</span></div>`;
+        }
+        function hueOf(t) { let h = 0; for (const c of String(t)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; }
+        function initials(t) {
+            const w = String(t).replace(/[^\p{L}\p{N} ]/gu, '').split(/\s+/).filter(Boolean);
+            return (w.length > 1 ? w[0][0] + w[1][0] : (w[0] || '?').slice(0, 2)).toUpperCase();
         }
 
-        function upRowHtml(it) {
-            let badge, when = '', cls = '';
-            if (it.releaseDate) {
-                const d = parseDate(it.releaseDate);
-                const days = daysUntil(it.releaseDate);
-                cls = days <= 0 ? 'out' : (days <= 7 ? 'soon' : '');
-                badge = `<div class="date-badge ${cls}"><div class="d">${d.getDate()}</div><div class="m">${MONTHS[d.getMonth()]}</div></div>`;
-                when = whenText(days);
+        const CHECK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+        const PLAY  = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
+
+        /* Una tarjeta = póster + título + (T·E en celeste) + detalle + círculo de acción. */
+        function cardHtml(it, tab) {
+            const isSeries = it.type === 'SERIES';
+            const sel = selected.has(String(it.id));
+            let pos = '', sub = '', circle = '';
+
+            if (tab === 'WATCHING') {
+                pos = isSeries ? `T${it.season || 1} · E${it.episode || 0}` : 'Película';
+                sub = [
+                    isSeries && it.avail ? availText(it.avail) : '',
+                    isSeries && it.schedule && it.releaseDate ? `Próximo: ${nextDropText(it.schedule)} · ${whenText(daysUntil(it.releaseDate)).toLowerCase()}` : '',
+                    it.note
+                ].filter(Boolean).join(' · ');
+                circle = isSeries
+                    ? `<button class="circle" onclick="event.stopPropagation();bump('${it.id}','episode',1)" aria-label="Marcar capítulo visto" title="Vi el capítulo (+1)">${CHECK}</button>`
+                    : `<button class="circle" onclick="event.stopPropagation();moveTo('${it.id}','DONE')" aria-label="La vi" title="La vi">${CHECK}</button>`;
+            } else if (tab === 'WANT') {
+                const paused = isSeries && it.episode > 0;
+                pos = isSeries ? (paused ? `Pausada · T${it.season || 1} E${it.episode}` : 'Serie') : 'Película';
+                sub = [releaseLabel(it), isSeries && it.avail ? availText(it.avail) : '', it.note].filter(Boolean).join(' · ');
+                circle = `<button class="circle play" onclick="event.stopPropagation();moveTo('${it.id}','WATCHING')" aria-label="Empezar" title="Empezar a verla">${PLAY}</button>`;
+            } else if (tab === 'UPCOMING') {
+                const days = it.releaseDate ? daysUntil(it.releaseDate) : null;
+                const cls = days == null ? 'none' : (days <= 0 ? 'out' : (days <= 7 ? 'soon' : ''));
+                const d = it.releaseDate ? parseDate(it.releaseDate) : null;
+                pos = d ? `${d.getDate()} ${MONTHS[d.getMonth()]}` : 'Sin fecha';
+                const s = it.schedule;
+                sub = [
+                    it.releaseDate ? whenText(days) : 'Sin fecha todavía',
+                    s ? `${nextDropText(s)}${everyLabel(s) ? ' · ' + everyLabel(s) : ''}` : (isSeries ? 'Serie' : 'Película')
+                ].join(' · ');
+                circle = `<span class="when-chip ${cls}">${d ? `<b>${d.getDate()}</b>${MONTHS[d.getMonth()]}` : '?'}</span>`;
             } else {
-                badge = `<div class="date-badge none"><div class="d">?</div><div class="m">s/f</div></div>`;
-                when = 'Sin fecha todavía';
+                pos = isSeries ? 'Serie' : 'Película';
+                sub = it.note || '';
+                circle = `<button class="circle on" onclick="event.stopPropagation();moveTo('${it.id}','WANT')" aria-label="Volver a Quiero ver" title="Volver a Quiero ver">${CHECK}</button>`;
             }
-            const s = it.schedule;
-            const detail = s
-                ? `${esc(nextDropText(s))}${everyLabel(s) ? ' · ' + esc(everyLabel(s)) : ''}`
-                : (it.type === 'SERIES' ? 'Serie' : 'Película');
+
+            const click = selectMode ? `toggleSel('${it.id}')` : `openEdit('${it.id}')`;
             return `
-            <div class="row">
-                ${badge}
-                <div class="row-main" onclick="openEdit('${it.id}')">
-                    <div class="row-title">${esc(it.title)}</div>
-                    <div class="row-sub"><span class="when ${cls}">${when}</span> · ${detail}</div>
+            <article class="wcard ${sel ? 'sel-on' : ''} ${tab === 'DONE' ? 'is-done' : ''}" onclick="${click}">
+                ${selectMode && tab !== 'UPCOMING' && tab !== 'DONE' ? `<input type="checkbox" class="sel-box" ${sel ? 'checked' : ''} aria-label="Seleccionar ${esc(it.title)}">` : ''}
+                ${posterHtml(it)}
+                <div class="wc-main">
+                    <div class="wc-title">${esc(it.title)}</div>
+                    <div class="wc-pos">${esc(pos)}</div>
+                    ${sub ? `<div class="wc-sub">${esc(sub)}</div>` : ''}
                 </div>
-                <div class="row-actions">
-                    <button class="icon-btn" onclick="openEdit('${it.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
-                </div>
-            </div>`;
+                ${selectMode ? '' : circle}
+            </article>`;
         }
 
-        function doneRowHtml(it) {
-            return `
-            <div class="row">
-                <span class="dot ${it.type === 'MOVIE' ? 'movie' : ''}"></span>
-                <div class="row-main" onclick="openEdit('${it.id}')">
-                    <div class="row-title">${esc(it.title)}</div>
-                </div>
-                <div class="row-actions">
-                    <button class="btn-soft" onclick="moveTo('${it.id}','WANT')" title="Volver a Quiero ver">Rever</button>
-                    <button class="icon-btn del" onclick="removeItem('${it.id}')" aria-label="Eliminar" title="Eliminar">✕</button>
-                </div>
-            </div>`;
-        }
+        const TAB_INFO = {
+            WATCHING: { hint: '', empty: ['Nada en curso', 'Empezá algo desde “Quiero ver” o agregalo directo arriba.'] },
+            WANT:     { hint: 'Últimos lanzamientos primero', empty: ['Lista vacía', 'Anotá lo que quieras ver más adelante.'] },
+            UPCOMING: { hint: 'Por fecha de estreno', empty: ['Sin estrenos anotados', 'Elegí “Próximamente” al agregar y ponele fecha.'] },
+            DONE:     { hint: '', empty: ['Todavía nada', 'Lo que termines de ver aparece acá.'] }
+        };
 
         function emptyHtml(title, text) {
             return `<div class="empty"><b>${title}</b>${text}</div>`;
@@ -1370,42 +1488,44 @@
 
         function render() {
             pruneSelection();
-            const now  = visible('WATCHING');
-            const want = visible('WANT').sort(byRelease);
-            const done = visible('DONE');
-            const up   = visible('UPCOMING').sort((a, b) => {
-                if (!a.releaseDate) return 1;
-                if (!b.releaseDate) return -1;
-                return a.releaseDate.localeCompare(b.releaseDate);
-            });
+            const lists = {
+                WATCHING: visible('WATCHING'),
+                WANT: visible('WANT').sort(byRelease),
+                UPCOMING: visible('UPCOMING').sort((a, b) => {
+                    if (!a.releaseDate) return 1;
+                    if (!b.releaseDate) return -1;
+                    return a.releaseDate.localeCompare(b.releaseDate);
+                }),
+                DONE: visible('DONE')
+            };
+            const cur = lists[tab];
+            const info = TAB_INFO[tab];
 
-            $('listNow').innerHTML = now.length
-                ? now.map(nowCardHtml).join('')
-                : `<div class="panel" style="grid-column:1/-1">${emptyHtml('Nada en curso', 'Empezá algo desde “Quiero ver” o agregalo directo arriba.')}</div>`;
+            $('wlList').innerHTML = cur.length
+                ? cur.map(it => cardHtml(it, tab)).join('')
+                : emptyHtml(info.empty[0], info.empty[1]);
+            $('wlHint').textContent = info.hint;
+            $('wlHint').hidden = !info.hint;
+            document.querySelectorAll('#tabSeg button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
 
-            $('listWant').innerHTML = want.length
-                ? want.map(wantRowHtml).join('')
-                : emptyHtml('Lista vacía', 'Anotá lo que quieras ver más adelante.');
-
-            $('listUp').innerHTML = up.length
-                ? up.map(upRowHtml).join('')
-                : emptyHtml('Sin estrenos anotados', 'Elegí “Próximamente” al agregar y ponele fecha.');
-
-            $('listDone').innerHTML = done.map(doneRowHtml).join('');
-            $('blockDone').hidden = items.filter(i => i.list === 'DONE').length === 0;
-            $('listDone').hidden = !doneOpen;
-            $('doneToggle').classList.toggle('open', doneOpen);
-
-            $('cNow').textContent = now.length;
-            $('cWant').textContent = want.length;
-            $('cUp').textContent = up.length;
-            $('cDone').textContent = done.length;
+            $('cNow').textContent = lists.WATCHING.length;
+            $('cWant').textContent = lists.WANT.length;
+            $('cUp').textContent = lists.UPCOMING.length;
+            $('cDone').textContent = lists.DONE.length;
 
             $('nALL').textContent = items.length;
             $('nMOVIE').textContent = items.filter(i => i.type === 'MOVIE').length;
             $('nSERIES').textContent = items.filter(i => i.type === 'SERIES').length;
             renderSelBar();
         }
+
+        $('tabSeg').addEventListener('click', e => {
+            const b = e.target.closest('button[data-tab]');
+            if (!b) return;
+            tab = b.dataset.tab;
+            try { localStorage.setItem('wtdWatchTab', tab); } catch (err) {}
+            render();
+        });
 
         /* ── Filtro ── */
         $('filterSeg').addEventListener('click', e => {
@@ -1449,12 +1569,15 @@
             e.preventDefault();
             const title = $('qaTitle').value.trim();
             if (!title) return;
+            const pick = qaPick && normTitle(qaPick.title) === normTitle(title) ? qaPick : null;
+            qaPick = null; hideSuggest();
             const list = $('qaList').value;
             const releaseDate = list === 'UPCOMING' ? ($('qaDate').value || null) : null;
             const schedule = qaType === 'SERIES' && list === 'UPCOMING' ? readSched('qa', releaseDate) : null;
-            items.unshift({
+            const newItem = {
                 id: newId(),
                 title,
+                poster: pick ? pick.poster : null,
                 type: qaType,
                 list,
                 releaseDate,
@@ -1468,10 +1591,20 @@
                     : null,
                 note: '',
                 createdAt: new Date().toISOString(),
-                external: null
-            });
+                external: pick ? { provider: 'tmdb', kind: pick.kind || (pick.type === 'SERIES' ? 'tv' : 'movie'), id: pick.id } : null
+            };
+            items.unshift(newItem);
+            // Sin sugerencia elegida: si hay TMDB, intenta traer el póster en segundo plano.
+            if (!pick && TMDB.key) {
+                TMDB.search(title, qaType).then(res => {
+                    const n = normTitle(title);
+                    const best = res.find(r => r.poster && normTitle(r.title) === n);
+                    if (best && !newItem.poster) { newItem.poster = best.poster; newItem.external = { provider: 'tmdb', kind: best.kind, id: best.id }; persist(); render(); }
+                }).catch(() => {});
+            }
             syncReleases();
             persist();
+            if (qaType === 'SERIES') runTmdbSync(false);
             $('qaTitle').value = '';
             $('qaDate').value = '';
             $('qaSeason').value = '';
@@ -1480,6 +1613,323 @@
             $('qaTitle').focus();
             render();
         });
+
+        /* ════════════════════════════════════════════════════════════
+           TMDB: autocompletar y pósters. La clave (v3 de 32 caracteres o el
+           "Access Token" v4) se guarda solo en este navegador.
+           ════════════════════════════════════════════════════════════ */
+        const TMDB = {
+            keyName: 'wtdTmdbKey',
+            get key() { try { return (localStorage.getItem(this.keyName) || '').trim(); } catch (e) { return ''; } },
+            set key(v) { try { v ? localStorage.setItem(this.keyName, v.trim()) : localStorage.removeItem(this.keyName); } catch (e) {} },
+            img: path => path ? `https://image.tmdb.org/t/p/w342${path}` : null,
+
+            async call(path, params = {}) {
+                const k = this.key;
+                if (!k) throw new Error('sin clave');
+                const q = new URLSearchParams({ language: 'es-AR', ...params });
+                const headers = {};
+                if (k.startsWith('eyJ')) headers.Authorization = 'Bearer ' + k; else q.set('api_key', k);
+                const r = await fetch(`https://api.themoviedb.org/3${path}?${q}`, { headers });
+                if (r.status === 401) throw new Error('clave inválida');
+                if (!r.ok) throw new Error('TMDB ' + r.status);
+                return r.json();
+            },
+
+            async search(query, type) {
+                const path = type === 'SERIES' ? '/search/tv' : type === 'MOVIE' ? '/search/movie' : '/search/multi';
+                const data = await this.call(path, { query, include_adult: 'false' });
+                return (data.results || [])
+                    .filter(r => r.media_type !== 'person')
+                    .map(r => {
+                        const isTv = type ? type === 'SERIES' : r.media_type === 'tv';
+                        const date = (isTv ? r.first_air_date : r.release_date) || '';
+                        return {
+                            id: r.id,
+                            type: isTv ? 'SERIES' : 'MOVIE',
+                            kind: isTv ? 'tv' : 'movie',
+                            title: (isTv ? r.name : r.title) || '',
+                            date,
+                            year: date ? date.slice(0, 4) : '',
+                            poster: this.img(r.poster_path)
+                        };
+                    })
+                    .filter(r => r.title);
+            }
+        };
+
+        function syncTmdbBtn() {
+            const on = !!TMDB.key;
+            $('tmdbBtn').classList.toggle('on', on);
+            $('tmdbBtn').textContent = on ? 'TMDB ✓' : 'Conectar TMDB';
+        }
+        $('tmdbBtn').addEventListener('click', async () => {
+            if (TMDB.key) {
+                const act = prompt('TMDB conectado.\n\n• Escribí "fechas" para actualizar los próximos capítulos de tus series.\n• Escribí "pósters" para buscar los que faltan en tu lista.\n• Escribí "quitar" para desconectar.\n• O pegá otra clave para reemplazarla.', '');
+                if (act == null || !act.trim()) return;
+                const a = act.trim().toLowerCase();
+                if (a === 'quitar') { TMDB.key = ''; syncTmdbBtn(); setBanner('TMDB desconectado.', 'info'); return; }
+                if (a === 'fechas') return runTmdbSync(true);
+                if (a === 'pósters' || a === 'posters') return backfillPosters();
+                TMDB.key = act; syncTmdbBtn();
+                return;
+            }
+            const k = prompt('Pegá tu clave de TMDB (API Key v3 o "API Read Access Token").\nLa conseguís gratis en themoviedb.org → Ajustes → API.\nSe guarda solo en este navegador.');
+            if (!k || !k.trim()) return;
+            TMDB.key = k;
+            try {
+                await TMDB.call('/configuration');
+                syncTmdbBtn();
+                runTmdbSync(true);
+                setBanner('TMDB conectado. Ahora al escribir un título te sugiere resultados con póster. Tocá "TMDB ✓" y escribí "pósters" para completar los de tu lista.', 'info');
+            } catch (e) {
+                TMDB.key = '';
+                syncTmdbBtn();
+                setBanner('No pude validar esa clave de TMDB (' + e.message + ').', 'warn');
+            }
+        });
+
+        const normTitle = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+        /* Completa póster (y fecha de lanzamiento si falta) de los títulos que no tienen. */
+        async function backfillPosters() {
+            const todo = items.filter(i => !i.poster);
+            if (!todo.length) { setBanner('Todos los títulos ya tienen póster.', 'info'); return; }
+            setBanner(`Buscando pósters de ${todo.length} títulos…`, 'info');
+            let hit = 0;
+            try {
+                for (const it of todo) {
+                    const res = await TMDB.search(it.title, it.type);
+                    const n = normTitle(it.title);
+                    const best = res.find(r => r.poster && normTitle(r.title) === n) || res.find(r => r.poster);
+                    if (best) {
+                        it.poster = best.poster;
+                        it.external = { provider: 'tmdb', kind: best.kind, id: best.id };
+                        if (!it.releasedOn && !it.year && best.year) it.year = Number(best.year);
+                        hit++;
+                    }
+                }
+            } catch (e) {
+                setBanner('Se cortó la búsqueda en TMDB: ' + e.message, 'warn');
+                if (hit) { persist(); render(); }
+                return;
+            }
+            persist(); render();
+            setBanner(`Listo: ${hit} de ${todo.length} títulos con póster.`, 'info');
+            setTimeout(() => { if ($('syncBanner').classList.contains('info')) setBanner('', ''); }, 5000);
+        }
+
+        /* Link de TMDB (…/tv/1234-nombre o …/movie/1234-nombre) -> { kind, id } */
+        function parseTmdbUrl(str) {
+            const m = /themoviedb\.org\/(tv|movie)\/(\d+)/i.exec(String(str || ''));
+            return m ? { kind: m[1].toLowerCase(), id: Number(m[2]) } : null;
+        }
+        const tmdbLink = it => it.external && it.external.provider === 'tmdb' && it.external.id
+            ? `https://www.themoviedb.org/${it.external.kind || (it.type === 'MOVIE' ? 'movie' : 'tv')}/${it.external.id}` : '';
+
+        async function tmdbDetails(ref) {
+            const d = await TMDB.call(`/${ref.kind}/${ref.id}`);
+            const tv = ref.kind === 'tv';
+            const date = (tv ? d.first_air_date : d.release_date) || '';
+            return {
+                id: ref.id,
+                kind: ref.kind,
+                type: tv ? 'SERIES' : 'MOVIE',
+                title: (tv ? d.name : d.title) || '',
+                date,
+                year: date ? date.slice(0, 4) : '',
+                poster: TMDB.img(d.poster_path)
+            };
+        }
+
+        /* Película con link: póster y fecha de lanzamiento (las series las completa tmdbSyncSeries). */
+        async function tmdbFillMovie(it) {
+            try {
+                const r = await tmdbDetails({ kind: 'movie', id: it.external.id });
+                if (!it.poster && r.poster) it.poster = r.poster;
+                if (r.date && !it.releasedOn) it.releasedOn = r.date;
+                persist(); render();
+            } catch (e) { setBanner('TMDB: ' + e.message, 'warn'); }
+        }
+
+        /* ── Series: próximos capítulos automáticos desde TMDB ──
+           Arma el mismo `schedule` que se carga a mano (WEEKLY con fechas por
+           capítulo en `overrides`, o FULL si sale todo junto) y la
+           disponibilidad (`avail`). Solo toca series con `tmdbSync` activo, o
+           sin calendario cargado a mano. Se refresca cada 12 h. */
+        const SYNC_TTL = 12 * 3600 * 1000;
+        let tmdbSyncing = false;
+
+        async function tmdbSeriesId(it) {
+            if (it.external && it.external.provider === 'tmdb' && it.external.id && it.external.kind !== 'movie') return it.external.id;
+            const res = await TMDB.search(it.title, 'SERIES');
+            const n = normTitle(it.title);
+            const best = res.find(r => normTitle(r.title) === n);
+            if (!best) return null;
+            it.external = { provider: 'tmdb', kind: 'tv', id: best.id };
+            if (!it.poster && best.poster) it.poster = best.poster;
+            return best.id;
+        }
+
+        const tmdbEligible = it => it.type === 'SERIES' && it.list !== 'DONE' && it.tmdbSync !== false && (it.tmdbSync === true || !it.schedule);
+
+        async function tmdbSyncSeries(it) {
+            const before = JSON.stringify([it.schedule, it.releaseDate, it.avail, it.releasedOn, it.list, it.poster]);
+            const id = await tmdbSeriesId(it);
+            it.tmdbSyncedAt = Date.now();
+            if (!id) return false;
+            it.tmdbSync = true;
+
+            const show = await TMDB.call(`/tv/${id}`);
+            const nxt = show.next_episode_to_air, last = show.last_episode_to_air;
+            const today = toLocalDateStr(new Date());
+            if (!it.poster && show.poster_path) it.poster = TMDB.img(show.poster_path);
+            if (last && last.air_date) it.releasedOn = last.air_date;
+
+            if (nxt && nxt.air_date) {
+                const season = nxt.season_number;
+                const sd = await TMDB.call(`/tv/${id}/season/${season}`);
+                const all = (sd.episodes || []).slice().sort((a, b) => a.episode_number - b.episode_number);
+                const dated = all.filter(e => e.air_date);
+                const total = Math.max(all.length, nxt.episode_number);
+                const aired = dated.filter(e => e.air_date <= today);
+                const future = dated.filter(e => e.air_date > today);
+                const released = aired.reduce((m, e) => Math.max(m, e.episode_number), 0);
+                if (!future.length) future.push({ episode_number: nxt.episode_number, air_date: nxt.air_date });
+
+                let s;
+                if (released === 0 && future.length > 1 && future.every(e => e.air_date === future[0].air_date)) {
+                    s = { mode: 'FULL', season, total, released: 0, first: future[0].air_date, overrides: {}, shifts: [] };
+                    it.releaseDate = future[0].air_date;
+                } else {
+                    const ep1 = dated.find(e => e.episode_number === 1);
+                    const f = future[0];
+                    s = {
+                        mode: 'WEEKLY', season, per: 1, every: 7, total, released,
+                        first: ep1 ? ep1.air_date : addDaysStr(f.air_date, -7 * (f.episode_number - 1)),
+                        overrides: {}, shifts: []
+                    };
+                    future.forEach(e => { s.overrides[e.episode_number] = e.air_date; });
+                    it.releaseDate = epDate(s, released + 1);
+                }
+                it.schedule = s;
+                if (released > 0) {
+                    it.avail = { season, count: released, total, full: false };
+                    if (it.list === 'UPCOMING') it.list = 'WANT';
+                } else if (last && last.season_number < season) {
+                    it.avail = { season: last.season_number, count: null, total: null, full: true };
+                }
+            } else if (last) {
+                // Sin próximos capítulos anunciados: solo lo ya disponible.
+                it.schedule = null;
+                it.releaseDate = null;
+                const info = (show.seasons || []).find(x => x.season_number === last.season_number);
+                const count = info ? info.episode_count : null;
+                it.avail = { season: last.season_number, count: last.episode_number, total: count, full: !!count && last.episode_number >= count };
+                if (it.list === 'UPCOMING') it.list = 'WANT';
+            }
+            return before !== JSON.stringify([it.schedule, it.releaseDate, it.avail, it.releasedOn, it.list, it.poster]);
+        }
+
+        async function runTmdbSync(force) {
+            if (!TMDB.key || tmdbSyncing) return;
+            const now = Date.now();
+            const todo = items.filter(it => tmdbEligible(it) && (force || !it.tmdbSyncedAt || now - it.tmdbSyncedAt > SYNC_TTL));
+            if (!todo.length) { if (force) setBanner('No hay series para actualizar.', 'info'); return; }
+            tmdbSyncing = true;
+            if (force) setBanner(`Actualizando ${todo.length} ${todo.length === 1 ? 'serie' : 'series'} desde TMDB…`, 'info');
+            let changed = 0, failed = '';
+            for (const it of todo) {
+                try { if (await tmdbSyncSeries(it)) changed++; }
+                catch (e) { failed = e.message; if (e.message === 'clave inválida') break; }
+            }
+            tmdbSyncing = false;
+            syncReleases();
+            persist();
+            render();
+            if (failed) setBanner('TMDB: ' + failed + (changed ? ` (se actualizaron ${changed})` : ''), 'warn');
+            else if (force) {
+                setBanner(`Listo: ${changed} de ${todo.length} series con fechas nuevas.`, 'info');
+                setTimeout(() => { if ($('syncBanner').classList.contains('info')) setBanner('', ''); }, 5000);
+            }
+        }
+
+        /* Sugerencias al escribir en el alta rápida */
+        let qaPick = null, sgTimer = null, sgSeq = 0, sgList = [], sgAct = -1;
+        function hideSuggest() { $('qaSuggest').hidden = true; sgAct = -1; }
+        function renderSuggest(list, note) {
+            sgList = list; sgAct = -1;
+            const box = $('qaSuggest');
+            if (note) { box.innerHTML = `<div class="sg-note">${esc(note)}</div>`; box.hidden = false; return; }
+            if (!list.length) return hideSuggest();
+            box.innerHTML = list.map((r, i) => `
+                <div class="sg-item" data-i="${i}">
+                    ${posterHtml({ title: r.title, poster: r.poster })}
+                    <div>
+                        <div class="sg-t">${esc(r.title)}</div>
+                        <div class="sg-s">${r.type === 'SERIES' ? 'Serie' : 'Película'}${r.year ? ' · ' + r.year : ''}</div>
+                    </div>
+                </div>`).join('');
+            box.hidden = false;
+        }
+        function pickSuggest(i) {
+            const r = sgList[i];
+            if (!r) return;
+            qaPick = r;
+            $('qaTitle').value = r.title;
+            $('qaBtn').disabled = false;
+            setQaType(r.type);
+            if ($('qaList').value === 'WANT' && r.date) $('qaDate').value = r.date;
+            hideSuggest();
+            $('qaTitle').focus();
+        }
+        $('qaTitle').addEventListener('input', async () => {
+            qaPick = null;
+            clearTimeout(sgTimer);
+            const q = $('qaTitle').value.trim();
+            const ref = TMDB.key && parseTmdbUrl(q);
+            if (ref) {
+                hideSuggest();
+                try {
+                    const r = await tmdbDetails(ref);
+                    if ($('qaTitle').value.trim() !== q) return;
+                    qaPick = r;
+                    $('qaTitle').value = r.title;
+                    $('qaBtn').disabled = false;
+                    setQaType(r.type);
+                    if ($('qaList').value === 'WANT' && r.date) $('qaDate').value = r.date;
+                } catch (e) { renderSuggest([], 'TMDB: ' + e.message); }
+                return;
+            }
+            if (!TMDB.key || q.length < 2) return hideSuggest();
+            const seq = ++sgSeq;
+            sgTimer = setTimeout(async () => {
+                try {
+                    const res = (await TMDB.search(q, null)).slice(0, 6);
+                    if (seq !== sgSeq) return;
+                    renderSuggest(res, res.length ? '' : 'Sin resultados en TMDB');
+                } catch (e) {
+                    if (seq === sgSeq) renderSuggest([], 'TMDB: ' + e.message);
+                }
+            }, 250);
+        });
+        $('qaTitle').addEventListener('keydown', e => {
+            if ($('qaSuggest').hidden || !sgList.length) return;
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                sgAct = (sgAct + (e.key === 'ArrowDown' ? 1 : -1) + sgList.length) % sgList.length;
+                document.querySelectorAll('.sg-item').forEach((el, i) => el.classList.toggle('act', i === sgAct));
+            } else if (e.key === 'Enter' && sgAct >= 0) {
+                e.preventDefault(); e.stopPropagation();
+                pickSuggest(sgAct);
+            } else if (e.key === 'Escape') { hideSuggest(); }
+        });
+        $('qaSuggest').addEventListener('mousedown', e => {
+            const el = e.target.closest('.sg-item');
+            if (el) { e.preventDefault(); pickSuggest(Number(el.dataset.i)); }
+        });
+        $('qaTitle').addEventListener('blur', () => setTimeout(hideSuggest, 120));
+        syncTmdbBtn();
 
         /* ── Acciones ── */
         function moveTo(id, list) {
@@ -1593,7 +2043,6 @@
         $('delCancel').addEventListener('click', closeDelete);
         $('deleteModal').addEventListener('click', e => { if (e.target === $('deleteModal')) closeDelete(); });
 
-        $('doneToggle').addEventListener('click', () => { doneOpen = !doneOpen; render(); });
 
         /* ── Editar ── */
         /* Trabajo en curso del calendario por capítulo mientras el modal está
@@ -1673,6 +2122,8 @@
             $('efSchedHint').hidden = !(schedShow && list !== 'UPCOMING');
             $('efDateLabel').textContent = list === 'UPCOMING' ? 'Fecha de estreno' : 'Fecha del próximo estreno';
             $('efDateRow').hidden = !(list === 'UPCOMING' || schedActive) || editHidesDate();
+            $('efTmdbRow').hidden = !TMDB.key;
+            $('efAutoRow').hidden = !(isSeries && list !== 'DONE' && TMDB.key);
             $('efProgRow').hidden = !isSeries;
             $('efRelRow').hidden = !(list !== 'UPCOMING' && !schedActive);
             renderEps();
@@ -1692,6 +2143,9 @@
             $('efSeason').value = it.season || '';
             $('efEpisode').value = it.episode ?? '';
             $('efNote').value = it.note || '';
+            $('efPoster').value = it.poster || '';
+            $('efAuto').checked = tmdbEligible(it);
+            $('efTmdb').value = tmdbLink(it);
             fillSched('ef', it.schedule);
             // Serie en curso sin calendario: lo más probable es que se cargue la temporada siguiente.
             if (!it.schedule && it.type === 'SERIES' && it.list !== 'UPCOMING') $('efSSeason').value = (it.season || 1) + 1;
@@ -1731,11 +2185,33 @@
                 it.episode = null;
             }
             it.note = $('efNote').value.trim();
+            const posterBefore = it.poster || '';
+            it.poster = $('efPoster').value.trim() || null;
+            let movieLink = false;
+            if (!$('efTmdbRow').hidden) {
+                const ref = parseTmdbUrl($('efTmdb').value);
+                if (ref && ref.id !== (it.external && it.external.id)) {
+                    it.external = { provider: 'tmdb', kind: ref.kind, id: ref.id };
+                    it.type = ref.kind === 'tv' ? 'SERIES' : 'MOVIE';
+                    if ((it.poster || '') === posterBefore) it.poster = null;   // el del link nuevo reemplaza al viejo
+                    it.tmdbSyncedAt = 0;
+                    if (ref.kind === 'tv') it.tmdbSync = true;
+                    movieLink = ref.kind === 'movie';
+                } else if (!$('efTmdb').value.trim() && it.external && it.external.provider === 'tmdb') {
+                    it.external = null;
+                }
+            }
+            if (!$('efAutoRow').hidden) {
+                if ($('efAuto').checked && !tmdbEligible(it)) it.tmdbSyncedAt = 0;
+                it.tmdbSync = $('efAuto').checked;
+            }
             if (!$('efRelRow').hidden) it.releasedOn = $('efReleased').value || null;
             syncReleases();
             persist();
             closeEdit();
             render();
+            if (movieLink) tmdbFillMovie(it);
+            runTmdbSync(false);
         });
         $('efCancel').addEventListener('click', closeEdit);
         $('efDelete').addEventListener('click', () => removeItem(editingId));

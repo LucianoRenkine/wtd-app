@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme.js?v=2"></script>
     <title>Calendario - WTD</title>
     <style>
         * {
@@ -13,15 +14,15 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #fbfbfd;
-            color: #1c1b22;
+            background: var(--bg);
+            color: var(--ink);
             line-height: 1.6;
         }
 
         header {
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--glass);
             backdrop-filter: blur(10px);
-            border-bottom: 2px solid #a63d63;
+            border-bottom: 2px solid var(--accent);
             padding: 15px 40px;
             display: flex;
             justify-content: flex-end;
@@ -36,7 +37,7 @@
         .logo {
             font-size: 1.6em;
             font-weight: 800;
-            color: #a63d63;
+            color: var(--accent);
             letter-spacing: 1px;
             text-decoration: none;
         }
@@ -48,8 +49,8 @@
         .side-nav {
             width: 228px;
             flex-shrink: 0;
-            background: #fff;
-            border-right: 1px solid rgba(28, 27, 34, 0.09);
+            background: var(--surface);
+            border-right: 1px solid rgba(var(--ink-rgb), 0.09);
             padding: 26px 18px;
             display: flex;
             flex-direction: column;
@@ -61,18 +62,18 @@
         .side-nav nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
         .side-nav nav a {
             text-decoration: none;
-            color: #45424f;
+            color: var(--ink-2);
             font-size: 0.92em;
             font-weight: 500;
             padding: 10px 12px;
             border-radius: 9px;
             transition: background 0.15s, color 0.15s;
         }
-        .side-nav nav a:hover { background: rgba(28, 27, 34, 0.045); color: #1c1b22; }
-        .side-nav nav a.active { background: rgba(166, 61, 99, 0.08); color: #a63d63; font-weight: 700; }
+        .side-nav nav a:hover { background: rgba(var(--ink-rgb), 0.045); color: var(--ink); }
+        .side-nav nav a.active { background: rgba(var(--accent-rgb), 0.08); color: var(--accent); font-weight: 700; }
         .side-nav-logout {
             text-decoration: none;
-            color: #be123c;
+            color: var(--danger);
             font-size: 0.85em;
             font-weight: 500;
             padding: 10px 12px;
@@ -88,29 +89,29 @@
             gap: 8px;
             padding: 5px 12px 5px 5px;
             border-radius: 99px;
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            background: #fff;
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
+            background: var(--surface);
         }
         .profile-avatar {
             width: 24px; height: 24px; border-radius: 50%;
-            background: #a63d63; color: #fff;
+            background: var(--accent); color: var(--on-accent);
             font-size: 0.75em; font-weight: 700;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
         .profile-name {
-            font-size: 0.85em; font-weight: 600; color: #1c1b22;
+            font-size: 0.85em; font-weight: 600; color: var(--ink);
             max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         .settings-btn {
             width: 32px; height: 32px; border-radius: 50%;
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            background: #fff; color: #45424f;
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
+            background: var(--surface); color: var(--ink-2);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; flex-shrink: 0;
             transition: background 0.15s, color 0.15s;
         }
-        .settings-btn:hover { background: rgba(28, 27, 34, 0.055); color: #1c1b22; }
+        .settings-btn:hover { background: rgba(var(--ink-rgb), 0.055); color: var(--ink); }
 
         @media (max-width: 900px) {
             .side-nav { display: none; }
@@ -123,7 +124,7 @@
         .hamburger {
             background: none;
             border: none;
-            color: #a63d63;
+            color: var(--accent);
             cursor: pointer;
             display: none; /* la nav fija de desktop lo hace innecesario; vuelve en mobile */
             flex-direction: column;
@@ -134,7 +135,7 @@
             display: block;
             width: 25px;
             height: 2px;
-            background: #a63d63;
+            background: var(--accent);
             border-radius: 2px;
             transition: all 0.3s;
         }
@@ -148,8 +149,8 @@
             top: 0;
             width: 300px;
             height: 100vh;
-            background: #fbfbfd;
-            border-right: 1px solid rgba(166, 61, 99, 0.3);
+            background: var(--bg);
+            border-right: 1px solid rgba(var(--accent-rgb), 0.3);
             padding: 80px 20px 30px;
             transition: left 0.3s ease;
             z-index: 200;
@@ -160,7 +161,7 @@
         .sidebar nav li { margin-bottom: 20px; }
         .sidebar nav a {
             text-decoration: none;
-            color: #1c1b22;
+            color: var(--ink);
             font-size: 1.05em;
             display: flex;
             align-items: center;
@@ -169,11 +170,11 @@
             border-radius: 5px;
             transition: all 0.3s;
         }
-        .sidebar nav a:hover { color: #a63d63; background: rgba(28, 27, 34, 0.055); padding-left: 15px; }
-        .sidebar nav a.active { color: #a63d63; font-weight: 600; background: rgba(28, 27, 34, 0.083); }
-        .sidebar-divider { border: none; border-top: 1px solid rgba(28, 27, 34, 0.11); margin: 20px 10px; }
-        .sidebar nav a.logout-link { color: #be123c; }
-        .sidebar nav a.logout-link:hover { color: #e11d48; background: rgba(225, 29, 72, 0.12); }
+        .sidebar nav a:hover { color: var(--accent); background: rgba(var(--ink-rgb), 0.055); padding-left: 15px; }
+        .sidebar nav a.active { color: var(--accent); font-weight: 600; background: rgba(var(--ink-rgb), 0.083); }
+        .sidebar-divider { border: none; border-top: 1px solid rgba(var(--ink-rgb), 0.11); margin: 20px 10px; }
+        .sidebar nav a.logout-link { color: var(--danger); }
+        .sidebar nav a.logout-link:hover { color: var(--danger); background: rgba(225, 29, 72, 0.12); }
 
         .sidebar-overlay {
             position: fixed;
@@ -194,7 +195,7 @@
 
         .page-title {
             font-size: 2.5em;
-            color: #1c1b22;
+            color: var(--ink);
             margin-bottom: 40px;
             text-align: center;
             letter-spacing: 1px;
@@ -204,8 +205,8 @@
 
         /* ── Calendar macOS style ── */
         .calendar-section {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(28, 27, 34, 0.11);
+            background: var(--glass);
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 12px;
             overflow: hidden;
             backdrop-filter: blur(8px);
@@ -216,7 +217,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 24px 16px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.083);
         }
 
         /* ── Filtros del calendario ── */
@@ -226,23 +227,23 @@
             align-items: center;
             gap: 8px 10px;
             padding: 14px 24px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.083);
         }
         .cal-filter-group {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             padding-right: 10px;
-            border-right: 1px solid rgba(28, 27, 34, 0.09);
+            border-right: 1px solid rgba(var(--ink-rgb), 0.09);
         }
         .cal-filter-group:last-of-type { border-right: none; }
         .cal-filter-chip {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: #fff;
-            border: 1px solid rgba(28, 27, 34, 0.13);
-            color: #45424f;
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.13);
+            color: var(--ink-2);
             padding: 6px 13px;
             border-radius: 20px;
             font-size: 0.78em;
@@ -250,15 +251,15 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-        .cal-filter-chip:hover { border-color: rgba(28, 27, 34, 0.28); }
-        .cal-filter-chip.active { background: #1c1b22; border-color: #1c1b22; color: #fff; }
-        .cal-filter-toggle.active { background: #a63d63; border-color: #a63d63; color: #fff; }
+        .cal-filter-chip:hover { border-color: rgba(var(--ink-rgb), 0.28); }
+        .cal-filter-chip.active { background: var(--btn); border-color: var(--btn); color: var(--on-btn); }
+        .cal-filter-toggle.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
         .cal-filter-chip .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
         .current-month {
             font-size: 1.6em;
             font-weight: 700;
-            color: #1c1b22;
+            color: var(--ink);
             letter-spacing: -0.3px;
         }
 
@@ -269,9 +270,9 @@
         }
 
         .calendar-nav button {
-            background: rgba(28, 27, 34, 0.066);
-            border: 1px solid rgba(166, 61, 99, 0.25);
-            color: #a63d63;
+            background: rgba(var(--ink-rgb), 0.066);
+            border: 1px solid rgba(var(--accent-rgb), 0.25);
+            color: var(--accent);
             cursor: pointer;
             transition: all 0.2s;
             border-radius: 6px;
@@ -281,8 +282,8 @@
         }
 
         .calendar-nav button:hover {
-            background: rgba(166, 61, 99, 0.25);
-            border-color: #a63d63;
+            background: rgba(var(--accent-rgb), 0.25);
+            border-color: var(--accent);
         }
 
         .calendar-nav .today-btn {
@@ -299,14 +300,14 @@
 
         .day-header {
             text-align: center;
-            color: #4a4458;
+            color: var(--ink-2);
             font-size: 0.72em;
             font-weight: 700;
             padding: 8px 0 6px;
             letter-spacing: 0.8px;
             text-transform: uppercase;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
-            border-right: 1px solid rgba(28, 27, 34, 0.044);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.083);
+            border-right: 1px solid rgba(var(--ink-rgb), 0.044);
         }
         .day-header:last-child { border-right: none; }
 
@@ -315,20 +316,20 @@
             display: flex;
             flex-direction: column;
             padding: 7px 7px 6px;
-            border-right: 1px solid rgba(28, 27, 34, 0.055);
-            border-bottom: 1px solid rgba(28, 27, 34, 0.055);
+            border-right: 1px solid rgba(var(--ink-rgb), 0.055);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.055);
             cursor: pointer;
             transition: background 0.15s;
             vertical-align: top;
             overflow: hidden;
         }
         .day-cell:nth-child(7n) { border-right: none; }
-        .day-cell:hover { background: rgba(28, 27, 34, 0.039); }
+        .day-cell:hover { background: rgba(var(--ink-rgb), 0.039); }
 
         .day-num {
             font-size: 0.85em;
             font-weight: 500;
-            color: #7a7389;
+            color: var(--muted);
             width: 24px;
             height: 24px;
             display: flex;
@@ -341,22 +342,22 @@
         }
 
         .day-cell.today .day-num {
-            background: #a63d63;
-            color: white;
+            background: var(--accent);
+            color: var(--on-accent);
             font-weight: 700;
         }
 
         /* Días de otro mes (antes/después del actual): el gris más
            marcado — no son "acá", pasaron o no. */
-        .day-cell.other-month { background: rgba(28, 27, 34, 0.09); }
-        .day-cell.other-month .day-num { color: #9d97a8; }
+        .day-cell.other-month { background: rgba(var(--ink-rgb), 0.09); }
+        .day-cell.other-month .day-num { color: var(--faint); }
         .day-cell.other-month .event-pill { filter: grayscale(1); opacity: 0.6; }
 
         /* Días ya pasados del mes actual: un gris más suave que el de
            los meses vecinos — siguen siendo "este mes", solo que ya
            se fueron. */
-        .day-cell.past:not(.other-month) { background: rgba(28, 27, 34, 0.05); }
-        .day-cell.past:not(.other-month) .day-num { color: #aaa4b3; }
+        .day-cell.past:not(.other-month) { background: rgba(var(--ink-rgb), 0.05); }
+        .day-cell.past:not(.other-month) .day-num { color: var(--faint); }
         .day-cell.past:not(.other-month) .event-pill { filter: grayscale(0.85); opacity: 0.7; }
 
         /* Seleccionar un día gris (pasado o de otro mes) aclara el
@@ -364,11 +365,11 @@
            de día es mientras lo estás editando. */
         .day-cell.selected.other-month,
         .day-cell.selected.past {
-            background: rgba(28, 27, 34, 0.02);
+            background: rgba(var(--ink-rgb), 0.02);
         }
         .day-cell.selected.other-month .day-num,
         .day-cell.selected.past .day-num {
-            color: #c4c0cc;
+            color: var(--faint);
         }
         .day-cell.selected.other-month .event-pill,
         .day-cell.selected.past .event-pill {
@@ -376,8 +377,8 @@
             opacity: 0.85;
         }
 
-        .day-cell.selected { background: rgba(28, 27, 34, 0.055); }
-        .day-cell.selected .day-num { outline: 1px solid #a63d63; }
+        .day-cell.selected { background: rgba(var(--ink-rgb), 0.055); }
+        .day-cell.selected .day-num { outline: 1px solid var(--accent); }
 
         .event-pill {
             position: relative;
@@ -409,10 +410,30 @@
             letter-spacing: -1px;
         }
         .event-pill.done .pill-text { text-decoration: line-through; opacity: 0.55; }
+        /* Cumpleaños en la grilla: marca junto al número del día, sin ocupar renglón */
+        .day-cell .day-head { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 3px; }
+        .day-cell .day-head .day-num { margin-bottom: 0; align-self: auto; }
+        .bday-mark {
+            min-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: 0.71em;
+            line-height: 1;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 9px;
+            background: rgba(var(--accent-rgb), 0.12);
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .bday-mark:hover { background: rgba(var(--accent-rgb), 0.22); }
+        .day-cell.other-month .bday-mark,
+        .day-cell.past:not(.other-month) .bday-mark { filter: grayscale(0.85); opacity: 0.7; }
         .event-pill.bday-pill {
-            background: rgba(166, 61, 99, 0.12);
-            color: #a63d63;
-            border-left: 3px solid #a63d63;
+            background: rgba(var(--accent-rgb), 0.12);
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
             font-weight: 600;
         }
 
@@ -444,9 +465,9 @@
             align-items: center;
             gap: 1px;
             padding: 0 3px;
-            background: #ffffff;
+            background: var(--surface);
             border-radius: 0 4px 4px 0;
-            box-shadow: -8px 0 6px -4px rgba(255, 255, 255, 0.95);
+            box-shadow: -8px 0 6px -4px var(--glass);
         }
         .event-pill:hover .pill-actions { display: flex; }
         .pill-action-btn {
@@ -462,16 +483,16 @@
             justify-content: center;
             cursor: pointer;
             padding: 0;
-            color: #45424f;
+            color: var(--ink-2);
             flex-shrink: 0;
         }
-        .pill-action-btn:hover { background: rgba(28, 27, 34, 0.1); }
-        .pill-action-btn.done:hover  { color: #0f9d6b; }
-        .pill-action-btn.delete:hover { color: #e11d48; }
+        .pill-action-btn:hover { background: rgba(var(--ink-rgb), 0.1); }
+        .pill-action-btn.done:hover  { color: var(--ok); }
+        .pill-action-btn.delete:hover { color: var(--danger); }
 
         .event-more {
             font-size: 0.65em;
-            color: #5b5468;
+            color: var(--ink-2);
             padding: 1px 5px;
         }
 
@@ -479,16 +500,16 @@
         .quick-add {
             width: 100%;
             border: none !important;
-            background: rgba(166, 61, 99, 0.07) !important;
+            background: rgba(var(--accent-rgb), 0.07) !important;
             border-radius: 5px !important;
             padding: 3px 6px;
             font-size: 0.72em;
-            color: #1c1b22;
-            outline: 1px dashed rgba(166, 61, 99, 0.45) !important;
+            color: var(--ink);
+            outline: 1px dashed rgba(var(--accent-rgb), 0.45) !important;
             margin-top: 2px;
         }
-        .quick-add::placeholder { color: #a49dae; }
-        .quick-add:focus { outline: 1px solid #a63d63 !important; box-shadow: none !important; }
+        .quick-add::placeholder { color: var(--faint); }
+        .quick-add:focus { outline: 1px solid var(--accent) !important; box-shadow: none !important; }
 
         /* ── Composer (modal de una tarea) ── */
         .composer-overlay {
@@ -505,8 +526,8 @@
         .composer-overlay.active { display: flex; }
 
         .composer {
-            background: #fff;
-            border: 1px solid rgba(28, 27, 34, 0.09);
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.09);
             border-radius: 18px;
             width: 100%;
             max-width: 560px;
@@ -526,18 +547,18 @@
             box-shadow: none !important;
             font-size: 1.45em;
             font-weight: 700;
-            color: #1c1b22;
+            color: var(--ink);
             padding: 0 0 6px !important;
             background: transparent !important;
         }
-        .composer-title-input::placeholder { color: #c4c0cc; }
+        .composer-title-input::placeholder { color: var(--faint); }
         .composer-when-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
             padding-bottom: 18px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.07);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.07);
         }
         .composer-when-group { display: flex; align-items: center; gap: 10px; }
         .composer-date-input {
@@ -548,16 +569,16 @@
             padding: 4px 2px !important;
             font-size: 0.9em;
             font-weight: 600;
-            color: #1c1b22;
+            color: var(--ink);
         }
-        .composer-date-input:focus { box-shadow: 0 0 0 2px rgba(166, 61, 99, 0.18) !important; border-radius: 6px !important; }
-        .composer-weekday { font-size: 0.82em; color: #837e90; text-transform: capitalize; }
+        .composer-date-input:focus { box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.18) !important; border-radius: 6px !important; }
+        .composer-weekday { font-size: 0.82em; color: var(--muted); text-transform: capitalize; }
 
         /* Tarea / Evento */
         .type-toggle {
             display: flex;
             flex-shrink: 0;
-            background: rgba(28, 27, 34, 0.045);
+            background: rgba(var(--ink-rgb), 0.045);
             border-radius: 8px;
             padding: 2px;
         }
@@ -567,12 +588,12 @@
             padding: 5px 12px;
             font-size: 0.78em;
             font-weight: 600;
-            color: #837e90;
+            color: var(--muted);
             border-radius: 6px;
             cursor: pointer;
             transition: background .15s, color .15s;
         }
-        .type-btn.selected { background: #fff; color: #1c1b22; box-shadow: 0 1px 2px rgba(28,27,34,.1); }
+        .type-btn.selected { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(28,27,34,.1); }
 
         .field-label-row {
             display: flex;
@@ -586,11 +607,11 @@
             align-items: center;
             gap: 6px;
             font-size: 0.78em;
-            color: #45424f;
+            color: var(--ink-2);
             cursor: pointer;
             user-select: none;
         }
-        .allday-toggle input { accent-color: #1c1b22; }
+        .allday-toggle input { accent-color: var(--ink); }
 
         .composer-body { padding: 20px 26px 4px; display: flex; flex-direction: column; gap: 18px; }
         .composer-body input[type="date"] { padding: 9px 11px; font-size: 0.9em; }
@@ -601,13 +622,13 @@
             font-weight: 700;
             letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: #837e90;
+            color: var(--muted);
             margin-bottom: 8px;
         }
 
         .time-row { display: flex; align-items: center; gap: 10px; }
         .time-row input { flex: 1; padding: 9px 11px; font-size: 0.9em; }
-        .time-row .sep { color: #a49dae; font-size: 0.85em; }
+        .time-row .sep { color: var(--faint); font-size: 0.85em; }
 
         .composer textarea {
             width: 100%;
@@ -626,22 +647,22 @@
             gap: 7px;
             padding: 8px 14px;
             border-radius: 99px;
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            background: #fff;
-            color: #45424f;
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
+            background: var(--surface);
+            color: var(--ink-2);
             font-size: 0.85em;
             font-weight: 600;
             cursor: pointer;
             transition: border-color 0.15s, background 0.15s, color 0.15s;
             user-select: none;
         }
-        .chip:hover { border-color: rgba(28, 27, 34, 0.24); }
+        .chip:hover { border-color: rgba(var(--ink-rgb), 0.24); }
         .chip .chip-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
         .chip.selected {
             border-color: currentColor;
-            background: color-mix(in srgb, currentColor 9%, #fff);
+            background: color-mix(in srgb, currentColor 9%, var(--surface));
         }
-        .chip:focus-visible { outline: 2px solid #a63d63; outline-offset: 2px; }
+        .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
         .composer-foot {
             display: flex;
@@ -650,12 +671,12 @@
             gap: 12px;
             padding: 18px 26px 22px;
             margin-top: 6px;
-            border-top: 1px solid rgba(28, 27, 34, 0.07);
+            border-top: 1px solid rgba(var(--ink-rgb), 0.07);
         }
-        .composer-hint { font-size: 0.72em; color: #a49dae; }
+        .composer-hint { font-size: 0.72em; color: var(--faint); }
         .composer-hint kbd {
             font-family: 'JetBrains Mono', monospace;
-            background: rgba(28, 27, 34, 0.055);
+            background: rgba(var(--ink-rgb), 0.055);
             border-radius: 4px;
             padding: 1px 5px;
             font-size: 0.95em;
@@ -669,31 +690,31 @@
             cursor: pointer;
             transition: background 0.15s, border-color 0.15s;
         }
-        .btn-save { background: #1c1b22; color: #fff; border: 1px solid #1c1b22; }
-        .btn-save:hover { background: #000; }
+        .btn-save { background: var(--btn); color: var(--on-btn); border: 1px solid var(--btn); }
+        .btn-save:hover { background: var(--btn-hover); }
         .btn-save:disabled { opacity: 0.5; cursor: default; }
         .btn-ghost {
-            background: #fff;
-            color: #45424f;
-            border: 1px solid rgba(28, 27, 34, 0.14);
+            background: var(--surface);
+            color: var(--ink-2);
+            border: 1px solid rgba(var(--ink-rgb), 0.14);
         }
-        .btn-ghost:hover { background: #f6f6f9; }
+        .btn-ghost:hover { background: var(--surface-2); }
         .no-tasks {
-            color: #5b5468;
+            color: var(--ink-2);
             text-align: center;
             padding: 20px;
         }
 
         .loading {
             text-align: center;
-            color: #8c8499;
+            color: var(--muted);
             padding: 20px;
         }
 
         .error {
-            background: rgba(28, 27, 34, 0.11);
-            border: 2px solid #a63d63;
-            color: #1c1b22;
+            background: rgba(var(--ink-rgb), 0.11);
+            border: 2px solid var(--accent);
+            color: var(--ink);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -711,7 +732,7 @@
 
         /* ── Task item clickable ── */
         .task-content { cursor: pointer; }
-        .task-content:hover .task-title { color: #1c1b22; }
+        .task-content:hover .task-title { color: var(--ink); }
 
         /* ── Vista de día (doble click en un día) ── */
         .dayview-overlay {
@@ -734,9 +755,9 @@
             max-height: 100%;
             display: flex;
             flex-direction: column;
-            background: #fff;
+            background: var(--surface);
             border-radius: 16px;
-            border: 1px solid rgba(28, 27, 34, 0.09);
+            border: 1px solid rgba(var(--ink-rgb), 0.09);
             box-shadow: 0 24px 60px rgba(28, 27, 34, 0.25);
             overflow: hidden;
             transform: translateY(8px);
@@ -750,15 +771,15 @@
             justify-content: space-between;
             gap: 16px;
             padding: 22px 28px 16px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.083);
         }
-        .dayview-title { font-size: 1.5em; font-weight: 700; color: #1c1b22; }
-        .dayview-sub { font-size: 0.85em; color: #7a7389; margin-left: 10px; font-weight: 400; text-transform: none; }
+        .dayview-title { font-size: 1.5em; font-weight: 700; color: var(--ink); }
+        .dayview-sub { font-size: 0.85em; color: var(--muted); margin-left: 10px; font-weight: 400; text-transform: none; }
         .dayview-close {
             border: none; background: none; cursor: pointer;
-            font-size: 1.4em; line-height: 1; color: #7a7389; padding: 4px 8px; border-radius: 8px;
+            font-size: 1.4em; line-height: 1; color: var(--muted); padding: 4px 8px; border-radius: 8px;
         }
-        .dayview-close:hover { background: rgba(28, 27, 34, 0.06); color: #1c1b22; }
+        .dayview-close:hover { background: rgba(var(--ink-rgb), 0.06); color: var(--ink); }
 
         /* Franja de todo el día / varios días: fuera del eje horario */
         .dayview-allday {
@@ -766,27 +787,27 @@
             flex-direction: column;
             gap: 6px;
             padding: 12px 28px;
-            background: rgba(28, 27, 34, 0.025);
-            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+            background: rgba(var(--ink-rgb), 0.025);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.083);
         }
         .dayview-allday-label {
             font-size: 0.68em; font-weight: 700; letter-spacing: 0.12em;
-            text-transform: uppercase; color: #a49dae;
+            text-transform: uppercase; color: var(--faint);
         }
         .dayview-allday-items { display: flex; flex-wrap: wrap; gap: 6px; }
         .dayview-allday .event-pill { width: auto; max-width: 100%; margin: 0; }
 
         .dayview-body { overflow-y: auto; padding: 8px 28px 24px; }
-        .dayview-empty { padding: 48px 0; text-align: center; color: #a49dae; }
+        .dayview-empty { padding: 48px 0; text-align: center; color: var(--faint); }
 
         .dv-axis { position: relative; margin-left: 52px; }
         .dv-hour {
             position: absolute; left: 0; right: 0;
-            border-top: 1px solid rgba(28, 27, 34, 0.07);
+            border-top: 1px solid rgba(var(--ink-rgb), 0.07);
         }
         .dv-hour span {
             position: absolute; left: -52px; top: -8px; width: 44px;
-            text-align: right; font-size: 0.72em; color: #a49dae;
+            text-align: right; font-size: 0.72em; color: var(--faint);
             font-variant-numeric: tabular-nums;
         }
         .dv-block {
@@ -828,8 +849,8 @@
             right: -440px;
             width: 420px;
             height: 100vh;
-            background: #ffffff;
-            border-left: 1px solid rgba(166, 61, 99, 0.25);
+            background: var(--surface);
+            border-left: 1px solid rgba(var(--accent-rgb), 0.25);
             z-index: 310;
             display: flex;
             flex-direction: column;
@@ -839,23 +860,23 @@
 
         .detail-header {
             padding: 22px 28px 18px;
-            border-bottom: 1px solid rgba(28, 27, 34, 0.083);
+            border-bottom: 1px solid rgba(var(--ink-rgb), 0.083);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.98);
+            background: var(--pop);
         }
         .detail-title-header {
             font-size: 1em;
             font-weight: 700;
-            color: #1c1b22;
+            color: var(--ink);
             letter-spacing: 0.5px;
         }
         .detail-close {
             background: none;
-            border: 1px solid rgba(28, 27, 34, 0.11);
-            color: #7a7389;
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
+            color: var(--muted);
             width: 30px;
             height: 30px;
             border-radius: 8px;
@@ -866,7 +887,7 @@
             align-items: center;
             justify-content: center;
         }
-        .detail-close:hover { background: rgba(28, 27, 34, 0.083); color: #1c1b22; border-color: #a63d63; }
+        .detail-close:hover { background: rgba(var(--ink-rgb), 0.083); color: var(--ink); border-color: var(--accent); }
 
         .detail-body {
             padding: 28px;
@@ -879,7 +900,7 @@
         .detail-task-title {
             font-size: 1.35em;
             font-weight: 700;
-            color: #1c1b22;
+            color: var(--ink);
             line-height: 1.35;
         }
         .detail-meta-row {
@@ -897,21 +918,21 @@
         }
         .detail-info-item {
             font-size: 0.75em;
-            color: #7a7389;
-            background: rgba(28, 27, 34, 0.033);
-            border: 1px solid rgba(28, 27, 34, 0.066);
+            color: var(--muted);
+            background: rgba(var(--ink-rgb), 0.033);
+            border: 1px solid rgba(var(--ink-rgb), 0.066);
             border-radius: 20px;
             padding: 3px 10px;
             letter-spacing: 0.2px;
         }
-        .detail-info-item.shared { color: #1c1b22; border-color: rgba(28, 27, 34, 0.25); background: rgba(28, 27, 34, 0.07); }
+        .detail-info-item.shared { color: var(--ink); border-color: rgba(var(--ink-rgb), 0.25); background: rgba(var(--ink-rgb), 0.07); }
         .detail-desc-block {
-            background: rgba(246, 243, 252, 0.9);
-            border: 1px solid rgba(28, 27, 34, 0.083);
+            background: var(--glass);
+            border: 1px solid rgba(var(--ink-rgb), 0.083);
             border-radius: 10px;
             padding: 16px;
             font-size: 0.9em;
-            color: #8c8499;
+            color: var(--muted);
             line-height: 1.7;
             white-space: pre-wrap;
             flex: 1;
@@ -919,7 +940,7 @@
         }
         .detail-desc-empty {
             font-size: 0.88em;
-            color: #b8b2c4;
+            color: var(--faint);
             font-style: italic;
             text-align: center;
             padding: 24px;
@@ -928,22 +949,22 @@
             display: block;
             margin-top: 14px;
             padding: 10px 14px;
-            border: 1px solid rgba(28, 27, 34, 0.11);
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 10px;
             font-size: 0.85em;
-            color: #a63d63;
+            color: var(--accent);
             text-decoration: none;
             word-break: break-all;
             transition: background .15s, border-color .15s;
         }
-        .detail-link-row:hover { background: rgba(166, 61, 99, 0.06); border-color: rgba(166, 61, 99, 0.3); }
+        .detail-link-row:hover { background: rgba(var(--accent-rgb), 0.06); border-color: rgba(var(--accent-rgb), 0.3); }
         .detail-actions {
             display: flex;
             gap: 10px;
             padding: 20px 28px;
-            border-top: 1px solid rgba(28, 27, 34, 0.066);
+            border-top: 1px solid rgba(var(--ink-rgb), 0.066);
             flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.98);
+            background: var(--pop);
         }
         .detail-btn {
             flex: 1;
@@ -958,25 +979,25 @@
         }
         .detail-btn.complete {
             background: rgba(16, 185, 129, 0.12);
-            color: #0f9d6b;
+            color: var(--ok);
             border: 1px solid rgba(16, 185, 129, 0.22);
         }
         .detail-btn.complete:hover { background: rgba(16, 185, 129, 0.22); }
-        .detail-btn.complete.done-state { background: rgba(5, 150, 105, 0.22); color: #0b8a5e; }
+        .detail-btn.complete.done-state { background: rgba(5, 150, 105, 0.22); color: var(--ok); }
         .detail-btn.edit {
-            background: rgba(28, 27, 34, 0.055);
-            color: #1c1b22;
-            border: 1px solid rgba(28, 27, 34, 0.11);
+            background: rgba(var(--ink-rgb), 0.055);
+            color: var(--ink);
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
         }
         .icon-edit { flex-shrink: 0; }
         .icon-edit-label { vertical-align: -2px; margin-right: 3px; }
-        .detail-btn.edit:hover { background: rgba(28, 27, 34, 0.1); }
+        .detail-btn.edit:hover { background: rgba(var(--ink-rgb), 0.1); }
         .detail-btn.delete {
             background: rgba(225, 29, 72, 0.1);
-            color: #be123c;
+            color: var(--danger);
             border: 1px solid rgba(225, 29, 72, 0.18);
         }
-        .detail-btn.delete:hover { background: rgba(225, 29, 72, 0.2); color: #e11d48; }
+        .detail-btn.delete:hover { background: rgba(225, 29, 72, 0.2); color: var(--danger); }
 
         @media (max-width: 500px) {
             .detail-panel { width: 100%; right: -100%; }
@@ -989,20 +1010,20 @@
             gap: 10px;
             cursor: pointer;
             padding: 10px 12px;
-            border: 1px solid rgba(28, 27, 34, 0.11);
+            border: 1px solid rgba(var(--ink-rgb), 0.11);
             border-radius: 8px;
             transition: all 0.2s;
             user-select: none;
             font-size: 0.9em;
-            color: #857d95;
+            color: var(--muted);
             margin-bottom: 15px;
         }
-        .share-label:hover { border-color: #a63d63; background: rgba(28, 27, 34, 0.033); }
+        .share-label:hover { border-color: var(--accent); background: rgba(var(--ink-rgb), 0.033); }
         .share-label input[type=checkbox] { display: none; }
         .share-box {
             width: 17px;
             height: 17px;
-            border: 1.5px solid rgba(166, 61, 99, 0.35);
+            border: 1.5px solid rgba(var(--accent-rgb), 0.35);
             border-radius: 4px;
             display: flex;
             align-items: center;
@@ -1012,8 +1033,8 @@
             font-size: 0.75em;
             color: transparent;
         }
-        .share-label input:checked + .share-box { background: #a63d63; border-color: #a63d63; color: white; }
-        .share-label:has(input:checked) { color: #1c1b22; border-color: rgba(28, 27, 34, 0.35); }
+        .share-label input:checked + .share-box { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+        .share-label:has(input:checked) { color: var(--ink); border-color: rgba(var(--ink-rgb), 0.35); }
 
         /* Delete Modal */
         .modal-overlay {
@@ -1028,8 +1049,8 @@
         .modal-overlay.active { display: flex; }
 
         .modal {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(166, 61, 99, 0.4);
+            background: var(--glass);
+            border: 1px solid rgba(var(--accent-rgb), 0.4);
             border-radius: 16px;
             padding: 36px;
             max-width: 360px;
@@ -1042,7 +1063,7 @@
             to   { transform: scale(1);    opacity: 1; }
         }
         .modal-icon { font-size: 2.2em; margin-bottom: 14px; }
-        .modal-text { font-size: 1em; color: #1c1b22; margin-bottom: 24px; line-height: 1.6; }
+        .modal-text { font-size: 1em; color: var(--ink); margin-bottom: 24px; line-height: 1.6; }
         .modal-btns { display: flex; gap: 10px; justify-content: center; }
         .modal-btn {
             padding: 10px 24px;
@@ -1054,25 +1075,25 @@
             transition: all 0.2s;
         }
         .modal-btn.cancel {
-            background: rgba(28, 27, 34, 0.066);
-            color: #1c1b22;
-            border: 1px solid rgba(166, 61, 99, 0.25);
+            background: rgba(var(--ink-rgb), 0.066);
+            color: var(--ink);
+            border: 1px solid rgba(var(--accent-rgb), 0.25);
         }
-        .modal-btn.cancel:hover { background: rgba(28, 27, 34, 0.11); }
-        .modal-btn.confirm { background: #a63d63; color: white; }
-        .modal-btn.confirm:hover { background: #1c1b22; }
+        .modal-btn.cancel:hover { background: rgba(var(--ink-rgb), 0.11); }
+        .modal-btn.confirm { background: var(--accent); color: var(--on-accent); }
+        .modal-btn.confirm:hover { background: var(--confirm-hover); }
 
         .toast {
             position: fixed;
             bottom: 28px;
             left: 50%;
             transform: translateX(-50%) translateY(20px);
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(166, 61, 99, 0.4);
+            background: var(--glass);
+            border: 1px solid rgba(var(--accent-rgb), 0.4);
             border-radius: 10px;
             padding: 12px 22px;
             font-size: 0.88em;
-            color: #1c1b22;
+            color: var(--ink);
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s, transform 0.3s;
@@ -1080,10 +1101,10 @@
             white-space: nowrap;
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.error { border-color: rgba(244, 63, 94, 0.5); color: #f43f5e; }
-        .toast.success { border-color: rgba(16, 185, 129, 0.5); color: #0b8a5e; }
+        .toast.error { border-color: rgba(244, 63, 94, 0.5); color: var(--danger); }
+        .toast.success { border-color: rgba(16, 185, 129, 0.5); color: var(--ok); }
     </style>
-    <link rel="stylesheet" href="css/theme.css?v=6">
+    <link rel="stylesheet" href="css/theme.css?v=7">
 </head>
 <body>
     <div class="page-shell">
@@ -1093,7 +1114,6 @@
             <nav>
                 <a href="index.html">Home</a>
                 <a href="calendar.html" class="active">Calendario</a>
-                <a href="proximas.html">Tareas</a>
                 <a href="watchlist.html">Watchlist</a>
                 <a href="cumpleanos.html">Cumpleaños</a>
             </nav>
@@ -1128,7 +1148,6 @@
                     <ul>
                         <li><a href="index.html">Home</a></li>
                         <li><a href="calendar.html" class="active">Calendario</a></li>
-                        <li><a href="proximas.html">Tareas</a></li>
                         <li><a href="watchlist.html">Watchlist</a></li>
                         <li><a href="cumpleanos.html">Cumpleaños</a></li>
                         <hr class="sidebar-divider">
@@ -1178,8 +1197,8 @@
                         <span class="composer-weekday" id="cWeekday"></span>
                     </div>
                     <div class="type-toggle" id="cTypeToggle">
-                        <button type="button" class="type-btn selected" data-type="TASK">Tarea</button>
-                        <button type="button" class="type-btn" data-type="EVENT">Evento</button>
+                        <button type="button" class="type-btn" data-type="TASK">Tarea</button>
+                        <button type="button" class="type-btn selected" data-type="EVENT">Evento</button>
                     </div>
                 </div>
             </div>
@@ -1346,7 +1365,7 @@
             const prioRow = document.getElementById('calPriorityFilters');
             prioRow.innerHTML = `<button class="cal-filter-chip active" data-prio="all" onclick="setCalPriorityFilter('all', this)">Toda prioridad</button>` +
                 PRIORITY_ORDER.slice().reverse().map(key => {
-                    const st = PRIORITY_STYLE[key];
+                    const st = prioStyle(key);
                     return `<button class="cal-filter-chip" data-prio="${key}" onclick="setCalPriorityFilter('${key}', this)">
                                 <span class="chip-dot" style="background:${st.color}"></span>${st.label}
                             </button>`;
@@ -1528,7 +1547,22 @@
             const dayNum = document.createElement('div');
             dayNum.className = 'day-num';
             dayNum.textContent = day;
-            cell.appendChild(dayNum);
+            const dayHead = document.createElement('div');
+            dayHead.className = 'day-head';
+            const dayBdays = allBirthdays.filter(b => bdayOnDay(b, dayStr));
+            if (dayBdays.length) {
+                const mark = document.createElement('span');
+                mark.className = 'bday-mark';
+                mark.textContent = `🎂 ${dayBdays[0].name}` + (dayBdays.length > 1 ? ` +${dayBdays.length - 1}` : '');
+                mark.title = dayBdays.map(b => `${b.name} · ${bdayAgeText(b, date)}`).join('\n');
+                mark.addEventListener('click', e => {
+                    e.stopPropagation();
+                    window.location.href = 'cumpleanos.html?q=' + encodeURIComponent(dayBdays[0].name);
+                });
+                dayHead.appendChild(mark);
+            }
+            dayHead.appendChild(dayNum);
+            cell.appendChild(dayHead);
 
             if (otherMonth) {
                 cell.classList.add('other-month');
@@ -1561,14 +1595,11 @@
             const isSelected = cell.classList.contains('selected');
             const MAX_PILLS = isSelected ? 3 : 4;
 
-            // Los cumpleaños van primero; cuentan para el tope de píldoras.
-            const dayBdays = allBirthdays.filter(b => bdayOnDay(b, dayStr));
-            const shownB = dayBdays.slice(0, MAX_PILLS);
-            shownB.forEach(b => cell.appendChild(buildBirthdayPill(b, date)));
-            dayTasks.slice(0, MAX_PILLS - shownB.length).forEach(task => {
+            // Los cumpleaños no son píldoras: van como marca junto al número del día.
+            dayTasks.slice(0, MAX_PILLS).forEach(task => {
                 cell.appendChild(buildPill(task, dayStr, date));
             });
-            const totalItems = dayBdays.length + dayTasks.length;
+            const totalItems = dayTasks.length;
             if (totalItems > MAX_PILLS) {
                 const more = document.createElement('div');
                 more.className = 'event-more';
@@ -1771,7 +1802,7 @@
         let composerDate     = null;
         let composerCatId    = null;
         let composerPrio     = 'NONE';
-        let composerItemType = 'TASK';
+        let composerItemType = 'EVENT';
         let editingTaskId    = null;
         let quickAddDraft    = '';
 
@@ -1832,7 +1863,7 @@
         function renderPriorityChips() {
             const row = document.getElementById('cPriorities');
             row.innerHTML = PRIORITY_ORDER.map(key => {
-                const st = PRIORITY_STYLE[key];
+                const st = prioStyle(key);
                 return `<button type="button" class="chip" data-prio="${key}" style="color:${st.color}">
                             <span class="chip-dot" style="background:${st.color}"></span><span>${st.label}${st.mark ? ' ' + st.mark : ''}</span>
                         </button>`;
@@ -1865,7 +1896,7 @@
             document.getElementById('cAllDay').checked = false;
             document.getElementById('cTimeRow').style.display = '';
 
-            selectItemType('TASK');
+            selectItemType('EVENT');
 
             // La categoría arranca con lo último que usaste: menos clicks en
             // el caso común. La prioridad, en cambio, siempre arranca en
