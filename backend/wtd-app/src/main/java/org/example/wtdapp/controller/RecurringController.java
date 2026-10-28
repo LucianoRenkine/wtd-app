@@ -63,6 +63,10 @@ public class RecurringController {
         if (r.getKind() == null) return "Falta el tipo";
         if (r.getFrequency() == null) return "Falta la frecuencia";
         if (r.getStartDate() == null) return "Falta la fecha";
+        if (r.getFrequency() == Recurring.Frequency.MONTHLY_WEEKDAY) {
+            if (r.getWeekOfMonth() == null || r.getWeekOfMonth() < 1 || r.getWeekOfMonth() > 5) return "Elegí qué semana del mes";
+            if (r.getWeekday() == null || r.getWeekday() < 0 || r.getWeekday() > 6) return "Elegí el día de la semana";
+        }
         if (r.getEndDate() != null && r.getEndDate().isBefore(r.getStartDate())) return "El fin no puede ser anterior al inicio";
         if (r.getKind() == Recurring.Kind.SUBSCRIPTION && r.getAmount() != null && r.getAmount() < 0) return "Costo inválido";
         return null;
@@ -78,6 +82,9 @@ public class RecurringController {
         to.setFrequency(from.getFrequency());
         to.setStartDate(from.getStartDate());
         to.setEndDate(from.getEndDate());
+        boolean nth = from.getFrequency() == Recurring.Frequency.MONTHLY_WEEKDAY;
+        to.setWeekOfMonth(nth ? from.getWeekOfMonth() : null);
+        to.setWeekday(nth ? from.getWeekday() : null);
         to.setSkippedDates(from.getSkippedDates() == null || from.getSkippedDates().isBlank() ? null : from.getSkippedDates().trim());
         to.setNote(from.getNote() == null || from.getNote().isBlank() ? null : from.getNote().trim());
         return to;

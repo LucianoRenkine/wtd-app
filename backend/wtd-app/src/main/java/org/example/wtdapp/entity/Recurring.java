@@ -58,6 +58,12 @@ public class Recurring {
     @Column(nullable = false, columnDefinition = "boolean not null default false")
     private Boolean shared = false;
 
+    /** Solo MONTHLY_WEEKDAY: qué semana del mes (1 a 4, o 5 = la última). */
+    private Integer weekOfMonth;
+
+    /** Solo MONTHLY_WEEKDAY: día de la semana, 0 = domingo … 6 = sábado (igual que getDay() de JavaScript). */
+    private Integer weekday;
+
     /** Días puntuales cancelados ("YYYY-MM-DD" separados por coma): la serie sigue, solo esa vez no cae. */
     @Column(columnDefinition = "TEXT")
     private String skippedDates;
@@ -73,5 +79,6 @@ public class Recurring {
 
     public enum Kind { SUBSCRIPTION, TASK }
 
-    public enum Frequency { WEEKLY, MONTHLY, YEARLY }
+    /** MONTHLY_WEEKDAY = "el primer sábado de cada mes", "el último viernes"… */
+    public enum Frequency { WEEKLY, MONTHLY, MONTHLY_WEEKDAY, YEARLY }
 }
