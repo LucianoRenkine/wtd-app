@@ -12,7 +12,8 @@
           "Nueva página Suscripciones en el menú: nombre, costo, moneda (ARS, USD o EUR), frecuencia (mensual o anual) y día de renovación.",
           "Arriba ves cuánto gastás por mes, por año y cuántas suscripciones tenés activas.",
           "La lista se ordena por la próxima renovación (“Hoy”, “Mañana”, “En 5 días”) y tiene buscador y notas.",
-          "Podés ponerles una fecha de fin; si no, duran por tiempo indeterminado."
+          "Podés ponerles una fecha de fin; si no, duran por tiempo indeterminado.",
+          "Son privadas: solo las ves vos. Con el botón Compartir las ve también el otro perfil."
         ]
       },
       {
@@ -37,7 +38,8 @@
         "items": [
           "En la página Suscripciones, pestaña Tareas repetidas: agregá tareas semanales, mensuales o anuales.",
           "Duran por tiempo indeterminado, o hasta la fecha de fin que elijas.",
-          "Aparecen solas en el calendario cada vez que les toca."
+          "Aparecen solas en el calendario cada vez que les toca.",
+          "Igual que las suscripciones, son privadas hasta que tocás Compartir."
         ]
       },
       {
