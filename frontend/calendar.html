@@ -451,6 +451,13 @@
         .bday-mark:hover { background: rgba(var(--accent-rgb), 0.22); }
         .day-cell.other-month .bday-mark,
         .day-cell.past:not(.other-month) .bday-mark { filter: grayscale(0.85); opacity: 0.7; }
+        .event-pill.rec-pill {
+            background: rgba(var(--accent-rgb), 0.07);
+            color: var(--ink);
+            border-left: 3px solid var(--muted);
+            font-weight: 600;
+        }
+        .event-pill.rec-pill.sub { border-left-color: #0f9d74; }
         .event-pill.bday-pill {
             background: rgba(var(--accent-rgb), 0.12);
             color: var(--accent);
@@ -1138,6 +1145,7 @@
                 <a href="calendar.html" class="active">Calendario</a>
                 <a href="watchlist.html">Watchlist</a>
                 <a href="cumpleanos.html">Cumpleaños</a>
+                <a href="suscripciones.html">Suscripciones</a>
             </nav>
             <a href="#" class="side-nav-logout" onclick="doLogout(event)">⏻ Cerrar sesión</a>
         </aside>
@@ -1172,6 +1180,7 @@
                         <li><a href="calendar.html" class="active">Calendario</a></li>
                         <li><a href="watchlist.html">Watchlist</a></li>
                         <li><a href="cumpleanos.html">Cumpleaños</a></li>
+                        <li><a href="suscripciones.html">Suscripciones</a></li>
                         <hr class="sidebar-divider">
                         <li><a href="#" class="logout-link" onclick="doLogout(event)">⏻ Cerrar sesión</a></li>
                     </ul>
@@ -1307,6 +1316,19 @@
         </div>
     </div>
 
+    <!-- Cancelar una sola vez una suscripción / tarea repetida -->
+    <div class="modal-overlay" id="recModal">
+        <div class="modal">
+            <div class="modal-icon" id="recModalIcon"></div>
+            <p class="modal-text" id="recModalText"></p>
+            <div class="modal-btns" style="flex-wrap:wrap">
+                <button class="modal-btn cancel" onclick="closeRecModal()">Cerrar</button>
+                <button class="modal-btn cancel" id="recOpenBtn">Ver / editar</button>
+                <button class="modal-btn confirm" id="recSkipBtn">Cancelar solo esta vez</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <!-- Detail Panel -->
@@ -1343,6 +1365,7 @@
     <script src="js/catalog.js?v=2"></script>
     <script src="js/api.js?v=5"></script>
     <script src="js/birthdays.js?v=1"></script>
+    <script src="js/recurring.js?v=1"></script>
     <script>
         /* ── Hamburger ── */
         const hamburger      = document.getElementById('hamburger');
@@ -1372,6 +1395,7 @@
         let selectedDate = new Date();
         let allTasks = [];
         let allBirthdays = [];
+        let allRecurrings = [];
         let categories = [];
         let partnerId = null;
 
@@ -1463,8 +1487,10 @@
 
             // Load tasks (+ cumpleaños, que se piden en paralelo)
             const bdayPromise = BirthdayApi.list();
+            const recPromise = RecurringApi.list();
             await loadTasks();
             allBirthdays = (await bdayPromise) || [];
+            allRecurrings = (await recPromise) || [];
 
             // Render calendar
             renderCalendar();
@@ -1646,10 +1672,13 @@
             const MAX_PILLS = isSelected ? 3 : 4;
 
             // Los cumpleaños no son píldoras: van como marca junto al número del día.
-            dayTasks.slice(0, MAX_PILLS).forEach(task => {
-                cell.appendChild(buildPill(task, dayStr, date));
+            // Suscripciones y tareas repetidas sí, antes de las tareas del día.
+            const dayRecs = allRecurrings.filter(r => recOnDay(r, dayStr));
+            const dayItems = [...dayRecs.map(r => ({ rec: r })), ...dayTasks.map(t => ({ task: t }))];
+            dayItems.slice(0, MAX_PILLS).forEach(it => {
+                cell.appendChild(it.rec ? buildRecurringPill(it.rec, dayStr) : buildPill(it.task, dayStr, date));
             });
-            const totalItems = dayTasks.length;
+            const totalItems = dayItems.length;
             if (totalItems > MAX_PILLS) {
                 const more = document.createElement('div');
                 more.className = 'event-more';
@@ -1711,6 +1740,45 @@
                 window.location.href = 'cumpleanos.html?q=' + encodeURIComponent(b.name);
             });
             return pill;
+        }
+
+        /* Suscripción (💳 + costo) o tarea repetida (solo el nombre). Al tocarla abre la página de Suscripciones. */
+        function buildRecurringPill(r, dayStr) {
+            const pill = document.createElement('div');
+            pill.className = 'event-pill rec-pill' + (r.kind === 'SUBSCRIPTION' ? ' sub' : '');
+            pill.innerHTML = `<span class="pill-text">${escapeHtml(recPillText(r))}</span>`;
+            pill.title = `${r.name} · ${recWhenText(r)}`;
+            pill.addEventListener('click', e => {
+                e.stopPropagation();
+                openRecModal(r, dayStr);
+            });
+            return pill;
+        }
+
+        let recModalItem = null, recModalDay = null;
+        function openRecModal(r, dayStr) {
+            recModalItem = r; recModalDay = dayStr;
+            const d = new Date(dayStr + 'T12:00:00');
+            document.getElementById('recModalIcon').textContent = r.kind === 'SUBSCRIPTION' ? '💳' : '';
+            document.getElementById('recModalText').innerHTML =
+                `<b>${escapeHtml(r.name)}</b><br><small>${escapeHtml(recWhenText(r))} · ${d.getDate()} de ${MONTHS_DETAIL[d.getMonth()]}</small>`;
+            document.getElementById('recOpenBtn').onclick = () => {
+                window.location.href = `suscripciones.html?k=${r.kind}&q=` + encodeURIComponent(r.name);
+            };
+            document.getElementById('recSkipBtn').onclick = skipRecOnce;
+            document.getElementById('recModal').classList.add('active');
+        }
+        function closeRecModal() { document.getElementById('recModal').classList.remove('active'); }
+        async function skipRecOnce() {
+            const r = recModalItem, day = recModalDay;
+            closeRecModal();
+            const res = await RecurringApi.save({ ...r, skippedDates: recSkipValue([...recSkipped(r), day]) }, r.id);
+            if (!res.ok) { showToast(res.error); return; }
+            const i = allRecurrings.findIndex(x => x.id === r.id);
+            if (i >= 0) allRecurrings[i] = res.data;
+            renderCalendar();
+            if (document.getElementById('dayViewOverlay').classList.contains('active')) renderDayView();
+            showToast('Cancelada solo esa vez');
         }
 
         /* Una píldora = color de categoría + ícono + barra de prioridad */
@@ -2249,29 +2317,32 @@
             const isTimed = t => !t.allDay && t.startTime && !(t.endDate && t.endDate !== t.startDate);
             const allDay = tasks.filter(t => !isTimed(t));
             const bdays = allBirthdays.filter(b => bdayOnDay(b, dayStr));
+            const recs = allRecurrings.filter(r => recOnDay(r, dayStr));
             const timed = tasks.filter(isTimed);
 
             const weekday = WEEKDAYS_DETAIL[date.getDay()];
             document.getElementById('dayViewTitle').innerHTML =
                 `${weekday.charAt(0).toUpperCase() + weekday.slice(1)} ${date.getDate()} de ${MONTHS_DETAIL[date.getMonth()]}` +
                 `<span class="dayview-sub">${tasks.length} ${tasks.length === 1 ? 'tarea' : 'tareas'}` +
-                `${bdays.length ? ` · ${bdays.length} ${bdays.length === 1 ? 'cumpleaños' : 'cumpleaños'}` : ''}</span>`;
+                `${bdays.length ? ` · ${bdays.length} ${bdays.length === 1 ? 'cumpleaños' : 'cumpleaños'}` : ''}` +
+                `${recs.length ? ` · ${recs.length} ${recs.length === 1 ? 'recurrente' : 'recurrentes'}` : ''}</span>`;
 
             // Franja "Todo el día"
             const allDayBox = document.getElementById('dayViewAllDay');
             allDayBox.innerHTML = '';
-            if (allDay.length || bdays.length) {
+            if (allDay.length || bdays.length || recs.length) {
                 allDayBox.className = 'dayview-allday';
                 allDayBox.innerHTML = '<div class="dayview-allday-label">Todo el día</div><div class="dayview-allday-items"></div>';
                 const list = allDayBox.querySelector('.dayview-allday-items');
                 bdays.forEach(b => list.appendChild(buildBirthdayPill(b, date)));
+                recs.forEach(r => list.appendChild(buildRecurringPill(r, dayStr)));
                 allDay.forEach(t => list.appendChild(buildPill(t, null, null)));
             } else {
                 allDayBox.className = '';
             }
 
             const body = document.getElementById('dayViewBody');
-            if (!tasks.length && !bdays.length) {
+            if (!tasks.length && !bdays.length && !recs.length) {
                 body.innerHTML = '<div class="dayview-empty">Sin tareas para este día</div>';
                 return;
             }
