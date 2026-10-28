@@ -19,6 +19,8 @@ años no bisiestos. Es la plantilla de la que salió Suscripciones.
 - Un solo modelo con `kind` = `SUBSCRIPTION` | `TASK`, `frequency` = `WEEKLY|MONTHLY|YEARLY`, `startDate`,
   `endDate` (null = tiempo indeterminado), `amount`/`currency` (solo suscripciones; ARS/USD/EUR), `note`,
   `skippedDates`.
+- `frequency` = `MONTHLY_WEEKDAY` es "el primer sábado de cada mes" (`weekOfMonth` 1–4, 5 = último; `weekday`
+  0=domingo … 6=sábado como `getDay()`). En ese caso `startDate` es solo el "desde cuándo".
 - **No se guardan ocurrencias**: `recOnDay(r, "YYYY-MM-DD")` decide si cae ese día. Mensual día 31 cae el último día
   de meses cortos; anual 29/2 cae el 28.
 - `skippedDates`: fechas canceladas "solo una vez" (coma-separadas). `recOnDay` las excluye, así que también

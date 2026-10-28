@@ -2,12 +2,13 @@
 
    Un item es { id, kind: 'SUBSCRIPTION'|'TASK', name, amount, currency,
    frequency: 'WEEKLY'|'MONTHLY'|'YEARLY', startDate, endDate|null, note,
-   shared, ownerId }. Cada una es privada de su dueño hasta que se marca `shared`.
+   shared, ownerId, weekOfMonth, weekday }. Cada una es privada de su dueño hasta que se marca `shared`.
    No se guardan las ocurrencias: salen de startDate + frequency, y sin
    endDate duran por tiempo indeterminado. Necesita js/api.js (API_BASE_URL). */
 
 const RECURRING_NOT_DEPLOYED = 'El servidor todavía no tiene esta función (falta actualizar el backend).';
-const REC_FREQ = { WEEKLY: 'Cada semana', MONTHLY: 'Cada mes', YEARLY: 'Cada año' };
+const REC_FREQ = { WEEKLY: 'Cada semana', MONTHLY: 'Cada mes (mismo día)', MONTHLY_WEEKDAY: 'Cada mes (ej. primer sábado)', YEARLY: 'Cada año' };
+const REC_NTH = { 1: 'primer', 2: 'segundo', 3: 'tercer', 4: 'cuarto', 5: 'último' };
 const REC_WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 const REC_MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -77,6 +78,11 @@ function recOnDay(r, dayStr) {
         const diff = Date.UTC(t.y, t.m - 1, t.d) - Date.UTC(s.y, s.m - 1, s.d);
         return Math.round(diff / 86400000) % 7 === 0;
     }
+    if (r.frequency === 'MONTHLY_WEEKDAY') {
+        // "El primer sábado": el día de la semana coincide y es la semana N del mes (5 = la última).
+        if (new Date(t.y, t.m - 1, t.d).getDay() !== r.weekday) return false;
+        return r.weekOfMonth === 5 ? t.d + 7 > recDaysInMonth(t.y, t.m) : Math.ceil(t.d / 7) === r.weekOfMonth;
+    }
     if (r.frequency === 'MONTHLY') {
         return t.d === Math.min(s.d, recDaysInMonth(t.y, t.m));
     }
@@ -112,6 +118,10 @@ function recMoney(amount, currency) {
 function recWhenText(r) {
     const s = recParse(r.startDate);
     if (r.frequency === 'WEEKLY') return `Cada ${REC_WEEKDAYS[new Date(s.y, s.m - 1, s.d).getDay()]}`;
+    if (r.frequency === 'MONTHLY_WEEKDAY') {
+        const nth = REC_NTH[r.weekOfMonth] || '';
+        return `El ${nth} ${REC_WEEKDAYS[r.weekday]} de cada mes`;
+    }
     if (r.frequency === 'MONTHLY') return `El ${s.d} de cada mes`;
     return `Cada ${s.d} de ${REC_MONTHS[s.m - 1]}`;
 }

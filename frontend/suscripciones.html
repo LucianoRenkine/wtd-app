@@ -236,6 +236,10 @@
                 <select class="field" id="qaCurrency" aria-label="Moneda"><option>ARS</option><option>USD</option><option>EUR</option></select>
             </span>
             <select class="field" id="qaFreq" aria-label="Frecuencia"></select>
+            <span id="qaNthWrap" style="display:none">
+                <select class="field" id="qaNth" aria-label="Qué semana del mes"></select>
+                <select class="field" id="qaWd" aria-label="Día de la semana"></select>
+            </span>
             <input class="field" id="qaDate" type="date" aria-label="Primera fecha / día de renovación">
             <button class="share-btn" id="qaShare" type="button" aria-pressed="false" title="Si la compartís, la ve también el otro perfil">Compartir</button>
             <button class="btn-primary" id="qaBtn" type="submit">Agregar</button>
@@ -265,6 +269,10 @@
             <div class="form-split form-row">
                 <div><label for="efFreq">Frecuencia</label><select class="field" id="efFreq"></select></div>
                 <div><label for="efDate" id="efDateLabel">Renovación</label><input class="field" id="efDate" type="date" required></div>
+            </div>
+            <div class="form-split form-row" id="efNthWrap" hidden>
+                <div><label for="efNth">Semana del mes</label><select class="field" id="efNth"></select></div>
+                <div><label for="efWd">Día</label><select class="field" id="efWd"></select></div>
             </div>
             <div class="form-row">
                 <label class="check-row" style="margin:0 0 8px"><input type="checkbox" id="efForever"> Por tiempo indeterminado</label>
@@ -441,6 +449,19 @@
         $('qaFreq').innerHTML = freqOptions;
         $('efFreq').innerHTML = freqOptions;
         $('qaFreq').value = 'MONTHLY';
+
+        /* "El primer sábado de cada mes": dos selects extra, solo con esa frecuencia. */
+        const nthOptions = Object.entries(REC_NTH).map(([k, v]) => `<option value="${k}">${v.charAt(0).toUpperCase() + v.slice(1)}</option>`).join('');
+        const wdOptions = [1, 2, 3, 4, 5, 6, 0].map(i => `<option value="${i}">${REC_WEEKDAYS[i].charAt(0).toUpperCase() + REC_WEEKDAYS[i].slice(1)}</option>`).join('');
+        $('qaNth').innerHTML = nthOptions; $('efNth').innerHTML = nthOptions;
+        $('qaWd').innerHTML = wdOptions;   $('efWd').innerHTML = wdOptions;
+        $('qaWd').value = '6'; $('efWd').value = '6';
+        function syncNth() {
+            $('qaNthWrap').style.display = $('qaFreq').value === 'MONTHLY_WEEKDAY' ? 'contents' : 'none';
+            $('efNthWrap').hidden = $('efFreq').value !== 'MONTHLY_WEEKDAY';
+        }
+        $('qaFreq').addEventListener('change', syncNth);
+        $('efFreq').addEventListener('change', syncNth);
         $('qaDate').value = toLocalDateStr(new Date());
 
         /* ── Compartir ── */
@@ -464,6 +485,7 @@
             if (!r.name) return 'Falta el nombre.';
             if (!r.startDate) return isSub() ? 'Elegí el día de renovación.' : 'Elegí la fecha.';
             if (r.endDate && r.endDate < r.startDate) return 'El fin no puede ser anterior al inicio.';
+            if (r.frequency === 'MONTHLY_WEEKDAY' && (!r.weekOfMonth || r.weekday == null)) return 'Elegí qué semana y qué día.';
             if (r.kind === 'SUBSCRIPTION' && (r.amount == null || r.amount < 0)) return 'Poné el costo.';
             return null;
         }
@@ -474,6 +496,8 @@
                 kind, name: $('qaName').value.trim(), frequency: $('qaFreq').value,
                 startDate: $('qaDate').value, endDate: null, note: null,
                 shared: $('qaShare').getAttribute('aria-pressed') === 'true',
+                weekOfMonth: $('qaFreq').value === 'MONTHLY_WEEKDAY' ? parseInt($('qaNth').value) : null,
+                weekday: $('qaFreq').value === 'MONTHLY_WEEKDAY' ? parseInt($('qaWd').value) : null,
                 amount: isSub() && $('qaAmount').value !== '' ? parseFloat($('qaAmount').value) : null,
                 currency: isSub() ? $('qaCurrency').value : null
             };
@@ -506,6 +530,9 @@
             $('efAmount').value = r.amount ?? '';
             $('efCurrency').value = r.currency || 'ARS';
             $('efFreq').value = r.frequency;
+            $('efNth').value = r.weekOfMonth ?? 1;
+            $('efWd').value = r.weekday ?? 6;
+            syncNth();
             $('efDate').value = r.startDate;
             $('efForever').checked = !r.endDate;
             $('efEnd').value = r.endDate || '';
@@ -542,6 +569,8 @@
                 kind: cur.kind, name: $('efName').value.trim(), frequency: $('efFreq').value,
                 startDate: $('efDate').value, endDate: $('efForever').checked ? null : ($('efEnd').value || null),
                 note: $('efNote').value.trim(), skippedDates: cur.skippedDates, shared: cur.shared,
+                weekOfMonth: $('efFreq').value === 'MONTHLY_WEEKDAY' ? parseInt($('efNth').value) : null,
+                weekday: $('efFreq').value === 'MONTHLY_WEEKDAY' ? parseInt($('efWd').value) : null,
                 amount: sub && $('efAmount').value !== '' ? parseFloat($('efAmount').value) : null,
                 currency: sub ? $('efCurrency').value : null
             };
