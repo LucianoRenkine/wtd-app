@@ -171,6 +171,10 @@
         .row.ended { opacity: .5; }
         .check-row { display: flex; align-items: center; gap: 8px; font-size: 0.88em; margin-bottom: 14px; }
         .check-row input { width: 16px; height: 16px; accent-color: var(--accent); }
+        .share-btn { border: 1px solid rgba(var(--ink-rgb), 0.16); background: none; color: var(--muted); font: inherit; font-size: 0.78em; font-weight: 600; padding: 6px 12px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        .share-btn:hover { color: var(--ink); border-color: rgba(var(--ink-rgb), 0.3); }
+        .share-btn.on { background: var(--btn); border-color: var(--btn); color: var(--on-btn); }
+        .share-tag { font-size: 0.74em; font-weight: 600; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
         .qa-end { display: flex; align-items: center; gap: 6px; font-size: 0.8em; color: var(--muted); }
 
         [hidden] { display: none !important; }
@@ -233,6 +237,7 @@
             </span>
             <select class="field" id="qaFreq" aria-label="Frecuencia"></select>
             <input class="field" id="qaDate" type="date" aria-label="Primera fecha / día de renovación">
+            <button class="share-btn" id="qaShare" type="button" aria-pressed="false" title="Si la compartís, la ve también el otro perfil">Compartir</button>
             <button class="btn-primary" id="qaBtn" type="submit">Agregar</button>
         </form>
         <div class="form-err" id="qaErr"></div>
@@ -369,6 +374,9 @@
                 </div>
                 ${r.kind === 'SUBSCRIPTION' ? `<span class="amount">${recMoney(r.amount, r.currency)}</span>` : ''}
                 <span class="when">${ended ? 'Terminó' : recDaysText(n.days)}</span>
+                ${recIsOwner(r)
+                    ? `<button class="share-btn ${r.shared ? 'on' : ''}" onclick="toggleShare('${r.id}')" title="${r.shared ? 'La ve también el otro perfil. Tocá para dejarla privada' : 'Es privada. Tocá para que la vea también el otro perfil'}">${r.shared ? 'Compartida' : 'Compartir'}</button>`
+                    : `<span class="share-tag">Compartida</span>`}
                 <button class="icon-btn" onclick="openEdit('${r.id}')" aria-label="Editar" title="Editar">${GEAR}</button>
             </div>`;
         }
@@ -435,6 +443,22 @@
         $('qaFreq').value = 'MONTHLY';
         $('qaDate').value = toLocalDateStr(new Date());
 
+        /* ── Compartir ── */
+        async function toggleShare(id) {
+            const r = find(id);
+            if (!r) return;
+            const res = await RecurringApi.save({ ...r, shared: !r.shared }, r.id);
+            if (!res.ok) { setBanner(res.error); return; }
+            items[items.findIndex(x => String(x.id) === String(id))] = res.data;
+            render();
+        }
+        $('qaShare').addEventListener('click', () => {
+            const on = $('qaShare').getAttribute('aria-pressed') !== 'true';
+            $('qaShare').setAttribute('aria-pressed', on);
+            $('qaShare').classList.toggle('on', on);
+            $('qaShare').textContent = on ? 'Compartida' : 'Compartir';
+        });
+
         /* ── Alta ── */
         function validate(r) {
             if (!r.name) return 'Falta el nombre.';
@@ -449,6 +473,7 @@
             const r = {
                 kind, name: $('qaName').value.trim(), frequency: $('qaFreq').value,
                 startDate: $('qaDate').value, endDate: null, note: null,
+                shared: $('qaShare').getAttribute('aria-pressed') === 'true',
                 amount: isSub() && $('qaAmount').value !== '' ? parseFloat($('qaAmount').value) : null,
                 currency: isSub() ? $('qaCurrency').value : null
             };
@@ -516,7 +541,7 @@
             const r = {
                 kind: cur.kind, name: $('efName').value.trim(), frequency: $('efFreq').value,
                 startDate: $('efDate').value, endDate: $('efForever').checked ? null : ($('efEnd').value || null),
-                note: $('efNote').value.trim(), skippedDates: cur.skippedDates,
+                note: $('efNote').value.trim(), skippedDates: cur.skippedDates, shared: cur.shared,
                 amount: sub && $('efAmount').value !== '' ? parseFloat($('efAmount').value) : null,
                 currency: sub ? $('efCurrency').value : null
             };

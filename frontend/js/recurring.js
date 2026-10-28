@@ -1,7 +1,8 @@
 /* ── Suscripciones y tareas periódicas: API + cálculo de fechas (compartido por la página y el Calendario) ──
 
    Un item es { id, kind: 'SUBSCRIPTION'|'TASK', name, amount, currency,
-   frequency: 'WEEKLY'|'MONTHLY'|'YEARLY', startDate, endDate|null, note }.
+   frequency: 'WEEKLY'|'MONTHLY'|'YEARLY', startDate, endDate|null, note,
+   shared, ownerId }. Cada una es privada de su dueño hasta que se marca `shared`.
    No se guardan las ocurrencias: salen de startDate + frequency, y sin
    endDate duran por tiempo indeterminado. Necesita js/api.js (API_BASE_URL). */
 
@@ -18,7 +19,7 @@ const RecurringApi = {
     /* Devuelve la lista, o null si el servidor no respondió. */
     async list() {
         try {
-            const r = await fetch(this.url());
+            const r = await fetch(this.url() + (currentUserId ? '?userId=' + currentUserId : ''));
             this.notDeployed = r.status === 404;
             if (!r.ok) throw new Error('GET ' + r.status);
             return await r.json();
@@ -32,7 +33,7 @@ const RecurringApi = {
             const r = await fetch(this.url(id), {
                 method: id == null ? 'POST' : 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(item)
+                body: JSON.stringify({ ...item, ownerId: currentUserId })
             });
             if (r.status === 404 && id == null) { this.notDeployed = true; return { ok: false, error: RECURRING_NOT_DEPLOYED }; }
             const body = await r.json().catch(() => ({}));
@@ -56,6 +57,9 @@ function recSkipped(r) {
 function recSkipValue(list) {
     return list.length ? list.slice().sort().join(',') : null;
 }
+
+/* ¿Puede este perfil cambiar si es compartida? El dueño, o cualquiera si es anterior al dueño. */
+function recIsOwner(r) { return r.ownerId == null || r.ownerId === currentUserId; }
 
 function recParse(dayStr) {
     const [y, m, d] = dayStr.split('-').map(Number);
