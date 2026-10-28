@@ -496,6 +496,9 @@ li.theme-setting { list-style: none; margin: 8px 0 !important; padding: 0 10px; 
 :root[data-theme="dark"] .tabs button.on,
 :root[data-theme="dark"] .seg button.on { background: #384051; box-shadow: none; }
 
+:root[data-theme="dark"] .cal-filter-select { background: var(--surface-2); color: var(--ink-2); border-color: rgba(var(--ink-rgb), 0.16); }
+:root[data-theme="dark"] .cal-filter-select.active { background: rgba(var(--ink-rgb), 0.14); border-color: rgba(var(--ink-rgb), 0.22); color: var(--ink); }
+
 /* ── Calendario en oscuro: más calmo ──
    Lo que más gritaba eran los chips activos en blanco, el celeste de "hoy"
    y las píldoras a todo color. Todo baja un escalón: neutros para lo activo,

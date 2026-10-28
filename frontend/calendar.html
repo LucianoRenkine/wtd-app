@@ -260,6 +260,18 @@
             cursor: pointer;
             transition: all 0.15s;
         }
+        .cal-filter-select {
+            background: var(--surface);
+            border: 1px solid rgba(var(--ink-rgb), 0.13);
+            color: var(--ink-2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font: inherit;
+            font-size: 0.78em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .cal-filter-select.active { background: var(--btn); border-color: var(--btn); color: var(--on-btn); }
         .cal-filter-chip:hover { border-color: rgba(var(--ink-rgb), 0.28); }
         .cal-filter-chip.active { background: var(--btn); border-color: var(--btn); color: var(--on-btn); }
         .cal-filter-toggle.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
@@ -1182,8 +1194,8 @@
                     </div>
                 </div>
                 <div class="calendar-filters">
-                    <div class="cal-filter-group" id="calCategoryFilters"></div>
-                    <div class="cal-filter-group" id="calPriorityFilters"></div>
+                    <select class="cal-filter-select" id="calCategoryFilter" aria-label="Categoría"></select>
+                    <select class="cal-filter-select" id="calPriorityFilter" aria-label="Prioridad"></select>
                     <button class="cal-filter-chip cal-filter-toggle" id="calSharedFilterBtn" onclick="toggleCalSharedFilter()">Compartidas</button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid">
@@ -1368,38 +1380,34 @@
         let calPriorityFilter = 'all';
         let calSharedOnly     = false;
 
+        /* Vista por defecto: la semana actual + las 3 siguientes (sin la
+           semana pasada). Al navegar con ‹ › se pasa a la grilla mensual. */
+        let rollingView = true;
+        const ROLLING_WEEKS = 4;
+        function rollingStart() {
+            const t = new Date();
+            return new Date(t.getFullYear(), t.getMonth(), t.getDate() - ((t.getDay() + 6) % 7));
+        }
+
         function renderCalFilters() {
-            const catRow = document.getElementById('calCategoryFilters');
-            catRow.innerHTML = `<button class="cal-filter-chip active" data-cat="all" onclick="setCalCategoryFilter('all', this)">Todas</button>` +
-                categories.map(cat => {
-                    const st = catStyle(cat);
-                    return `<button class="cal-filter-chip" data-cat="${cat.id}" onclick="setCalCategoryFilter(${cat.id}, this)">
-                                <span class="chip-dot" style="background:${st.color}"></span>${cat.name}
-                            </button>`;
-                }).join('');
+            const catSel = document.getElementById('calCategoryFilter');
+            catSel.innerHTML = `<option value="all">Todas las categorías</option>` +
+                categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+            catSel.value = calCategoryFilter;
+            catSel.onchange = () => { calCategoryFilter = catSel.value; syncCalFilterUI(); renderCalendar(); };
 
-            const prioRow = document.getElementById('calPriorityFilters');
-            prioRow.innerHTML = `<button class="cal-filter-chip active" data-prio="all" onclick="setCalPriorityFilter('all', this)">Toda prioridad</button>` +
-                PRIORITY_ORDER.slice().reverse().map(key => {
-                    const st = prioStyle(key);
-                    return `<button class="cal-filter-chip" data-prio="${key}" onclick="setCalPriorityFilter('${key}', this)">
-                                <span class="chip-dot" style="background:${st.color}"></span>${st.label}
-                            </button>`;
-                }).join('');
+            const prioSel = document.getElementById('calPriorityFilter');
+            prioSel.innerHTML = `<option value="all">Toda prioridad</option>` +
+                PRIORITY_ORDER.slice().reverse().map(key => `<option value="${key}">${prioStyle(key).label}</option>`).join('');
+            prioSel.value = calPriorityFilter;
+            prioSel.onchange = () => { calPriorityFilter = prioSel.value; syncCalFilterUI(); renderCalendar(); };
+            syncCalFilterUI();
         }
 
-        function setCalCategoryFilter(catId, btn) {
-            calCategoryFilter = catId;
-            btn.parentElement.querySelectorAll('.cal-filter-chip').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderCalendar();
-        }
-
-        function setCalPriorityFilter(prio, btn) {
-            calPriorityFilter = prio;
-            btn.parentElement.querySelectorAll('.cal-filter-chip').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderCalendar();
+        // Resalta los selects que están filtrando algo
+        function syncCalFilterUI() {
+            document.getElementById('calCategoryFilter').classList.toggle('active', calCategoryFilter !== 'all');
+            document.getElementById('calPriorityFilter').classList.toggle('active', calPriorityFilter !== 'all');
         }
 
         function toggleCalSharedFilter() {
@@ -1441,6 +1449,7 @@
                     const d = new Date(editTask.startDate + 'T12:00:00');
                     currentDate  = new Date(d);
                     selectedDate = new Date(d);
+                    rollingView = false;
                 }
                 history.replaceState(null, '', 'calendar.html');
             } else if (newFor) {
@@ -1448,6 +1457,7 @@
                 const d = new Date(jumpToNewDay + 'T12:00:00');
                 currentDate  = new Date(d);
                 selectedDate = new Date(d);
+                rollingView = false;
                 history.replaceState(null, '', 'calendar.html');
             }
 
@@ -1492,8 +1502,13 @@
             const month = currentDate.getMonth();
             // Margen de 6 días a cada lado: cubre los días de relleno del
             // mes anterior/siguiente que se llegan a ver en la grilla.
-            const from = toLocalDateStr(new Date(year, month, 1 - 6));
-            const to = toLocalDateStr(new Date(year, month + 1, 6));
+            let from = toLocalDateStr(new Date(year, month, 1 - 6));
+            let to = toLocalDateStr(new Date(year, month + 1, 6));
+            if (rollingView) {
+                const start = rollingStart();
+                from = toLocalDateStr(start);
+                to = toLocalDateStr(new Date(start.getFullYear(), start.getMonth(), start.getDate() + ROLLING_WEEKS * 7));
+            }
 
             allTasks = await getTasksByDateRange(from, to);
         }
@@ -1505,8 +1520,17 @@
             // Update month display (bold month + muted year)
             const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
                 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            let title = monthNames[month];
+            let titleYear = year;
+            if (rollingView) {
+                const a = rollingStart();
+                const b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + ROLLING_WEEKS * 7 - 1);
+                title = a.getMonth() === b.getMonth() ? monthNames[a.getMonth()]
+                                                      : `${monthNames[a.getMonth()]} – ${monthNames[b.getMonth()]}`;
+                titleYear = b.getFullYear();
+            }
             document.getElementById('currentMonth').innerHTML =
-                `${monthNames[month]} <span style="color:#b8b2c4;font-weight:400">${year}</span>`;
+                `${title} <span style="color:#b8b2c4;font-weight:400">${titleYear}</span>`;
 
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
@@ -1519,6 +1543,16 @@
                 header.textContent = day;
                 grid.appendChild(header);
             });
+
+            if (rollingView) {
+                const start = rollingStart();
+                for (let i = 0; i < ROLLING_WEEKS * 7; i++) {
+                    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+                    grid.appendChild(createDayCell(d.getDate(), false, 0, d));
+                }
+                if (dayViewDate) renderDayView();
+                return;
+            }
 
             // First day of month — convert to Monday-first (0=Mon … 6=Sun)
             const rawFirst = new Date(year, month, 1).getDay(); // 0=Sun
@@ -1549,13 +1583,13 @@
             if (dayViewDate) renderDayView();
         }
 
-        function createDayCell(day, otherMonth, monthOffset) {
+        function createDayCell(day, otherMonth, monthOffset, exactDate) {
             const cell = document.createElement('div');
             cell.className = 'day-cell';
 
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            const date = new Date(year, month + monthOffset, day);
+            const date = exactDate || new Date(year, month + monthOffset, day);
             const dayStr = toLocalDateStr(date);
             cell.dataset.date = dayStr;
 
@@ -2049,11 +2083,13 @@
 
         // Navigation
         document.getElementById('prevBtn').addEventListener('click', () => {
+            if (rollingView) { rollingView = false; currentDate = new Date(); currentDate.setDate(1); }
             currentDate.setMonth(currentDate.getMonth() - 1);
             loadTasks().then(() => renderCalendar());
         });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
+            if (rollingView) { rollingView = false; currentDate = new Date(); currentDate.setDate(1); }
             currentDate.setMonth(currentDate.getMonth() + 1);
             loadTasks().then(() => renderCalendar());
         });
@@ -2061,6 +2097,7 @@
         document.getElementById('todayBtn').addEventListener('click', () => {
             currentDate = new Date();
             selectedDate = new Date();
+            rollingView = true;
             loadTasks().then(() => renderCalendar());
         });
 
@@ -2336,7 +2373,10 @@
             selectedDate = next;
             quickAddDraft = '';
 
-            if (next.getMonth() !== currentDate.getMonth() || next.getFullYear() !== currentDate.getFullYear()) {
+            const rs = rollingStart();
+            const outOfRolling = rollingView && (next < rs || next >= new Date(rs.getFullYear(), rs.getMonth(), rs.getDate() + ROLLING_WEEKS * 7));
+            if (outOfRolling) rollingView = false;
+            if (outOfRolling || (!rollingView && (next.getMonth() !== currentDate.getMonth() || next.getFullYear() !== currentDate.getFullYear()))) {
                 currentDate = new Date(next);
                 loadTasks().then(() => { renderCalendar(); focusQuickAdd(); });
             } else {
