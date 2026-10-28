@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Suscripciones y tareas periódicas compartidas: una sola lista para todos los perfiles.
+ * Suscripciones y tareas periódicas. Cada una es privada de su dueño salvo que se marque como compartida.
  */
 @RestController
 @RequestMapping("/recurrings")
@@ -22,15 +22,18 @@ public class RecurringController {
     private RecurringRepository recurringRepository;
 
     @GetMapping
-    public List<Recurring> getAll() {
-        return recurringRepository.findAllByOrderByNameAsc();
+    public List<Recurring> getAll(@RequestParam(required = false) Long userId) {
+        return userId == null ? recurringRepository.findVisibleToAnyone() : recurringRepository.findVisibleTo(userId);
     }
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Recurring r) {
         String error = validate(r);
         if (error != null) return ResponseEntity.badRequest().body(Map.of("error", error));
-        return ResponseEntity.ok(recurringRepository.save(clean(r, new Recurring())));
+        Recurring created = clean(r, new Recurring());
+        created.setOwnerId(r.getOwnerId());
+        created.setShared(Boolean.TRUE.equals(r.getShared()));
+        return ResponseEntity.ok(recurringRepository.save(created));
     }
 
     @PutMapping("/{id}")
@@ -39,7 +42,14 @@ public class RecurringController {
         if (existing.isEmpty()) return ResponseEntity.notFound().build();
         String error = validate(details);
         if (error != null) return ResponseEntity.badRequest().body(Map.of("error", error));
-        return ResponseEntity.ok(recurringRepository.save(clean(details, existing.get())));
+        Recurring r = clean(details, existing.get());
+        // details.ownerId es quien edita. Solo el dueño (o cualquiera, si no tenía dueño) cambia si es compartida.
+        boolean isOwner = r.getOwnerId() == null || r.getOwnerId().equals(details.getOwnerId());
+        if (isOwner) {
+            r.setShared(Boolean.TRUE.equals(details.getShared()));
+            if (r.getOwnerId() == null) r.setOwnerId(details.getOwnerId());
+        }
+        return ResponseEntity.ok(recurringRepository.save(r));
     }
 
     @DeleteMapping("/{id}")
