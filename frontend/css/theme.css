@@ -45,11 +45,11 @@
     --pop:        rgba(30, 36, 47, 0.98);
     --glass:      rgba(12, 18, 28, 0.82);
     --glass-soft: rgba(12, 18, 28, 0.55);
-    --ink:        #eef1f6;
-    --ink-rgb:    238, 241, 246;
-    --ink-2:      #cbd2de;
-    --muted:      #9aa5b5;
-    --faint:      #6b7686;
+    --ink:        #f7f9fc;
+    --ink-rgb:    247, 249, 252;
+    --ink-2:      #dde3ee;
+    --muted:      #b6c0cf;
+    --faint:      #8794a6;
     --accent:     #4cc3ee;
     --accent-rgb: 76, 195, 238;
     --accent-ink: #8fdcf7;
