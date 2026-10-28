@@ -25,6 +25,9 @@ Cada vez que se pushea una release a prod, publicar la novedad en
   temática. Para separar cambios dentro de un mismo archivo: revertir con `git apply -R --unidiff-zero --recount`
   los hunks propios, commitear el resto y restaurar el archivo (probado en `calendar.html`).
 - Orden de push cuando hay dependencia: backend → verificar `curl` 200 en prod → front → novedades.
+- **No testear ni hacer polling en prod después de pushear.** Al terminar el push, avisar que se despliega
+  (~1–2 min) y listo: nada de `curl` en loop esperando el deploy ni de probar el endpoint. Gasta tokens al pedo.
+  La verificación se hace **antes** del push, en local. (Única excepción: que el usuario lo pida.)
 - Push a `main` desde un commit puntual: `git push origin <sha>:refs/heads/main`.
 
 ## Código
@@ -46,6 +49,12 @@ Cada vez que se pushea una release a prod, publicar la novedad en
 - Respuestas cortas en español, con lo que se hizo y qué quedó sin verificar. Ofrecer el siguiente paso en una línea.
 - Acciones con efecto afuera (push a prod, notificaciones al iPhone) solo cuando las pide; avisar qué va a pasar
   (por ejemplo: "esto manda N pushes").
+
+## Gotchas de la base de datos
+- `ddl-auto=update` agrega tablas y columnas pero **no actualiza los CHECK que Hibernate crea para los enums**
+  (`<tabla>_<columna>_check`). Si agregás un valor a un enum guardado como `EnumType.STRING`, la base rechaza el
+  valor nuevo con un 500. Hay que quitar el CHECK viejo: ver `RecurringSchemaFix` como ejemplo (corre al iniciar,
+  `DROP CONSTRAINT IF EXISTS`). Probar siempre el alta real con el valor nuevo (no solo la lógica) antes de pushear.
 
 ## Gotchas de la máquina (macOS)
 - `sed -i ''` (con comillas vacías). `psql -c` no interpola `-v`: pasar el SQL por stdin.

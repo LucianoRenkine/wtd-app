@@ -18,5 +18,6 @@ Si algo cambia (endpoint, página, convención), actualizalos en el mismo commit
 - **Commits y pushes separados por temática**, en español, estilo `feat:` / `fix:` / `docs:`.
   Commitear/pushear solo cuando lo pide.
 - Si el front depende de un endpoint nuevo: **primero el backend, verificar en prod, después el front**.
+- **Después de pushear no probar prod ni hacer polling del deploy**: verificar en local antes y avisar que se despliega.
 - Fechas en el front: **nunca `toISOString()`**, usar `toLocalDateStr()` (GMT-3).
 - Al levantar el proyecto en local: backend `:8080/api`, front con `python3 -m http.server 4321 --directory frontend`.
